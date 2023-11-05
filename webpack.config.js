@@ -80,13 +80,13 @@ module.exports = function (env) {
         }),
         new HTMLWebpackPlugin({
           template: `${paths.publicPath}/index.html`,
-          publicPath: "/",
+          publicPath: process.env.PUBLIC_PATH ?? '/',
           minify: false
         }),
         new HTMLWebpackPlugin({
           template: `${paths.publicPath}/index.html`,
           filename: '404.html',
-          publicPath: "/",
+          publicPath: process.env.PUBLIC_PATH ?? '/',
           minify: false
         }),
         new webpack.ProgressPlugin(),

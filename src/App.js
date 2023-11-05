@@ -25,7 +25,12 @@ function Viewer() {
     );
   }, [location]);
 
-  const src = location.pathname?.substring(1);
+  let src = location.pathname;
+  if (src) {
+    src = src.substring(src.lastIndexOf('/',src.indexOf('.near'))+1);
+  } else {
+    src = 'devhub.near/widget/app';
+  }
   return <Widget key={src} src={src} props={widgetProps} />;
 }
 
