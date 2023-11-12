@@ -1,8 +1,16 @@
 {
-  "name": "frontend",
-  "version": "0.18.2",
-  "homepage": "/",
-  "private": true,
+  "name": "near-bos-webcomponent",
+  "version": "0.0.1",
+  "homepage": "https://github.com/petersalomonsen/near-bos-webcomponent",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/petersalomonsen/near-bos-webcomponent.git"
+  },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
   "dependencies": {
     "@braintree/sanitize-url": "^6.0.2",
     "big.js": "^6.1.1",
