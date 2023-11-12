@@ -27,11 +27,16 @@ function Viewer() {
 
   let src = location.pathname;
   if (src) {
-    src = src.substring(src.lastIndexOf('/',src.indexOf('.near'))+1);
+    src = src.substring(src.lastIndexOf('/', src.indexOf('.near')) + 1);
   } else {
     src = 'devhub.near/widget/app';
   }
-  return <Widget key={src} src={src} props={widgetProps} />;
+
+  const redirectMap = JSON.parse(sessionStorage.getItem('nearSocialVMredirectMap'));
+  const config = {
+    redirectMap
+  }
+  return <Widget src={src} props={widgetProps} config={config} />;
 }
 
 function App(props) {

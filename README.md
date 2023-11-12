@@ -44,3 +44,17 @@ Serve the production build:
 ```
 yarn serve prod
 ```
+
+# Use redirectmap for development
+
+The NEAR social VM supports a feature called `redirectMap` which allows you to load widgets from other sources than the on chain social db. An example redirect map can look like this:
+
+```json
+{"devhub.near/widget/devhub.page.feed": {"code": "return 'hello';"}}
+```
+
+The result of applying this redirect map is that the widget `devhub.near/widget/devhub.page.feed` will be replaced by a string that says `hello`.
+
+The `near-social-viewer` web component supports loading a redirect map from the session storage, which is useful when using the viewer for local development or test pipelines.
+
+By setting the session storage key `nearSocialVMredirectMap` to the JSON value of the redirect map, the web component will pass this to the VM Widget config.
