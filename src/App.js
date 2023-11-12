@@ -12,6 +12,8 @@ import {
   useInitNear,
 } from "near-social-vm";
 
+const SESSION_STORAGE_REDIRECT_MAP_KEY = 'nearSocialVMredirectMap';
+
 function Viewer() {
   const [widgetProps, setWidgetProps] = useState({});
   const location = useLocation();
@@ -32,11 +34,22 @@ function Viewer() {
     src = 'devhub.near/widget/app';
   }
 
-  const redirectMap = JSON.parse(sessionStorage.getItem('nearSocialVMredirectMap'));
-  const config = {
-    redirectMap
-  }
-  return <Widget src={src} props={widgetProps} config={config} />;
+  const [redirectMap, setRedirectMap] = useState(null);
+  useEffect(() => {
+    (async () => {
+      const localStorageFlags = JSON.parse(localStorage.getItem('flags'));
+
+      if (localStorageFlags?.bosLoaderUrl) {
+        setRedirectMap(
+          (await fetch(localStorageFlags.bosLoaderUrl).then(r => r.json())).components
+        );
+      } else {
+        setRedirectMap(JSON.parse(sessionStorage.getItem(SESSION_STORAGE_REDIRECT_MAP_KEY)));
+      }
+    })();
+  }, []);
+
+  return <Widget src={src} props={widgetProps} config={{ redirectMap }} />;
 }
 
 function App(props) {
