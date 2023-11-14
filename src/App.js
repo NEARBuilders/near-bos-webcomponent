@@ -14,9 +14,10 @@ import {
 
 const SESSION_STORAGE_REDIRECT_MAP_KEY = 'nearSocialVMredirectMap';
 
-function Viewer() {
+function Viewer({ widgetSrc, code }) {
   const [widgetProps, setWidgetProps] = useState({});
   const location = useLocation();
+
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     setWidgetProps(
@@ -27,7 +28,7 @@ function Viewer() {
     );
   }, [location]);
 
-  let src = location.pathname;
+  let src = widgetSrc || code || location.pathname;
   if (src) {
     src = src.substring(src.lastIndexOf('/', src.indexOf('.near')) + 1);
   } else {
