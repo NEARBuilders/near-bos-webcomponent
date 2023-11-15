@@ -6,17 +6,21 @@ import "react-bootstrap-typeahead/css/Typeahead.bs5.css";
 import "bootstrap/dist/js/bootstrap.bundle";
 import "App.scss";
 
-import { BrowserRouter as Router, Link, Route, useLocation } from "react-router-dom";
-import { sanitizeUrl } from "@braintree/sanitize-url";
 import {
-  useInitNear,
-} from "near-social-vm";
+  BrowserRouter as Router,
+  Link,
+  Route,
+  useLocation,
+} from "react-router-dom";
+import { sanitizeUrl } from "@braintree/sanitize-url";
+import { useInitNear } from "near-social-vm";
 
 const SESSION_STORAGE_REDIRECT_MAP_KEY = 'nearSocialVMredirectMap';
 
-function Viewer() {
+function Viewer({ widgetSrc, code }) {
   const [widgetProps, setWidgetProps] = useState({});
   const location = useLocation();
+
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     setWidgetProps(
@@ -27,29 +31,43 @@ function Viewer() {
     );
   }, [location]);
 
-  let src = location.pathname;
-  if (src) {
-    src = src.substring(src.lastIndexOf('/', src.indexOf('.near')) + 1);
-  } else {
-    src = 'devhub.near/widget/app';
+  let src;
+
+  if (!code) { // prioritize code if provided
+    src = widgetSrc || location.pathname;
+    if (src) {
+      src = src.substring(src.lastIndexOf('/', src.indexOf('.near')) + 1);
+    } else {
+      src = 'devhub.near/widget/app';
+    }
   }
 
   const [redirectMap, setRedirectMap] = useState(null);
   useEffect(() => {
     (async () => {
-      const localStorageFlags = JSON.parse(localStorage.getItem('flags'));
+      const localStorageFlags = JSON.parse(localStorage.getItem("flags"));
 
       if (localStorageFlags?.bosLoaderUrl) {
         setRedirectMap(
-          (await fetch(localStorageFlags.bosLoaderUrl).then(r => r.json())).components
+          (await fetch(localStorageFlags.bosLoaderUrl).then((r) => r.json()))
+            .components
         );
       } else {
-        setRedirectMap(JSON.parse(sessionStorage.getItem(SESSION_STORAGE_REDIRECT_MAP_KEY)));
+        setRedirectMap(
+          JSON.parse(sessionStorage.getItem(SESSION_STORAGE_REDIRECT_MAP_KEY))
+        );
       }
     })();
   }, []);
 
-  return <Widget src={src} props={widgetProps} config={{ redirectMap }} />;
+  return (
+    <Widget
+      src={src}
+      code={code}
+      props={widgetProps}
+      config={{ redirectMap }}
+    />
+  );
 }
 
 function App(props) {
@@ -80,7 +98,7 @@ function App(props) {
   return (
     <Router>
       <Route>
-        <Viewer></Viewer>
+        <Viewer widgetSrc={props.widgetSrc} code={props.code}></Viewer>
       </Route>
     </Router>
   );
