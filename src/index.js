@@ -8,7 +8,13 @@ class NearSocialViewerElement extends HTMLElement {
         super();
         this.attachShadow({ mode: "open" });
         this.shadowRoot.innerHTML = `<slot></slot>`;
+        this.selectorPromise = new Promise(resolve => this.selectorPromiseResolve = resolve);
     }
+
+    set selector(selector) {
+        this.selectorPromiseResolve(selector);
+    }
+
     connectedCallback() {
         const container = document.createElement('div');
         this.appendChild(container);
@@ -17,7 +23,7 @@ class NearSocialViewerElement extends HTMLElement {
         const code = this.getAttribute('code');
 
         const root = createRoot(container);
-        root.render(<App widgetSrc={src} code={code} />);
+        root.render(<App widgetSrc={src} code={code} selectorPromise={this.selectorPromise}/>);
     }
 
     static get observedAttributes() {
