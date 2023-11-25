@@ -41,7 +41,8 @@
     "build": "yarn run prod",
     "start": "yarn run dev --allowed-hosts=all",
     "serve:prod": "http-server -p 3000 dist",
-    "generateimportmap": "(cd public && jspm link index.html -o index.html)"
+    "generateimportmap": "(cd public && jspm link index.html -o index.html)",
+    "web4:deploy": "NEAR_ENV=mainnet npx web4-deploy dist psalomobos.near --nearfs"
   },
   "eslintConfig": {
     "extends": [
