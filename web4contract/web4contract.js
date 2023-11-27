@@ -21,7 +21,7 @@ export function web4_get() {
     }
     response = {
         contentType,
-        bodyUrl: 'https://ipfs.web4.near.page/ipfs/bafybeid5dgpanpnrjqyp5fbo6bukf374zyhoo2i5gtsjntk4ldkgcmrzlu/' + path
+        bodyUrl: 'https://ipfs.web4.near.page/ipfs/bafybeibr75euwvtncemnjclts6ybao6tilgwk3llsv36prqvjuonvyjbqq/' + path
     };
     env.value_return(JSON.stringify(response));
 }
