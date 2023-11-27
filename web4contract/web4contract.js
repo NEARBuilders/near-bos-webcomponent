@@ -5,7 +5,7 @@ export function web4_get() {
     const pathParts = request.path.split('/');
     let path = pathParts[pathParts.length - 1];
     let dotparts = path.split('.');
-    const extension = dotparts[dotparts.length - 1];
+    const extension = dotparts[dotparts.length-1];
 
     let contentType;
     switch (extension) {
@@ -15,13 +15,13 @@ export function web4_get() {
         case 'html':
             contentType = "text/html; charset=UTF-8";
             break;
-        default:
-            contentType = "text/html; charset=UTF-8";
-            path = 'index.html';
+      default:
+          contentType = "text/html; charset=UTF-8";
+          path = 'index.html';
     }
     response = {
         contentType,
-        bodyUrl: 'https://ipfs.web4.near.page/ipfs/bafybeigmvbzasjmmhkfgkcs52wnbpdisygne6eoedaanohjwox7erghkry/' + path
+        bodyUrl: 'https://ipfs.web4.near.page/ipfs/bafybeidpo6ebf4u7zgymjmppst3cye3a47axgs7wabullhbqkggqgt7unu/' + path
     };
     env.value_return(JSON.stringify(response));
 }
