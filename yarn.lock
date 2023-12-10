@@ -7377,7 +7377,7 @@ near-social-vm-types@^1.0.0:
 
 "near-social-vm@https://github.com/petersalomonsen/NearSocialVM.git#feat/multiple-funciton-access-keys":
   version "2.5.2"
-  resolved "https://github.com/petersalomonsen/NearSocialVM.git#5d4b37e78ac0a11e48c42edbb9931c0a28a70d0c"
+  resolved "https://github.com/petersalomonsen/NearSocialVM.git#22e8585d60da1b08eaa1889489bb48fa27f18341"
   dependencies:
     "@braintree/sanitize-url" "6.0.0"
     "@radix-ui/react-accordion" "^1.1.1"
