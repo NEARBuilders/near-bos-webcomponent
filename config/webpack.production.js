@@ -1,5 +1,6 @@
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 const path = require("path");
 
 module.exports = () => {
@@ -67,7 +68,12 @@ module.exports = () => {
     ],
     optimization: {
       minimize: true,
-      minimizer: [new CssMinimizerPlugin(), "..."],
+      minimizer: [
+        new CssMinimizerPlugin(),
+        new TerserPlugin({
+          exclude: /webcomponentapp.js/
+        })
+      ],
       runtimeChunk: {
         name: "runtime",
       },

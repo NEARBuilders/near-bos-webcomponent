@@ -13,7 +13,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { sanitizeUrl } from "@braintree/sanitize-url";
-import { useInitNear } from "near-social-vm";
+import { useInitNear, useAccount } from "near-social-vm";
 
 const SESSION_STORAGE_REDIRECT_MAP_KEY = 'nearSocialVMredirectMap';
 
@@ -73,10 +73,12 @@ function Viewer({ widgetSrc, code }) {
 function App(props) {
   const { initNear } = useInitNear();
 
+  useAccount();
   useEffect(() => {
     initNear &&
       initNear({
         networkId: 'mainnet',
+        selector: props.selectorPromise,
         customElements: {
           Link: (props) => {
             if (!props.to && props.href) {
