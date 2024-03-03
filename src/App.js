@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Widget } from "near-social-vm";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "react-bootstrap-typeahead/css/Typeahead.css";
@@ -15,56 +15,68 @@ import {
 import { sanitizeUrl } from "@braintree/sanitize-url";
 import { useInitNear, useAccount } from "near-social-vm";
 
-const SESSION_STORAGE_REDIRECT_MAP_KEY = 'nearSocialVMredirectMap';
+const SESSION_STORAGE_REDIRECT_MAP_KEY = "nearSocialVMredirectMap";
 
 function Viewer({ widgetSrc, code }) {
-  const [widgetProps, setWidgetProps] = useState({});
   const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
 
-  useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    setWidgetProps(
-      Array.from(searchParams.entries()).reduce((props, [key, value]) => {
-        props[key] = value;
-        return props;
-      }, {})
-    );
+  const defaultRoute = {
+    path: "efiz.near/widget/Tree",
+    blockHeight: "final",
+    init: {
+      rootPath: "efiz.near"
+    },
+  };
+
+  // create props from params
+  const passProps = useMemo(() => {
+    return Array.from(searchParams.entries()).reduce((props, [key, value]) => {
+      props[key] = value;
+      return props;
+    }, {});
   }, [location]);
 
-  let src;
+  // src = src.substring(src.lastIndexOf("/", src.indexOf(".near")) + 1);
 
-  if (!code) { // prioritize code if provided
-    src = widgetSrc || location.pathname;
-    if (src) {
-      src = src.substring(src.lastIndexOf('/', src.indexOf('.near')) + 1);
-    } else {
-      src = 'devhub.near/widget/app';
-    }
-  }
+  const src = useMemo(() => {
+    const defaultSrc = defaultRoute.path; // default widget to load
+    const pathSrc = widgetSrc || defaultSrc; // if no path, load default widget
+    return pathSrc;
+  }, [widgetSrc]);
 
   const [redirectMap, setRedirectMap] = useState(null);
-  useEffect(() => {
-    (async () => {
-      const localStorageFlags = JSON.parse(localStorage.getItem("flags"));
 
-      if (localStorageFlags?.bosLoaderUrl) {
-        setRedirectMap(
-          (await fetch(localStorageFlags.bosLoaderUrl).then((r) => r.json()))
-            .components
+  useEffect(() => {
+    const fetchRedirectMap = async () => {
+      try {
+        const localStorageFlags = JSON.parse(
+          localStorage.getItem("flags") || "{}"
         );
-      } else {
-        setRedirectMap(
-          JSON.parse(sessionStorage.getItem(SESSION_STORAGE_REDIRECT_MAP_KEY))
-        );
+        let redirectMapData;
+
+        if (localStorageFlags.bosLoaderUrl) {
+          const response = await fetch(localStorageFlags.bosLoaderUrl);
+          const data = await response.json();
+          redirectMapData = data.components;
+        } else {
+          redirectMapData = JSON.parse(
+            sessionStorage.getItem(SESSION_STORAGE_REDIRECT_MAP_KEY) || "{}"
+          );
+        }
+        setRedirectMap(redirectMapData);
+      } catch (error) {
+        console.error("Error fetching redirect map:", error);
       }
-    })();
+    };
+    fetchRedirectMap();
   }, []);
 
   return (
     <Widget
-      src={src}
-      code={code}
-      props={widgetProps}
+      src={!code && src}
+      code={code} // prioritize code
+      props={{ ...(defaultRoute.init), ...passProps }}
       config={{ redirectMap }}
     />
   );
@@ -77,7 +89,7 @@ function App(props) {
   useEffect(() => {
     initNear &&
       initNear({
-        networkId: 'mainnet',
+        networkId: "mainnet",
         selector: props.selectorPromise,
         customElements: {
           Link: (props) => {
