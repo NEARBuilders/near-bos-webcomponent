@@ -25,8 +25,8 @@ function Viewer({ widgetSrc, code }) {
   const defaultRoute = {
     path: "efiz.near/widget/Tree", // your path here
     blockHeight: "final",
-    init: { // and any props you want to pass
-      rootPath: "efiz.near"
+    init: {
+      // and any props you want to pass
     },
   };
 
@@ -75,7 +75,7 @@ function Viewer({ widgetSrc, code }) {
     <Widget
       src={!code && src}
       code={code} // prioritize code
-      props={{ ...(defaultRoute.init), ...passProps }}
+      props={{ ...defaultRoute.init, ...passProps }}
       config={{ redirectMap }}
     />
   );
