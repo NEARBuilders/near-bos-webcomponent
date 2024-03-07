@@ -20,11 +20,12 @@ const SESSION_STORAGE_REDIRECT_MAP_KEY = "nearSocialVMredirectMap";
 function Viewer({ widgetSrc, code }) {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
+  const [redirectMap, setRedirectMap] = useState({});
 
   const defaultRoute = {
-    path: "efiz.near/widget/Tree",
+    path: "efiz.near/widget/Tree", // your path here
     blockHeight: "final",
-    init: {
+    init: { // and any props you want to pass
       rootPath: "efiz.near"
     },
   };
@@ -37,15 +38,13 @@ function Viewer({ widgetSrc, code }) {
     }, {});
   }, [location]);
 
-  // src = src.substring(src.lastIndexOf("/", src.indexOf(".near")) + 1);
+  const path = location.pathname.substring(1);
 
   const src = useMemo(() => {
     const defaultSrc = defaultRoute.path; // default widget to load
-    const pathSrc = widgetSrc || defaultSrc; // if no path, load default widget
+    const pathSrc = widgetSrc || (path !== "" && path) || defaultSrc; // if no path, load default widget
     return pathSrc;
   }, [widgetSrc]);
-
-  const [redirectMap, setRedirectMap] = useState(null);
 
   useEffect(() => {
     const fetchRedirectMap = async () => {
