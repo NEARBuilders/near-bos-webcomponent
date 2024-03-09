@@ -17,18 +17,10 @@ import { useInitNear, useAccount } from "near-social-vm";
 
 const SESSION_STORAGE_REDIRECT_MAP_KEY = "nearSocialVMredirectMap";
 
-function Viewer({ widgetSrc, code }) {
+function Viewer({ widgetSrc, code, initialProps }) {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const [redirectMap, setRedirectMap] = useState({});
-
-  const defaultRoute = {
-    path: "efiz.near/widget/Tree", // your path here
-    blockHeight: "final",
-    init: {
-      // and any props you want to pass
-    },
-  };
 
   // create props from params
   const passProps = useMemo(() => {
@@ -41,10 +33,9 @@ function Viewer({ widgetSrc, code }) {
   const path = location.pathname.substring(1);
 
   const src = useMemo(() => {
-    const defaultSrc = defaultRoute.path; // default widget to load
-    const pathSrc = widgetSrc || (path !== "" && path) || defaultSrc; // if no path, load default widget
+    const pathSrc = widgetSrc ?? path;
     return pathSrc;
-  }, [widgetSrc]);
+  }, [widgetSrc, path]);
 
   useEffect(() => {
     const fetchRedirectMap = async () => {
@@ -72,12 +63,14 @@ function Viewer({ widgetSrc, code }) {
   }, []);
 
   return (
-    <Widget
-      src={!code && src}
-      code={code} // prioritize code
-      props={{ ...defaultRoute.init, ...passProps }}
-      config={{ redirectMap }}
-    />
+    <>
+      <Widget
+        src={!code && src}
+        code={code} // prioritize code
+        props={{ ...initialProps, ...passProps }}
+        config={{ redirectMap }}
+      />
+    </>
   );
 }
 
@@ -111,7 +104,7 @@ function App(props) {
   return (
     <Router>
       <Route>
-        <Viewer widgetSrc={props.widgetSrc} code={props.code}></Viewer>
+        <Viewer widgetSrc={props.src} code={props.code} initialProps={props.initialProps}></Viewer>
       </Route>
     </Router>
   );

@@ -78,6 +78,7 @@ module.exports = function (env) {
             },
           ],
         }),
+        // InjectHTMLWebpackPlugin
         new HTMLWebpackPlugin({
           template: `${paths.publicPath}/index.html`,
           publicPath: process.env.PUBLIC_PATH ?? '/',

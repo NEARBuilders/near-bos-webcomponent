@@ -21,13 +21,14 @@ class NearSocialViewerElement extends HTMLElement {
 
         const src = this.getAttribute('src');
         const code = this.getAttribute('code');
+        const initialProps = this.getAttribute('initialProps');
 
         const root = createRoot(container);
-        root.render(<App widgetSrc={src} code={code} selectorPromise={this.selectorPromise}/>);
+        root.render(<App src={src} code={code} initialProps={JSON.parse(initialProps)} selectorPromise={this.selectorPromise}/>);
     }
 
     static get observedAttributes() {
-        return ['src', 'code'];
+        return ['src', 'code', 'initialProps'];
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
