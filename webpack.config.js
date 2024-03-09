@@ -8,9 +8,24 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { merge } = require("webpack-merge");
 const loadPreset = require("./config/presets/loadPreset");
 const loadConfig = (mode) => require(`./config/webpack.${mode}.js`)(mode);
+const fs = require("fs");
 
 module.exports = function (env) {
   const { mode = "production" } = env || {};
+
+  let hasDefaultRoute = false;
+  let defaultRoute = {};
+  // Read bos.config.json
+  try {
+    const bosConfig = JSON.parse(
+      fs.readFileSync("../bos.config.json", "utf-8")
+    );
+    defaultRoute = bosConfig.defaultRoute || null;
+    hasDefaultRoute = defaultRoute !== null;
+  } catch (e) {
+    console.error("Error reading bos.config.json. Skipping.");
+  }
+
   return merge(
     {
       mode,
@@ -78,27 +93,62 @@ module.exports = function (env) {
             },
           ],
         }),
-        // InjectHTMLWebpackPlugin
         new HTMLWebpackPlugin({
           template: `${paths.publicPath}/index.html`,
-          publicPath: process.env.PUBLIC_PATH ?? '/',
-          minify: false
+          publicPath: process.env.PUBLIC_PATH ?? "/",
+          minify: false,
         }),
         new HTMLWebpackPlugin({
           template: `${paths.publicPath}/index.html`,
-          filename: '404.html',
-          publicPath: process.env.PUBLIC_PATH ?? '/',
-          minify: false
+          filename: "404.html",
+          publicPath: process.env.PUBLIC_PATH ?? "/",
+          minify: false,
         }),
         new webpack.ProgressPlugin(),
         new webpack.ProvidePlugin({
           process: "process/browser",
           Buffer: [require.resolve("buffer/"), "Buffer"],
         }),
-        // new ManifestPlugin.WebpackManifestPlugin(),
+        new ReplaceContentPlugin({
+          filePath: path.resolve(__dirname, "dist", "index.html"),
+          replacePattern: /<near-social-viewer><\/near-social-viewer>/g,
+          replacement: hasDefaultRoute
+            ? `<near-social-viewer src="${defaultRoute.src}" code="${
+                defaultRoute.code
+              }" initialProps="${JSON.stringify(
+                defaultRoute.initialProps
+              )}"></near-social-viewer>`
+            : "<near-social-viewer></near-social-viewer>",
+        }),
       ],
     },
     loadConfig(mode),
     loadPreset(env)
   );
 };
+
+class ReplaceContentPlugin {
+  constructor(options) {
+    this.options = options;
+  }
+
+  apply(compiler) {
+    compiler.hooks.done.tap("ReplaceContentPlugin", () => {
+      const { filePath, replacePattern, replacement } = this.options;
+      fs.readFile(filePath, "utf-8", (err, data) => {
+        if (err) {
+          console.error("Error reading file:", err);
+          return;
+        }
+        const replacedContent = data.replace(replacePattern, replacement);
+        fs.writeFile(filePath, replacedContent, "utf-8", (err) => {
+          if (err) {
+            console.error("Error writing file:", err);
+            return;
+          }
+          console.log("index.html content replaced successfully.");
+        });
+      });
+    });
+  }
+}
