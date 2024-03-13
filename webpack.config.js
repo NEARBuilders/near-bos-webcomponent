@@ -10,6 +10,19 @@ const loadPreset = require("./config/presets/loadPreset");
 const loadConfig = (mode) => require(`./config/webpack.${mode}.js`)(mode);
 const fs = require("fs");
 
+function renderAttribute(name, value) {
+  return value !== undefined ? `${name}="${value}"` : "";
+}
+
+function htmlStringify(json) {
+  return JSON.stringify(json)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 module.exports = function (env) {
   const { mode = "production" } = env || {};
 
@@ -17,10 +30,8 @@ module.exports = function (env) {
   let defaultRoute = {};
   // Read bos.config.json
   try {
-    const bosConfig = JSON.parse(
-      fs.readFileSync("../bos.config.json", "utf-8")
-    );
-    defaultRoute = bosConfig.defaultRoute || null;
+    const bosConfig = JSON.parse(fs.readFileSync("./bos.config.json", "utf-8"));
+    defaultRoute = bosConfig.web4.index || null;
     hasDefaultRoute = defaultRoute !== null;
   } catch (e) {
     console.error("Error reading bos.config.json. Skipping.");
@@ -113,11 +124,15 @@ module.exports = function (env) {
           filePath: path.resolve(__dirname, "dist", "index.html"),
           replacePattern: /<near-social-viewer><\/near-social-viewer>/g,
           replacement: hasDefaultRoute
-            ? `<near-social-viewer src="${defaultRoute.src}" code="${
-                defaultRoute.code
-              }" initialProps="${JSON.stringify(
-                defaultRoute.initialProps
-              )}"></near-social-viewer>`
+            ? `<near-social-viewer ${renderAttribute(
+                "src",
+                defaultRoute.src
+              )} ${renderAttribute("code", defaultRoute.code)} ${renderAttribute(
+                "initialProps",
+                defaultRoute.initialProps !== undefined
+                  ? htmlStringify(defaultRoute.initialProps)
+                  : undefined
+              )}></near-social-viewer>`
             : "<near-social-viewer></near-social-viewer>",
         }),
       ],
