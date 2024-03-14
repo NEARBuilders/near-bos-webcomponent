@@ -115,7 +115,6 @@ module.exports = function (env) {
           publicPath: process.env.PUBLIC_PATH ?? "/",
           minify: false,
         }),
-        new webpack.ProgressPlugin(),
         new webpack.ProvidePlugin({
           process: "process/browser",
           Buffer: [require.resolve("buffer/"), "Buffer"],
