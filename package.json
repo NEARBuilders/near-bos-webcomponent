@@ -33,13 +33,12 @@
     "styled-components": "^5.3.6"
   },
   "scripts": {
-    "serve": "webpack serve",
     "webpack": "webpack",
-    "dev": "yarn run serve -- --env mode=development",
+    "dev": "yarn run webpack -- --env mode=development",
     "prod": "yarn run webpack -- --env mode=production",
     "prod:analyze": "yarn run prod -- --env presets=analyze",
     "build": "yarn run prod",
-    "start": "yarn run dev --allowed-hosts=all",
+    "start": "yarn run dev && http-server -p 3000 dist --allowed-hosts=all",
     "serve:prod": "http-server -p 3000 dist",
     "generateimportmap": "(cd public && jspm link index.html -o index.html)",
     "web4:deploy": "NEAR_ENV=mainnet npx web4-deploy dist psalomobos.near --nearfs"

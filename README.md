@@ -60,3 +60,33 @@ The `near-social-viewer` web component supports loading a redirect map from the 
 By setting the session storage key `nearSocialVMredirectMap` to the JSON value of the redirect map, the web component will pass this to the VM Widget config.
 
 You can also use the same mechanism as [near-discovery](https://github.com/near/near-discovery/) where you can load components from a locally hosted [bos-loader](https://github.com/near/bos-loader) by adding the key `flags` to localStorage with the value `{"bosLoaderUrl": "http://127.0.0.1:3030" }`.
+
+
+# Configuring the default widget
+
+The `near-social-viewer` web component supports three attributes:
+
+* `src` : the src of the widget to render (e.g. `devs.near/widget/default`)
+* `code`: raw, valid, stringified widget code to render (e.g. `"return <p>hello world</p>"`)
+* `initialProps`: initial properties to be passed to the rendered widget.
+
+You can modify the default widget that is displayed via the configuration in `./bos.config.json`.
+
+Make changes to `web4/index` as shown below:
+
+```json
+{
+  "account": "devs.near",
+  "web4": {
+    "index": {
+      "src": "devs.near/widget/default",
+      // "code": "return <p>Hello world!</p>"
+      "initialProps": {
+        "message": "hello world!"
+      }
+    }
+  }
+}
+```
+
+Then be sure to build `yarn run prod` to see the changes take effect.
