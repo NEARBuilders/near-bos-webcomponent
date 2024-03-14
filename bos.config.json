@@ -1,8 +1,8 @@
 {
-  "account": "devs.near",
+  "account": "every.near",
   "web4": {
     "index": {
-      "src": "devs.near/widget/default",
+      "src": "every.near/widget/index",
       "initialProps": {
         "message": "hello world!"
       }
