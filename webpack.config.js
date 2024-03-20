@@ -123,10 +123,10 @@ module.exports = function (env) {
           filePath: path.resolve(__dirname, "dist", "index.html"),
           replacePattern: /<near-social-viewer><\/near-social-viewer>/g,
           replacement: hasDefaultRoute
-            ? `<near-social-viewer ${renderAttribute(
-                "src",
-                defaultRoute.src
-              )} ${renderAttribute("code", defaultRoute.code)} ${renderAttribute(
+            ? `<near-social-viewer ${renderAttribute("src", defaultRoute.src)} ${renderAttribute(
+                "code",
+                defaultRoute.code
+              )} ${renderAttribute(
                 "initialProps",
                 defaultRoute.initialProps !== undefined
                   ? htmlStringify(defaultRoute.initialProps)
