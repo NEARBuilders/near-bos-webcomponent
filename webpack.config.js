@@ -30,7 +30,7 @@ module.exports = function (env) {
   let defaultRoute = {};
   // Read bos.config.json
   try {
-    const bosConfig = JSON.parse(fs.readFileSync("./bos.config.json", "utf-8"));
+    const bosConfig = JSON.parse(fs.readFileSync("../bos.config.json", "utf-8"));
     defaultRoute = bosConfig.web4.index || null;
     hasDefaultRoute = defaultRoute !== null;
   } catch (e) {
