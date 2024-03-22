@@ -12,6 +12,7 @@
     "LICENSE"
   ],
   "dependencies": {
+    "@playwright/test": "^1.38.1",
     "@braintree/sanitize-url": "^6.0.2",
     "big.js": "^6.1.1",
     "bn.js": "^5.1.1",
@@ -41,7 +42,8 @@
     "start": "yarn run dev && http-server -p 3000 dist --allowed-hosts=all",
     "serve:prod": "http-server -p 3000 dist",
     "generateimportmap": "(cd public && jspm link index.html -o index.html)",
-    "web4:deploy": "NEAR_ENV=mainnet npx web4-deploy dist psalomobos.near --nearfs"
+    "web4:deploy": "NEAR_ENV=mainnet npx web4-deploy dist psalomobos.near --nearfs",
+    "test": "npx playwright test"
   },
   "eslintConfig": {
     "extends": [
