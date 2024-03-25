@@ -94,6 +94,9 @@ function App(props) {
             return <Link {...props} />;
           },
         },
+        features: {
+          enableComponentSrcDataKey: true,
+        },
         config: {
           defaultFinality: undefined,
         },
