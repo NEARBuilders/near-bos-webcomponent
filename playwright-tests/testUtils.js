@@ -1,9 +1,9 @@
 import { expect } from "@playwright/test";
 
-export const pauseIfVideoRecording = async (page) => {
+export const pauseIfVideoRecording = async (page, pause = 500) => {
   let isVideoRecorded = (await page.video()) ? true : false;
   if (isVideoRecorded) {
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(pause);
   }
 };
 

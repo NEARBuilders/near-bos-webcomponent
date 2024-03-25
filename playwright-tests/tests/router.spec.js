@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { waitForSelectorToBeVisible } from "../testUtils";
+import { pauseIfVideoRecording, waitForSelectorToBeVisible } from "../testUtils";
 
 test("Verify default route loads successfully and displays expected content", async ({
   page,
@@ -32,6 +32,8 @@ test("Verify default route loads successfully and displays expected content", as
 
   // Verify default props are active
   await waitForSelectorToBeVisible(page, 'h4:has-text("hello world!")');
+
+  await pauseIfVideoRecording(page, 1000);
 });
 
 test("should load the other routes with params when provided", async ({
@@ -48,4 +50,6 @@ test("should load the other routes with params when provided", async ({
 
   // Verify provided props are active
   await waitForSelectorToBeVisible(page, 'div:has-text("devs.near")');
+  
+  await pauseIfVideoRecording(page, 1000);
 });
