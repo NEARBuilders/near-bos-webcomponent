@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { waitForSelectorToBeVisible } from "../testUtils";
 
 test("Verify default route loads successfully and displays expected content", async ({
   page,
@@ -7,11 +8,9 @@ test("Verify default route loads successfully and displays expected content", as
   await page.goto("/");
 
   // Verify the viewer's default route
-  await page.waitForSelector(
-    'near-social-viewer[src="devs.near/widget/default"]',
-    {
-      state: "visible",
-    }
+  await waitForSelectorToBeVisible(
+    page,
+    'near-social-viewer[src="devs.near/widget/default"]'
   );
 
   // Get the value of the initialProps attribute
@@ -26,14 +25,13 @@ test("Verify default route loads successfully and displays expected content", as
   expect(JSON.parse(initialProps)).toEqual({ message: "hello world!" });
 
   // Verify default component renders
-  await page.waitForSelector('div[data-component="devs.near/widget/default"]', {
-    state: "visible",
-  });
+  await waitForSelectorToBeVisible(
+    page,
+    'div[data-component="devs.near/widget/default"]'
+  );
 
   // Verify default props are active
-  await page.waitForSelector('h4:has-text("hello world!")', {
-    state: "visible",
-  });
+  await waitForSelectorToBeVisible(page, 'h4:has-text("hello world!")');
 });
 
 test("should load the other routes with params when provided", async ({
@@ -43,12 +41,11 @@ test("should load the other routes with params when provided", async ({
   await page.goto("/efiz.near/widget/Tree?rootPath=devs.near");
 
   // Verify route loads
-  await page.waitForSelector('div[data-component="efiz.near/widget/Node"]', {
-    state: "visible",
-  });
+  await waitForSelectorToBeVisible(
+    page,
+    'div[data-component="efiz.near/widget/Node"]'
+  );
 
   // Verify provided props are active
-  await page.waitForSelector('div:has-text("devs.near")', {
-    state: "visible",
-  });
+  await waitForSelectorToBeVisible(page, 'div:has-text("devs.near")');
 });
