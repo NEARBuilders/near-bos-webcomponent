@@ -1,19 +1,18 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Widget } from "near-social-vm";
-import "bootstrap-icons/font/bootstrap-icons.css";
-import "react-bootstrap-typeahead/css/Typeahead.css";
-import "react-bootstrap-typeahead/css/Typeahead.bs5.css";
-import "bootstrap/dist/js/bootstrap.bundle";
 import "App.scss";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import "bootstrap/dist/js/bootstrap.bundle";
+import { Widget } from "near-social-vm";
+import React, { useEffect, useMemo, useState } from "react";
+import "react-bootstrap-typeahead/css/Typeahead.css";
 
+import { sanitizeUrl } from "@braintree/sanitize-url";
+import { useAccount, useInitNear } from "near-social-vm";
 import {
-  BrowserRouter as Router,
+  createBrowserRouter,
   Link,
-  Route,
+  RouterProvider,
   useLocation,
 } from "react-router-dom";
-import { sanitizeUrl } from "@braintree/sanitize-url";
-import { useInitNear, useAccount } from "near-social-vm";
 
 const SESSION_STORAGE_REDIRECT_MAP_KEY = "nearSocialVMredirectMap";
 
@@ -95,19 +94,30 @@ function App(props) {
             return <Link {...props} />;
           },
         },
+        features: {
+          enableComponentSrcDataKey: true,
+        },
         config: {
           defaultFinality: undefined,
         },
       });
   }, [initNear]);
 
-  return (
-    <Router>
-      <Route>
-        <Viewer widgetSrc={props.src} code={props.code} initialProps={props.initialProps}></Viewer>
-      </Route>
-    </Router>
-  );
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: (
+        <Viewer
+          widgetSrc={props.src}
+          code={props.code}
+          initialProps={props.initialProps}
+        />
+      ),
+    },
+    { path: "/*", element: <Viewer /> },
+  ]);
+
+  return <RouterProvider router={router} />;
 }
 
 export default App;
