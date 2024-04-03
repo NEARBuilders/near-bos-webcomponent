@@ -2,18 +2,21 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <base href="/" />
-  <title>Near social</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@near-wallet-selector/modal-ui-js@8.7.2/styles.css">
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<base href="/" />
+	<title>Near social</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@near-wallet-selector/modal-ui-js@8.7.2/styles.css">
+	<script id="env-config" type="application/json"> %ENV_CONFIG% </script>
 </head>
+
 <body>
-  <div><button id="open-walletselector-button">Open wallet selector</button></div>
-  <near-social-viewer></near-social-viewer>
+	<div><button id="open-walletselector-button">Open wallet selector</button></div>
+	<near-social-viewer></near-social-viewer>
 </body>
 
-<script async src="https://ga.jspm.io/npm:es-module-shims@1.8.2/dist/es-module-shims.js" crossorigin="anonymous"></script>
+<script async src="https://ga.jspm.io/npm:es-module-shims@1.8.2/dist/es-module-shims.js"
+	crossorigin="anonymous"></script>
 <script type="importmap">
 {
   "imports": {
@@ -103,5 +106,6 @@
   }
 }
 </script>
-  <script src="webcomponentapp.js" type="module"></script>
+<script src="webcomponentapp.js" type="module"></script>
+
 </html>
