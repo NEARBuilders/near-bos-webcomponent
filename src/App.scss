@@ -1,49 +1,56 @@
 @import "bootstrap";
+@import "./components/tailwindGeneratedCss.css";
 
 body {
-  overflow-y: scroll;
+	overflow-y: scroll;
 }
 
-body, html {
-  -webkit-font-smoothing: antialiased;
+body,
+html {
+	-webkit-font-smoothing: antialiased;
 }
 
 .pointer {
-  cursor: pointer;
+	cursor: pointer;
 }
 
-.btn-success, .btn-primary {
-  .text-muted {
-    color: #fff !important;
-  };
+.btn-success,
+.btn-primary {
+	.text-muted {
+		color: #fff !important;
+	}
+
+	;
 }
 
 .outline-none {
-  outline: 0 !important;
+	outline: 0 !important;
 }
 
 a {
-  text-decoration: none;
-  &:hover {
-    text-decoration: underline;
-  }
-  &.btn {
-    text-decoration: none;
-  }
+	text-decoration: none;
+
+	&:hover {
+		text-decoration: underline;
+	}
+
+	&.btn {
+		text-decoration: none;
+	}
 }
 
 .sidebar-items {
-  &> div {
-    border-right: 1px solid #e5e5e5;
-    text-align: center;
-    min-height: 4rem;
-    max-height: 4rem;
-    display: flex;
-  }
+	&>div {
+		border-right: 1px solid #e5e5e5;
+		text-align: center;
+		min-height: 4rem;
+		max-height: 4rem;
+		display: flex;
+	}
 
-  &> div:not(.apps) {
-    min-width: 4rem;
-    align-items: center !important;
-    justify-content: center !important;
-  }
+	&>div:not(.apps) {
+		min-width: 4rem;
+		align-items: center !important;
+		justify-content: center !important;
+	}
 }
