@@ -1,56 +1,82 @@
 @import "bootstrap";
-@import "./components/tailwindGeneratedCss.css";
+
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@500;700;&display=swap");
+@import url("tldraw/tldraw.css");
 
 body {
-	overflow-y: scroll;
+  overflow-y: scroll;
+	font-family: "Inter";
 }
 
-body,
-html {
-	-webkit-font-smoothing: antialiased;
+body, html {
+  -webkit-font-smoothing: antialiased;
 }
 
 .pointer {
-	cursor: pointer;
+  cursor: pointer;
 }
 
-.btn-success,
-.btn-primary {
-	.text-muted {
-		color: #fff !important;
-	}
-
-	;
+.btn-success, .btn-primary {
+  .text-muted {
+    color: #fff !important;
+  };
 }
 
 .outline-none {
-	outline: 0 !important;
+  outline: 0 !important;
 }
 
 a {
-	text-decoration: none;
-
-	&:hover {
-		text-decoration: underline;
-	}
-
-	&.btn {
-		text-decoration: none;
-	}
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+  &.btn {
+    text-decoration: none;
+  }
 }
 
-.sidebar-items {
-	&>div {
-		border-right: 1px solid #e5e5e5;
-		text-align: center;
-		min-height: 4rem;
-		max-height: 4rem;
-		display: flex;
-	}
+/* ------ tldraw ----- */
 
-	&>div:not(.apps) {
-		min-width: 4rem;
-		align-items: center !important;
-		justify-content: center !important;
-	}
+.tldraw__editor {
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	bottom: 0px;
+	right: 0px;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+.tldrawLogo {
+	position: absolute;
+	z-index: 290;
+	bottom: 0px;
+	right: 0px;
+}
+
+.tldrawLogo__mobile {
+	bottom: 60px;
+}
+
+.tldraw__shareZone {
+	pointer-events: all;
+}
+
+.tldraw__topZone {
+	pointer-events: all;
+}
+
+/* ------ near-wallet-selector ----- */
+
+.nws-modal-wrapper {
+  z-index: 5000;
+}
+
+/* ------ auth/core ----- */
+
+.core__auth {
+  pointer-events: all;
 }

@@ -2,10 +2,7 @@
 	"account": "devs.near",
 	"web4": {
 		"index": {
-			"src": "trylivepeer.near/widget/index",
-			"initialProps": {
-				"message": "hello world!"
-			}
-		}
+      "src": "tldraw.near/widget/app"
+    }
 	}
 }

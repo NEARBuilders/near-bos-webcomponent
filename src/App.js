@@ -14,9 +14,8 @@ import {
   useLocation,
 } from "react-router-dom";
 
-import { VideoPlayer } from "./components/Player";
-import { BroadcastComponent } from "./components/Broadcast";
 import useRedirectMap from "./useRedirectMap"
+import TldrawCanvas from "./components/TldrawCanvas";
 
 const SESSION_STORAGE_REDIRECT_MAP_KEY = "nearSocialVMredirectMap";
 
@@ -72,12 +71,33 @@ function App(props) {
             }
             return <Link {...props} />;
           },
-					Player: (props) => {
-						return <VideoPlayer {...props} />;
-					},
-					Broadcast: (props) => {
-						return <BroadcastComponent {...props} />;
-					},
+					Canvas: (props) => {
+            return <TldrawCanvas {...props} />;
+          },
+          Connect: (props) => {
+            return (
+              <button
+                id="open-walletselector-button"
+                key="open-walletselector-button"
+                onClick={() => console.log("click")}
+                {...props}
+              >
+                Login
+              </button>
+            );
+          },
+          Disconnect: (props) => {
+            return (
+              <button
+                id="disconnect-wallet-button"
+                key="disconnect-wallet-button"
+                onClick={() => console.log("click")}
+                {...props}
+              >
+                Logout
+              </button>
+            );
+          },
         },
         features: {
           enableComponentSrcDataKey: true,
