@@ -16,6 +16,8 @@ import {
 
 import { VideoPlayer } from "./components/Player";
 import { BroadcastComponent } from "./components/Broadcast";
+import { SubComponent } from "./components/Broadcast";
+
 import useRedirectMap from "./useRedirectMap"
 
 const SESSION_STORAGE_REDIRECT_MAP_KEY = "nearSocialVMredirectMap";
@@ -75,8 +77,11 @@ function App(props) {
 					Player: (props) => {
 						return <VideoPlayer {...props} />;
 					},
-					Broadcast: (props) => {
+					BroadcastComponent: (props) => {
 						return <BroadcastComponent {...props} />;
+					},
+					SubComponent: (props) => {
+						return <SubComponent {...props} />;
 					},
         },
         features: {
