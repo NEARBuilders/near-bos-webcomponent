@@ -2,7 +2,7 @@ import "App.scss";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/js/bootstrap.bundle";
 import { Widget } from "near-social-vm";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import "react-bootstrap-typeahead/css/Typeahead.css";
 
 import { sanitizeUrl } from "@braintree/sanitize-url";
@@ -15,8 +15,7 @@ import {
 } from "react-router-dom";
 
 import { VideoPlayer } from "./components/Player";
-import { BroadcastComponent } from "./components/Broadcast";
-import { SubComponent } from "./components/Broadcast";
+import { BroadcastComponent } from "./components/Broadcast/Broadcast";
 
 import useRedirectMap from "./useRedirectMap"
 
@@ -77,12 +76,15 @@ function App(props) {
 					Player: (props) => {
 						return <VideoPlayer {...props} />;
 					},
-					BroadcastComponent: (props) => {
+					Broadcast: (props) => {
 						return <BroadcastComponent {...props} />;
 					},
-					SubComponent: (props) => {
-						return <SubComponent {...props} />;
-					},
+					"Broadcast.Player": (props) => {
+						return <BroadcastComponent.Player {...props} />;
+					 },
+					"Broadcast.GenerateStream": (props) => {
+						return <BroadcastComponent.GenerateStream{...props} />;
+					} 
         },
         features: {
           enableComponentSrcDataKey: true,

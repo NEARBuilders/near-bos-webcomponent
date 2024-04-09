@@ -1,22 +1,15 @@
-import React, { createContext, useContext, useState } from 'react';
+import React from 'react';
 import { EnableVideoIcon, StopIcon } from "@livepeer/react/assets";
 import * as Broadcast from "@livepeer/react/broadcast";
 import { getIngest } from "@livepeer/react/external";
 
-const BroadcastContext = createContext();
+import {useStore} from "./state"
 
 export const BroadcastComponent = ({ children }) => {
-  const [streamKey, setStreamKey] = useState(null);
-
-  return (
-    <BroadcastContext.Provider value={{ streamKey, setStreamKey}}>
-      {children}
-    </BroadcastContext.Provider>
-  );
 };
 
 BroadcastComponent.Player = (props) => {
-	const { streamKey } = useContext(BroadcastContext);
+	const { streamKey } = useStore();
 
 	if (!streamKey) return (
 		<div>stream key not found</div>
@@ -24,6 +17,7 @@ BroadcastComponent.Player = (props) => {
 
 	return (
 		<div>
+			{streamKey}
 			<Broadcast.Root ingestUrl={getIngest(streamKey)}>
 				<Broadcast.Container>
 					<Broadcast.Video
@@ -80,31 +74,31 @@ BroadcastComponent.Player = (props) => {
 };
 
 BroadcastComponent.GenerateStream = (props) => {
-	const { setStreamKey } = useContext(ComponentContext);
+	const { setStreamKey } = useStore();
 
 	const createStream = async () => {
-		try {
-			const response = await fetch("https://livepeer.studio/api/stream", {
-				method: "POST",
-				headers: {
-					Authorization: `Bearer ${process.env.REACT_APP_LIVEPEER_STUDIO_API_KEY}`,
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					name: "test_stream",
-				}),
-			});
+		  try {
+		  	const response = await fetch("https://livepeer.studio/api/stream", {
+		  		method: "POST",
+		  		headers: {
+		  			Authorization: `Bearer ${process.env.REACT_APP_LIVEPEER_STUDIO_API_KEY}`,
+		  			"Content-Type": "application/json",
+		  		},
+		  		body: JSON.stringify({
+		  			name: "test_stream",
+		  		}),
+		  	});
 
-			if (!response.ok) {
-				throw new Error("Network response was not ok");
-			}
+		  	if (!response.ok) {
+		  		throw new Error("Network response was not ok");
+		  	}
 
-			const data = await response.json();
-			console.log("Stream created:", data);
-			setStreamKey(data.streamKey);
-		} catch (error) {
-			console.error("Error creating stream:", error);
-		}
+		  	const data = await response.json();
+		  	console.log("Stream created:", data);
+		  	setStreamKey(data.streamKey);
+		  } catch (error) {
+		  	console.error("Error creating stream:", error);
+		  }
 	};
 
 	return (

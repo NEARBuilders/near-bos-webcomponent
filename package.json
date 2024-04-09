@@ -6,17 +6,23 @@
 		"type": "git",
 		"url": "https://github.com/petersalomonsen/near-bos-webcomponent.git"
 	},
-	"files": ["dist/", "README.md", "LICENSE"],
+	"files": [
+		"dist/",
+		"README.md",
+		"LICENSE"
+	],
 	"dependencies": {
-		"socket.io-client": "^4.7.2",
-		"@playwright/test": "^1.38.1",
 		"@braintree/sanitize-url": "^6.0.2",
+		"@livepeer/react": "^4.1.0",
+		"@playwright/test": "^1.38.1",
 		"big.js": "^6.1.1",
 		"bn.js": "^5.1.1",
 		"bootstrap": "^5.3.1",
 		"bootstrap-icons": "^1.9.0",
 		"collections": "^5.1.12",
+		"dotenv": "^16.4.5",
 		"error-polyfill": "^0.1.2",
+		"livepeer": "^3.0.2",
 		"local-storage": "^2.0.0",
 		"near-api-js": "^2.1.3",
 		"near-social-vm": "git+https://github.com/NearSocial/VM.git",
@@ -28,10 +34,9 @@
 		"react-bootstrap-typeahead": "^6.1.2",
 		"react-dom": "^18.2.0",
 		"react-router-dom": "^6.20.0",
+		"socket.io-client": "^4.7.2",
 		"styled-components": "^5.3.6",
-		"@livepeer/react": "^4.1.0",
-		"livepeer": "^3.0.2",
-		"dotenv": "^16.4.5"
+		"zustand": "^4.5.2"
 	},
 	"scripts": {
 		"webpack": "webpack",
@@ -46,10 +51,17 @@
 		"test": "npx playwright test"
 	},
 	"eslintConfig": {
-		"extends": ["react-app", "react-app/jest"]
+		"extends": [
+			"react-app",
+			"react-app/jest"
+		]
 	},
 	"browserslist": {
-		"production": [">0.2%", "not dead", "not op_mini all"],
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
 		"development": [
 			"last 1 chrome version",
 			"last 1 firefox version",
