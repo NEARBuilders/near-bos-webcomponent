@@ -14,7 +14,7 @@ import {
   useLocation,
 } from "react-router-dom";
 
-import { VideoPlayer } from "./components/Player";
+import { VideoPlayer } from "./components/Player/Player";
 import { BroadcastComponent } from "./components/Broadcast/Broadcast";
 
 import useRedirectMap from "./useRedirectMap"

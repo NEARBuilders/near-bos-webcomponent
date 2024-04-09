@@ -4,6 +4,8 @@ import { PlayIcon, PauseIcon } from "@livepeer/react/assets";
 import { getSrc } from "@livepeer/react/external";
 import { Livepeer } from "livepeer";
 
+import {useStore} from "./state"
+
 const livepeer = new Livepeer({
 	apiKey: process.env.REACT_APP_LIVEPEER_STUDIO_API_KEY,
 });
