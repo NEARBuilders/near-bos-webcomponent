@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
 export const useStore = create((set) => ({
-	playbackId: "",
-	setPlaybackId: (value) => set(() => ({ playbackId: value })),
+	src: "",
+	setSrc: (value) => set(() => ({ src: value })),
 }));

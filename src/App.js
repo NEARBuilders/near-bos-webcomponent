@@ -76,6 +76,12 @@ function App(props) {
 					Player: (props) => {
 						return <VideoPlayer {...props} />;
 					},
+					"Player.Display": (props) => {
+						return <VideoPlayer.Display {...props} />;
+					},
+					"Player.GetPlaybackId": (props) => {
+						return <VideoPlayer.GetPlaybackId {...props} />;
+					},
 					Broadcast: (props) => {
 						return <BroadcastComponent {...props} />;
 					},
