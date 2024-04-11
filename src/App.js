@@ -17,12 +17,12 @@ import {
 import { VideoPlayer } from "./components/Player/Player";
 import { BroadcastComponent } from "./components/Broadcast/Broadcast";
 
-import useRedirectMap from "./useRedirectMap"
+import useRedirectMap from "./useRedirectMap";
 
 const SESSION_STORAGE_REDIRECT_MAP_KEY = "nearSocialVMredirectMap";
 
 function Viewer({ widgetSrc, code, initialProps }) {
-	const { components: redirectMap } = useRedirectMap();
+  const { components: redirectMap } = useRedirectMap();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
 
@@ -73,24 +73,27 @@ function App(props) {
             }
             return <Link {...props} />;
           },
-					Player: (props) => {
-						return <VideoPlayer {...props} />;
-					},
-					"Player.Display": (props) => {
-						return <VideoPlayer.Display {...props} />;
-					},
-					"Player.GetPlaybackId": (props) => {
-						return <VideoPlayer.GetPlaybackId {...props} />;
-					},
-					Broadcast: (props) => {
-						return <BroadcastComponent {...props} />;
-					},
-					"Broadcast.Player": (props) => {
-						return <BroadcastComponent.Player {...props} />;
-					 },
-					"Broadcast.GenerateStream": (props) => {
-						return <BroadcastComponent.GenerateStream{...props} />;
-					} 
+          Player: (props) => {
+            return <VideoPlayer {...props} />;
+          },
+          "Player.Display": (props) => {
+            return <VideoPlayer.Display {...props} />;
+          },
+          "Player.GetPlaybackId": (props) => {
+            return <VideoPlayer.GetPlaybackId {...props} />;
+          },
+          "Player.UploadVideo": (props) => {
+            return <VideoPlayer.UploadVideo {...props} />;
+          },
+          Broadcast: (props) => {
+            return <BroadcastComponent {...props} />;
+          },
+          "Broadcast.Player": (props) => {
+            return <BroadcastComponent.Player {...props} />;
+          },
+          "Broadcast.GenerateStream": (props) => {
+            return <BroadcastComponent.GenerateStream {...props} />;
+          },
         },
         features: {
           enableComponentSrcDataKey: true,
