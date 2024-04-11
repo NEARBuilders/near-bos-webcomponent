@@ -16,7 +16,7 @@ import {
 
 const SESSION_STORAGE_REDIRECT_MAP_KEY = "nearSocialVMredirectMap";
 
-function Viewer({ widgetSrc, code, initialProps }) {
+function Viewer({ widgetSrc, code, initialProps, rpc }) {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const [redirectMap, setRedirectMap] = useState({});
@@ -39,6 +39,7 @@ function Viewer({ widgetSrc, code, initialProps }) {
   useEffect(() => {
     const fetchRedirectMap = async () => {
       try {
+
         const localStorageFlags = JSON.parse(
           localStorage.getItem("flags") || "{}"
         );
@@ -53,7 +54,9 @@ function Viewer({ widgetSrc, code, initialProps }) {
             sessionStorage.getItem(SESSION_STORAGE_REDIRECT_MAP_KEY) || "{}"
           );
         }
-        setRedirectMap(redirectMapData);
+
+        if (rpc) redirectMapData.nodeUrl = rpc;
+        setRedirectMap(redirectMapData); // ?? I would have thought this would have worked...
       } catch (error) {
         console.error("Error fetching redirect map:", error);
       }
@@ -78,6 +81,7 @@ function App(props) {
 
   useAccount();
   useEffect(() => {
+
     initNear &&
       initNear({
         networkId: "mainnet",
@@ -99,7 +103,8 @@ function App(props) {
         },
         config: {
           defaultFinality: undefined,
-        },
+          ...(props.rpc ? { nodeUrl: props.rpc } : {})
+        }
       });
   }, [initNear]);
 
@@ -111,6 +116,7 @@ function App(props) {
           widgetSrc={props.src}
           code={props.code}
           initialProps={props.initialProps}
+          rpc={props.rpc}
         />
       ),
     },
