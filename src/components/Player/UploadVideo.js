@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Livepeer } from "livepeer";
 
+import { useStore } from "./state";
+
 const livepeerInstance = new Livepeer({
   apiKey: process.env.REACT_APP_LIVEPEER_STUDIO_API_KEY,
 });
@@ -8,6 +10,7 @@ const livepeerInstance = new Livepeer({
 const UploadVideo = () => {
   const [name, setName] = useState("");
   const [uploadUrl, setUploadUrl] = useState("");
+  const { setPlaybackId } = useStore();
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -21,7 +24,8 @@ const UploadVideo = () => {
 
     console.log(result);
 
-    // setUploadUrl(result.url)
+    setUploadUrl(result.object.url);
+    setPlaybackId(result.object.asset.playbackId);
   };
 
   return (
@@ -37,7 +41,7 @@ const UploadVideo = () => {
         </label>
         <button type="submit">Generate link</button>
       </>
-      {uploadUrl && <DirectUploadForm uploadUrl={""} />}
+      {uploadUrl && <DirectUploadForm uploadUrl={uploadUrl} />}
     </form>
   );
 };
@@ -49,8 +53,8 @@ function DirectUploadForm({ uploadUrl }) {
     setFile(event.target.files[0]);
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async () => {
+    // event.preventDefault();
 
     if (!file) {
       alert("Please select a file first!");
@@ -68,6 +72,8 @@ function DirectUploadForm({ uploadUrl }) {
 
       if (response.ok) {
         alert("Upload successful");
+        console.log("-- response upload");
+        console.log(response);
       } else {
         alert("Upload failed");
       }
@@ -78,13 +84,15 @@ function DirectUploadForm({ uploadUrl }) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <>
       <label>
         Upload file:
         <input type="file" onChange={handleFileChange} />
       </label>
-      <button type="submit">Upload</button>
-    </form>
+      <button type="submit" onClick={handleSubmit}>
+        Upload
+      </button>
+    </>
   );
 }
 
