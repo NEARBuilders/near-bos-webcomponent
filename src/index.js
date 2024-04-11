@@ -22,19 +22,20 @@ class NearSocialViewerElement extends HTMLElement {
         const src = this.getAttribute('src');
         const code = this.getAttribute('code');
         const initialProps = this.getAttribute('initialProps');
+        const rpc = this.getAttribute('rpc');
 
         const root = createRoot(container);
-        root.render(<App src={src} code={code} initialProps={JSON.parse(initialProps)} selectorPromise={this.selectorPromise}/>);
+        root.render(<App src={src} code={code} rpc={rpc} initialProps={JSON.parse(initialProps)} selectorPromise={this.selectorPromise}/>);
     }
 
     static get observedAttributes() {
-        return ['src', 'code', 'initialProps'];
+        return ['src', 'code', 'initialProps', 'rpc'];
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
         // Re-render the component with new props when attributes change
         if (oldValue !== newValue) {
-            const container = this.shadowRoot.querySelector('div');
+            const container = this.shadowRoot.querySelector('slot');
             const root = createRoot(container);
             root.render(<App {...{[name]: newValue}} />);
         }

@@ -12,8 +12,8 @@
     "LICENSE"
   ],
   "dependencies": {
-    "@playwright/test": "^1.38.1",
     "@braintree/sanitize-url": "^6.0.2",
+    "@playwright/test": "^1.38.1",
     "big.js": "^6.1.1",
     "bn.js": "^5.1.1",
     "bootstrap": "^5.3.1",
