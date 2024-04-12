@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Livepeer } from "livepeer";
 
 import { useStore } from "./state";
+import ResumableUpload from "./ResumableUpload";
 
 const livepeerInstance = new Livepeer({
   apiKey: process.env.REACT_APP_LIVEPEER_STUDIO_API_KEY,
@@ -10,6 +11,7 @@ const livepeerInstance = new Livepeer({
 const UploadVideo = () => {
   const [name, setName] = useState("");
   const [uploadUrl, setUploadUrl] = useState("");
+  const [tusUploadUrl, setTusUploadUrl] = useState("");
   const { setPlaybackId } = useStore();
 
   const handleSubmit = (event) => {
@@ -25,6 +27,7 @@ const UploadVideo = () => {
     console.log(result);
 
     setUploadUrl(result.object.url);
+    setTusUploadUrl(result.object.tusEndpoint);
     setPlaybackId(result.object.asset.playbackId);
   };
 
@@ -42,6 +45,7 @@ const UploadVideo = () => {
         <button type="submit">Generate link</button>
       </>
       {uploadUrl && <DirectUploadForm uploadUrl={uploadUrl} />}
+      {tusUploadUrl && <ResumableUpload tusEndpoint={tusUploadUrl} />}
     </form>
   );
 };
