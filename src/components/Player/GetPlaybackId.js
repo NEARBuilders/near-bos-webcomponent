@@ -11,9 +11,9 @@ const livepeerInstance = new Livepeer({
 const getPlaybackSource = async (playbackId, livepeer = livepeerInstance) => {
   if (!livepeer) throw new Error("Livepeer instance not found");
 
-  // const playbackInfo = await livepeer.playback.get(playbackId);
-  const a = "9bc9jzmv6rdt1gqr";
-  const playbackInfo = await livepeer.playback.get(a);
+  const playbackInfo = await livepeer.playback.get(playbackId);
+  // const a = "9bc9jzmv6rdt1gqr";
+  // const playbackInfo = await livepeer.playback.get(a);
 
   const src = getSrc(playbackInfo.playbackInfo);
 

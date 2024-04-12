@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import tus from "tus-js-client";
+// import tus from "tus-js-client";
+import * as tus from "tus-js-client";
 
 const ResumableUpload = ({ tusEndpoint }) => {
   const [uploadProgress, setUploadProgress] = useState(0);
