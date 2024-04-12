@@ -1,7 +1,7 @@
-import "App.scss";
+// import "App.scss";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/js/bootstrap.bundle";
-import { Widget } from "near-social-vm";
+import { Widget, useAccount, useInitNear } from "near-social-vm";
 import React, { useEffect, useMemo, useState } from "react";
 import "react-bootstrap-typeahead/css/Typeahead.css";
 
