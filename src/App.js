@@ -82,8 +82,17 @@ function App(props) {
           "Player.GetPlaybackId": (props) => {
             return <VideoPlayer.GetPlaybackId {...props} />;
           },
-          "Player.UploadVideo": (props) => {
-            return <VideoPlayer.UploadVideo {...props} />;
+          "Player.GetUploadUrl": (props) => {
+            return <VideoPlayer.GetUploadUrl {...props} />;
+          },
+          "Player.DirectUploadAsset": (props) => {
+            return <VideoPlayer.DirectUploadAsset {...props} />;
+          },
+          "Player.ResumableUploadAsset": (props) => {
+            return <VideoPlayer.ResumableUploadAsset {...props} />;
+          },
+          "Player.Debug": (props) => {
+            return <VideoPlayer.DebugState {...props} />;
           },
           Broadcast: (props) => {
             return <BroadcastComponent {...props} />;

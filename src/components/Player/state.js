@@ -7,4 +7,8 @@ export const useStore = create((set) => ({
   setPlaybackId: (value) => set(() => ({ playbackId: value })),
   livepeer: {},
   setLivepeer: (value) => set(() => ({ livepeer: value })),
+  uploadUrl: "",
+  setUploadUrl: (value) => set(() => ({ uploadUrl: value })),
+  resumableUploadUrl: "",
+  setResumableUploadUrl: (value) => set(() => ({ resumableUploadUrl: value })),
 }));

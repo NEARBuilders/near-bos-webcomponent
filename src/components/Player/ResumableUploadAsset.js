@@ -2,7 +2,11 @@ import React, { useState } from "react";
 // import tus from "tus-js-client";
 import * as tus from "tus-js-client";
 
-const ResumableUpload = ({ tusEndpoint }) => {
+import { useStore } from "./state";
+
+const ResumableUploadAsset = () => {
+  const { resumableUploadUrl } = useStore();
+
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadUrl, setUploadUrl] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -11,11 +15,8 @@ const ResumableUpload = ({ tusEndpoint }) => {
     const file = event.target.files[0];
     if (!file) return;
 
-    console.log("-- here");
-    console.log(tus);
-
     const upload = new tus.Upload(file, {
-      endpoint: tusEndpoint,
+      endpoint: resumableUploadUrl,
       retryDelays: [0, 1000, 3000, 5000],
       metadata: {
         filename: file.name,
@@ -28,12 +29,10 @@ const ResumableUpload = ({ tusEndpoint }) => {
       },
       onProgress: (bytesUploaded, bytesTotal) => {
         const percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2);
-        console.log("Uploaded", percentage + "%");
         setUploadProgress(percentage);
       },
       onSuccess: () => {
         console.log("Upload finished:", upload.url);
-        console.log(upload);
         setUploadUrl(upload.url);
       },
     });
@@ -58,4 +57,4 @@ const ResumableUpload = ({ tusEndpoint }) => {
   );
 };
 
-export default ResumableUpload;
+export default ResumableUploadAsset;
