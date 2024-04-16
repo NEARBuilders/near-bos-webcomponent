@@ -92,7 +92,7 @@ function App(props) {
             return <VideoPlayer.ResumableUploadAsset {...props} />;
           },
           "Player.Debug": (props) => {
-            return <VideoPlayer.DebugState {...props} />;
+            return <VideoPlayer.Debug {...props} />;
           },
           Broadcast: (props) => {
             return <BroadcastComponent {...props} />;

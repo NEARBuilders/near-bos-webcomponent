@@ -8,13 +8,15 @@ const livepeerInstance = new Livepeer({
 });
 
 const GetUploadUrl = () => {
-  const { setPlaybackId, setResumableUploadUrl, setUploadUrl } = useStore();
+  const { setAssetName, setPlaybackId, setResumableUploadUrl, setUploadUrl } =
+    useStore();
 
   const [name, setName] = useState("");
 
   const handleSubmit = (event) => {
     event.preventDefault();
     generateUploadLink();
+    setAssetName(name);
   };
 
   const generateUploadLink = async () => {
