@@ -39,7 +39,6 @@ function Viewer({ widgetSrc, code, initialProps, rpc }) {
   useEffect(() => {
     const fetchRedirectMap = async () => {
       try {
-
         const localStorageFlags = JSON.parse(
           localStorage.getItem("flags") || "{}"
         );
@@ -55,7 +54,6 @@ function Viewer({ widgetSrc, code, initialProps, rpc }) {
           );
         }
 
-        if (rpc) redirectMapData.nodeUrl = rpc;
         setRedirectMap(redirectMapData); // ?? I would have thought this would have worked...
       } catch (error) {
         console.error("Error fetching redirect map:", error);
@@ -77,15 +75,18 @@ function Viewer({ widgetSrc, code, initialProps, rpc }) {
 }
 
 function App(props) {
+  const { src, code, initialProps, rpc, selectorPromise } = props;
   const { initNear } = useInitNear();
 
   useAccount();
   useEffect(() => {
+    console.log("rpc", rpc);
+    const networkId = "mainnet";
 
     initNear &&
       initNear({
-        networkId: "mainnet",
-        selector: props.selectorPromise,
+        networkId: networkId,
+        selector: selectorPromise,
         customElements: {
           Link: (props) => {
             if (!props.to && props.href) {
@@ -103,8 +104,12 @@ function App(props) {
         },
         config: {
           defaultFinality: undefined,
-          ...(props.rpc ? { nodeUrl: props.rpc } : {})
-        }
+          nodeUrl:
+            "http://127.0.0.1:8080/rpc" ||
+            (networkId === "mainnet"
+              ? "https://near.lava.build"
+              : "https://near-testnet.lava.build"),
+        },
       });
   }, [initNear]);
 
@@ -112,12 +117,7 @@ function App(props) {
     {
       path: "/*",
       element: (
-        <Viewer
-          widgetSrc={props.src}
-          code={props.code}
-          initialProps={props.initialProps}
-          rpc={props.rpc}
-        />
+        <Viewer widgetSrc={src} code={code} initialProps={initialProps} />
       ),
     },
     //{ path: "/*", element: <Viewer /> },
