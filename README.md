@@ -90,3 +90,24 @@ Make changes to `web4/index` as shown below:
 ```
 
 Then be sure to build `yarn run prod` to see the changes take effect.
+
+# Publishing libraries to NEARFS
+
+For testing how the library would work when used from CDN, you may publish it to NEARFS.
+
+ ```bash
+yarn nearfs:publish-library:create:car
+```
+
+Take note of the IPFS address returned by this command, which will be used for finding the published library later. An example of what this looks like is `bafybeicu5ozyhhsd4bpz4keiur6cwexnrzwxla5kaxwhrcu52fkno5q5fa`
+
+```bash
+NODE_ENV=mainnet yarn nearfs:publish-library:upload:car youraccount.near
+```
+
+After uploading, it normally takes some minutes before the files are visible on NEARFS. When going to the expected URL based on the IPFS address we saw above, we will first see the message `Not found`.
+
+This is an example of the NEARFS url, and you should replace with the IPFS address you received above:
+
+https://ipfs.web4.near.page/ipfs/bafybeicu5ozyhhsd4bpz4keiur6cwexnrzwxla5kaxwhrcu52fkno5q5fa/
+

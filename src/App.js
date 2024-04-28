@@ -105,7 +105,7 @@ function App(props) {
 
   const router = createBrowserRouter([
     {
-      path: "/",
+      path: "/*",
       element: (
         <Viewer
           widgetSrc={props.src}
@@ -114,7 +114,7 @@ function App(props) {
         />
       ),
     },
-    { path: "/*", element: <Viewer /> },
+    //{ path: "/*", element: <Viewer /> },
   ]);
 
   return <RouterProvider router={router} />;
