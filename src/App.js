@@ -2,7 +2,7 @@ import "App.scss";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/js/bootstrap.bundle";
 import { Widget } from "near-social-vm";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import "react-bootstrap-typeahead/css/Typeahead.css";
 
 import { sanitizeUrl } from "@braintree/sanitize-url";
@@ -14,12 +14,9 @@ import {
   useLocation,
 } from "react-router-dom";
 
-const SESSION_STORAGE_REDIRECT_MAP_KEY = "nearSocialVMredirectMap";
-
-function Viewer({ widgetSrc, code, initialProps, rpc }) {
+function Viewer({ widgetSrc, code, initialProps }) {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const [redirectMap, setRedirectMap] = useState({});
 
   // create props from params
   const passProps = useMemo(() => {
@@ -36,39 +33,12 @@ function Viewer({ widgetSrc, code, initialProps, rpc }) {
     return pathSrc;
   }, [widgetSrc, path]);
 
-  useEffect(() => {
-    const fetchRedirectMap = async () => {
-      try {
-        const localStorageFlags = JSON.parse(
-          localStorage.getItem("flags") || "{}"
-        );
-        let redirectMapData;
-
-        if (localStorageFlags.bosLoaderUrl) {
-          const response = await fetch(localStorageFlags.bosLoaderUrl);
-          const data = await response.json();
-          redirectMapData = data.components;
-        } else {
-          redirectMapData = JSON.parse(
-            sessionStorage.getItem(SESSION_STORAGE_REDIRECT_MAP_KEY) || "{}"
-          );
-        }
-
-        setRedirectMap(redirectMapData); // ?? I would have thought this would have worked...
-      } catch (error) {
-        console.error("Error fetching redirect map:", error);
-      }
-    };
-    fetchRedirectMap();
-  }, []);
-
   return (
     <>
       <Widget
         src={!code && src}
         code={code} // prioritize code
         props={{ ...initialProps, ...passProps }}
-        config={{ redirectMap }}
       />
     </>
   );
@@ -80,8 +50,12 @@ function App(props) {
 
   useAccount();
   useEffect(() => {
-    console.log("rpc", rpc);
     const networkId = "mainnet";
+    const rpcUrl =
+      rpc ??
+      (networkId === "mainnet"
+        ? "https://free.rpc.fastnear.com"
+        : "https://rpc.testnet.near.org");
 
     initNear &&
       initNear({
@@ -104,13 +78,10 @@ function App(props) {
         },
         config: {
           defaultFinality: undefined,
-          nodeUrl:
-            "http://127.0.0.1:8080/rpc" ||
-            (networkId === "mainnet"
-              ? "https://near.lava.build"
-              : "https://near-testnet.lava.build"),
+          nodeUrl: rpcUrl,
         },
       });
+    console.log("using rpc: ", rpcUrl);
   }, [initNear]);
 
   const router = createBrowserRouter([
