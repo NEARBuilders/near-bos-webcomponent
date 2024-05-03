@@ -91,6 +91,31 @@ Make changes to `web4/index` as shown below:
 
 Then be sure to build `yarn run prod` to see the changes take effect.
 
+# Landing page for SEO friendly URLs
+
+Normally, the URL path decides which component to be loaded. The path `/devhub.near/widget/app` will load the `app` component from the `devhub.near` account. DevHub is an example of a collection of many components that are part of a big app, and the `app` component is just a proxy to components that represent a `page`. Which page to display is controlled by the `page` query string parameter, which translates to `props.page` in the component.
+
+In order to create a SEO friendly URL for such a page, we would like to represent a path like `/devhub.near/widget/app?page=community&handle=webassemblymusic` to be as easy as `/community/webassemblymusic`. And we do not want the viewer to look for a component named according to the path.
+
+We can obtain this by setting the `src` attribute pointing to the component we want to use, and also set the `initialProps` attribute to the values taken from the URL path.
+
+An example of this can be found in [router.spec.js](./playwright-tests/tests/router.spec.js).
+
+```
+test("for supporting SEO friendly URLs, it should be possible to set initialProps and src widget from any path", async ({ page }) => {
+  await page.goto("/community/webassemblymusic");
+  await page.evaluate(() => {
+    const viewerElement = document.querySelector('near-social-viewer');
+    viewerElement.setAttribute("src", "devhub.near/widget/app");
+    const pathparts = location.pathname.split("/");
+    viewerElement.setAttribute("initialProps", JSON.stringify({ page: pathparts[1], handle: pathparts[2] }));
+  });
+  await expect(await page.getByText('WebAssembly Music', { exact: true })).toBeVisible();
+});
+```
+
+Here you can see that the viewer element `src` attribute is set to use the `devhub.near/widget/app` component, and the `initialProps` set to values from the path.
+
 # Publishing libraries to NEARFS
 
 For testing how the library would work when used from CDN, you may publish it to NEARFS.
