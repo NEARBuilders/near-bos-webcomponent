@@ -1,0 +1,18 @@
+name: CI
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  test:
+    name: Playwright test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Playwright test
+        run: |
+          yarn install
+          yarn playwright install-deps
+          yarn playwright install
+          yarn test
