@@ -19,24 +19,27 @@ class NearSocialViewerElement extends HTMLElement {
         const container = document.createElement('div');
         this.appendChild(container);
 
-        const src = this.getAttribute('src');
-        const code = this.getAttribute('code');
-        const initialProps = this.getAttribute('initialProps');
-
-        const root = createRoot(container);
-        root.render(<App src={src} code={code} initialProps={JSON.parse(initialProps)} selectorPromise={this.selectorPromise}/>);
+        this.reactRoot = createRoot(container);
+        this.renderRoot();
     }
 
     static get observedAttributes() {
-        return ['src', 'code', 'initialProps'];
+        return ['src', 'code', 'initialprops'];
+    }
+
+    renderRoot() {
+        const src = this.getAttribute('src');
+        const code = this.getAttribute('code');
+        const initialProps = this.getAttribute('initialprops');
+
+        console.log('render', src, initialProps);
+        this.reactRoot.render(<App src={src} code={code} initialProps={JSON.parse(initialProps)} selectorPromise={this.selectorPromise} />);
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
-        // Re-render the component with new props when attributes change
+        console.log('attribute changed', name, oldValue, newValue);
         if (oldValue !== newValue) {
-            const container = this.shadowRoot.querySelector('div');
-            const root = createRoot(container);
-            root.render(<App {...{[name]: newValue}} />);
+            this.renderRoot();
         }
     }
 }
