@@ -32,12 +32,10 @@ class NearSocialViewerElement extends HTMLElement {
         const code = this.getAttribute('code');
         const initialProps = this.getAttribute('initialprops');
 
-        console.log('render', src, initialProps);
         this.reactRoot.render(<App src={src} code={code} initialProps={JSON.parse(initialProps)} selectorPromise={this.selectorPromise} />);
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
-        console.log('attribute changed', name, oldValue, newValue);
         if (oldValue !== newValue) {
             this.renderRoot();
         }

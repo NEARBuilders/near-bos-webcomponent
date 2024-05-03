@@ -44,8 +44,8 @@
     "generateimportmap": "(cd public && jspm link index.html -o index.html)",
     "web4:deploy": "NEAR_ENV=mainnet npx web4-deploy dist psalomobos.near --nearfs",
     "test": "npx playwright test",
-    "test:watch": "npx playwright test --ui",
-    "test:watch:codespaces": "npx playwright test --ui-host=0.0.0.0",
+    "test:ui": "npx playwright test --ui",
+    "test:ui:codespaces": "npx playwright test --ui-host=0.0.0.0",
     "nearfs:publish-library:create:car": "ipfs-car pack dist/ --output dist.car",
     "nearfs:publish-library:upload:car": "NODE_ENV=mainnet node ./node_modules/nearfs/scripts/upload-car.js dist.car"
   },
