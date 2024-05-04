@@ -17,7 +17,6 @@ class NearSocialViewerElement extends HTMLElement {
 
     connectedCallback() {
         const container = document.createElement('div');
-        // container.setAttribute('id', 'wc-container');
         this.appendChild(container);
 
         this.reactRoot = createRoot(container);
