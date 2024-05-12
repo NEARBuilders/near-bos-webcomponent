@@ -9,6 +9,7 @@ class NearSocialViewerElement extends HTMLElement {
         this.attachShadow({ mode: "open" });
         this.shadowRoot.innerHTML = `<slot></slot>`;
         this.selectorPromise = new Promise(resolve => this.selectorPromiseResolve = resolve);
+        this.reactRoot = null;
     }
 
     set selector(selector) {

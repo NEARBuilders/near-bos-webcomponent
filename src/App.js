@@ -51,38 +51,36 @@ function App(props) {
   useAccount();
   useEffect(() => {
     const networkId = "mainnet";
-    const rpcUrl =
-      rpc ??
-      (networkId === "mainnet"
-        ? "https://free.rpc.fastnear.com"
-        : "https://rpc.testnet.near.org");
 
-    initNear &&
-      initNear({
-        networkId: networkId,
-        selector: selectorPromise,
-        customElements: {
-          Link: (props) => {
-            if (!props.to && props.href) {
-              props.to = props.href;
-              delete props.href;
-            }
-            if (props.to) {
-              props.to = sanitizeUrl(props.to);
-            }
-            return <Link {...props} />;
-          },
+    const config = {
+      networkId: networkId,
+      selector: selectorPromise,
+      customElements: {
+        Link: (props) => {
+          if (!props.to && props.href) {
+            props.to = props.href;
+            delete props.href;
+          }
+          if (props.to) {
+            props.to = sanitizeUrl(props.to);
+          }
+          return <Link {...props} />;
         },
-        features: {
-          enableComponentSrcDataKey: true,
-        },
-        config: {
-          defaultFinality: undefined,
-          nodeUrl: rpcUrl,
-        },
-      });
-    console.log("using rpc: ", rpcUrl);
-  }, [initNear]);
+      },
+      features: {
+        enableComponentSrcDataKey: true,
+      },
+      config: {
+        defaultFinality: undefined,
+      },
+    };
+
+    if (rpc) {
+      config.config.nodeUrl = rpc;
+    }
+
+    initNear && initNear(config);
+  }, [initNear, rpc]);
 
   const router = createBrowserRouter([
     {

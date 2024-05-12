@@ -15,15 +15,6 @@
       <button id="open-walletselector-button" type="button">
         Open wallet selector
       </button>
-      <select
-        style="width: auto; display: inline-block; transform: translateY(2px)"
-        aria-label="Select Near RPC"
-        onchange="document.querySelector('near-social-viewer').setAttribute('rpc', this.options[this.selectedIndex].text)"
-      >
-        <option selected>https://free.rpc.fastnear.com</option>
-        <option value="1">http://127.0.0.1:8080/rpc</option>
-        <option value="2">https://rpc.mainnet.near.org</option>
-      </select>
     </div>
     <near-social-viewer></near-social-viewer>
   </body>
