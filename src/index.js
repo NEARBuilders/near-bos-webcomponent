@@ -9,6 +9,7 @@ class NearSocialViewerElement extends HTMLElement {
         this.attachShadow({ mode: "open" });
         this.shadowRoot.innerHTML = `<slot></slot>`;
         this.selectorPromise = new Promise(resolve => this.selectorPromiseResolve = resolve);
+        this.reactRoot = null;
     }
 
     set selector(selector) {
@@ -24,15 +25,16 @@ class NearSocialViewerElement extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ['src', 'code', 'initialprops'];
+        return ['src', 'code', 'initialprops', 'rpc'];
     }
 
     renderRoot() {
         const src = this.getAttribute('src');
         const code = this.getAttribute('code');
         const initialProps = this.getAttribute('initialprops');
+        const rpc = this.getAttribute('rpc');
 
-        this.reactRoot.render(<App src={src} code={code} initialProps={JSON.parse(initialProps)} selectorPromise={this.selectorPromise} />);
+        this.reactRoot.render(<App src={src} code={code} initialProps={JSON.parse(initialProps)} rpc={rpc} selectorPromise={this.selectorPromise} />);
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
