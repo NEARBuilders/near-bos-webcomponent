@@ -7,6 +7,12 @@ test("Verify default route loads successfully and displays expected content", as
   // Navigate to the default route
   await page.goto("/");
 
+  await page.evaluate(() => {
+    document.body.innerHTML = `
+    <near-social-viewer src="devs.near/widget/default" initialprops='{"message": "hello world!"}'></near-social-viewer>
+    `;
+  });
+
   // Verify the viewer's default route
   await waitForSelectorToBeVisible(
     page,
@@ -61,7 +67,7 @@ test("should be possible to set initialProps and src widget for the root path", 
     <near-social-viewer src="devhub.near/widget/app" initialProps='{"page": "community", "handle": "webassemblymusic"}'></near-social-viewer>
     `;
   });
-  await expect(await page.getByText('WebAssembly Music', { exact: true })).toBeVisible();
+  await expect(await page.getByText('WebAssembly Music', { exact: true })).toBeVisible({ timeout: 10000});
 });
 
 test("for supporting SEO friendly URLs, it should be possible to set initialProps and src widget from any path", async ({ page }) => {

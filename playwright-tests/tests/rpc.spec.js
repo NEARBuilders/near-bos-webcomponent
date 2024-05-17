@@ -13,6 +13,12 @@ test("Verify default RPC is called when value not provided", async ({
   // Navigate to the default route
   await page.goto("/");
 
+  await page.evaluate(() => {
+    document.body.innerHTML = `
+    <near-social-viewer src="devs.near/widget/default"></near-social-viewer>
+    `;
+  });
+
   // Verify the viewer is visible
   await waitForSelectorToBeVisible(page, "near-social-viewer");
 
@@ -43,6 +49,13 @@ test("Verify custom RPC is called when provided", async ({ page }) => {
   // Verify the viewer is visible
   await waitForSelectorToBeVisible(page, "near-social-viewer");
 
+  // Set the rpc attribute to a custom rpc value
+  await page.evaluate((url) => {
+    document.body.innerHTML = `
+    <near-social-viewer src="devs.near/widget/default" rpc="${url}"></near-social-viewer>
+    `;
+  }, CUSTOM_RPC_URL);
+
   // Mock the custom rpc call so that the request doesn't hang
   await page.route(CUSTOM_RPC_URL, (route) => {
     route.fulfill({
@@ -51,12 +64,6 @@ test("Verify custom RPC is called when provided", async ({ page }) => {
       body: JSON.stringify({ result: "some valid response" }),
     });
   });
-
-  // Set the rpc attribute to a custom rpc value
-  await page.evaluate((url) => {
-    const viewer = document.querySelector("near-social-viewer");
-    viewer.setAttribute("rpc", url);
-  }, CUSTOM_RPC_URL);
 
   // Get the value of the rpc attribute
   const actualRpc = await page.evaluate(() => {

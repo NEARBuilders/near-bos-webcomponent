@@ -20,32 +20,43 @@ Just load react production react bundles into your index.html as shown below, an
 </html>
 ```
 
-
 ## Setup & Development
 
 Initialize repo:
-```
+
+```cmd
 yarn
 ```
 
 Start development version:
-```
+
+```cmd
 yarn start
 ```
 
 Production build:
 
-```
+```cmd
 yarn prod
 ```
 
 Serve the production build:
 
-```
+```cmd
 yarn serve prod
 ```
 
-# Running Playwright tests
+## Attributes
+
+The `near-social-viewer` web component supports several attributes:
+
+* `src`: the src of the widget to render (e.g. `devs.near/widget/default`)
+* `code`: raw, valid, stringified widget code to render (e.g. `"return <p>hello world</p>"`)
+* `initialprops`: initial properties to be passed to the rendered widget.
+* `rpc`: rpc url to use for requests within the VM
+
+
+## Running Playwright tests
 
 To be able to run the [playwright](https://playwright.dev) tests, you first need to install the dependencies. You can see how this is done in [.devcontainer/post-create.sh](./.devcontainer/post-create.sh) which is automatically executed when opening this repository in a github codespace.
 
@@ -71,7 +82,7 @@ yarn test:ui:codespaces
 
 In general it is a good practice, and very helpful for reviewers and users of this project, that all use cases are covered in Playwright tests. Also, when contributing, try to make your tests as simple and clear as possible, so that they serve as examples on how to use the functionality.
 
-# Use redirectmap for development
+## Use redirectmap for development
 
 The NEAR social VM supports a feature called `redirectMap` which allows you to load widgets from other sources than the on chain social db. An example redirect map can look like this:
 
@@ -87,37 +98,7 @@ By setting the session storage key `nearSocialVMredirectMap` to the JSON value o
 
 You can also use the same mechanism as [near-discovery](https://github.com/near/near-discovery/) where you can load components from a locally hosted [bos-loader](https://github.com/near/bos-loader) by adding the key `flags` to localStorage with the value `{"bosLoaderUrl": "http://127.0.0.1:3030" }`.
 
-
-# Configuring the default widget
-
-The `near-social-viewer` web component supports three attributes:
-
-* `src` : the src of the widget to render (e.g. `devs.near/widget/default`)
-* `code`: raw, valid, stringified widget code to render (e.g. `"return <p>hello world</p>"`)
-* `initialProps`: initial properties to be passed to the rendered widget.
-
-You can modify the default widget that is displayed via the configuration in `./bos.config.json`.
-
-Make changes to `web4/index` as shown below:
-
-```json
-{
-  "account": "devs.near",
-  "web4": {
-    "index": {
-      "src": "devs.near/widget/default",
-      // "code": "return <p>Hello world!</p>"
-      "initialProps": {
-        "message": "hello world!"
-      }
-    }
-  }
-}
-```
-
-Then be sure to build `yarn run prod` to see the changes take effect.
-
-# Landing page for SEO friendly URLs
+## Landing page for SEO friendly URLs
 
 Normally, the URL path decides which component to be loaded. The path `/devhub.near/widget/app` will load the `app` component from the `devhub.near` account. DevHub is an example of a collection of many components that are part of a big app, and the `app` component is just a proxy to components that represent a `page`. Which page to display is controlled by the `page` query string parameter, which translates to `props.page` in the component.
 
@@ -127,7 +108,7 @@ We can obtain this by setting the `src` attribute pointing to the component we w
 
 An example of this can be found in [router.spec.js](./playwright-tests/tests/router.spec.js).
 
-```
+```javascript
 test("for supporting SEO friendly URLs, it should be possible to set initialProps and src widget from any path", async ({ page }) => {
   await page.goto("/community/webassemblymusic");
   await page.evaluate(() => {
@@ -142,7 +123,7 @@ test("for supporting SEO friendly URLs, it should be possible to set initialProp
 
 Here you can see that the viewer element `src` attribute is set to use the `devhub.near/widget/app` component, and the `initialProps` set to values from the path.
 
-# Publishing libraries to NEARFS
+## Publishing libraries to NEARFS
 
 For testing how the library would work when used from CDN, you may publish it to NEARFS.
 
@@ -160,5 +141,4 @@ After uploading, it normally takes some minutes before the files are visible on 
 
 This is an example of the NEARFS url, and you should replace with the IPFS address you received above:
 
-https://ipfs.web4.near.page/ipfs/bafybeicu5ozyhhsd4bpz4keiur6cwexnrzwxla5kaxwhrcu52fkno5q5fa/
-
+<https://ipfs.web4.near.page/ipfs/bafybeicu5ozyhhsd4bpz4keiur6cwexnrzwxla5kaxwhrcu52fkno5q5fa/>
