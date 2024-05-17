@@ -55,6 +55,42 @@ The `near-social-viewer` web component supports several attributes:
 * `initialprops`: initial properties to be passed to the rendered widget.
 * `rpc`: rpc url to use for requests within the VM
 
+## Configuring VM Custom Elements
+
+Since [NearSocial/VM v2.1.0](https://github.com/NearSocial/VM/blob/master/CHANGELOG.md#210), a gateway can register custom elements where the key is the name of the element, and the value is a function that returns a React component. For example:
+
+```javascript
+initNear({
+  customElements: {
+    Link: (props) => {
+      if (!props.to && props.href) {
+        props.to = props.href;
+        delete props.href;
+      }
+      if (props.to) {
+        props.to = sanitizeUrl(props.to);
+      }
+      return <Link {...props} />;
+    },
+  },
+});
+```
+
+This is a helpful feature for exposing packages and component libraries that otherwise cannot be accessed through an iframe in typical Widget development. It enables developers to provide a sandbox for builders wanting to build with these elements without going through all the setup.
+
+To distribute a specialized near-bos-webcomponent with its own custom elements:
+
+1. Use the [template](https://github.com/new?template_name=near-bos-webcomponent&template_owner=NEARBuilders) to create a new web component
+2. Install the necessary packages and add the custom VM element to `initNear` function
+3. Build and distribute the resulting `/dist`
+
+Then, the path to this dist can be referenced via the `-g` flag with [bos-workspace](https://github.com/nearbuilders/bos-workspace).
+
+```cmd
+bos-workspace dev -g ./path/to/dist
+```
+
+This will start a local dev server using the custom gateway, so you may develop your local widgets through it with access to the custom element.
 
 ## Running Playwright tests
 
