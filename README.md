@@ -54,6 +54,7 @@ The `near-social-viewer` web component supports several attributes:
 * `code`: raw, valid, stringified widget code to render (e.g. `"return <p>hello world</p>"`)
 * `initialprops`: initial properties to be passed to the rendered widget.
 * `rpc`: rpc url to use for requests within the VM
+* `network`: network to connect to for rpc requests & wallet connection
 
 ## Configuring VM Custom Elements
 

@@ -25,7 +25,7 @@ class NearSocialViewerElement extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ['src', 'code', 'initialprops', 'rpc'];
+        return ['src', 'code', 'initialprops', 'rpc', 'network'];
     }
 
     renderRoot() {
@@ -33,8 +33,9 @@ class NearSocialViewerElement extends HTMLElement {
         const code = this.getAttribute('code');
         const initialProps = this.getAttribute('initialprops');
         const rpc = this.getAttribute('rpc');
+        const network = this.getAttribute('network');
 
-        this.reactRoot.render(<App src={src} code={code} initialProps={JSON.parse(initialProps)} rpc={rpc} selectorPromise={this.selectorPromise} />);
+        this.reactRoot.render(<App src={src} code={code} initialProps={JSON.parse(initialProps)} rpc={rpc} network={network} selectorPromise={this.selectorPromise} />);
     }
 
     attributeChangedCallback(name, oldValue, newValue) {

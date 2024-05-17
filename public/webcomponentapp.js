@@ -5,15 +5,38 @@ import { setupHereWallet } from "@near-wallet-selector/here-wallet";
 import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
 import { setupSender } from "@near-wallet-selector/sender";
 
-const selector = await setupWalletSelector({
-  network: "mainnet",
-  modules: [setupMyNearWallet(), setupHereWallet(), setupMeteorWallet(), setupSender()],
-});
+// Function to initialize wallet selector and modal
+async function initializeWalletSelector(network) {
+  const contractId = network === "mainnet" ? "social.near" : "v1.social08.testnet";
 
-const modal = setupModal(selector, {
-  contractId: "social.near",
-});
+  const selector = await setupWalletSelector({
+    network: network,
+    modules: [setupMyNearWallet(), setupHereWallet(), setupMeteorWallet(), setupSender()],
+  });
 
-document.getElementById('open-walletselector-button').addEventListener('click', () => modal.show());
+  const modal = setupModal(selector, {
+    contractId: contractId,
+  });
+
+  document.getElementById('open-walletselector-button').addEventListener('click', () => modal.show());
+
+  viewer.selector = selector;
+}
+
 const viewer = document.querySelector('near-social-viewer');
-viewer.selector = selector;
+let network = viewer.getAttribute('network') || "mainnet";
+
+initializeWalletSelector(network);
+
+const observer = new MutationObserver((mutationsList) => {
+  for (const mutation of mutationsList) {
+    if (mutation.type === 'attributes' && mutation.attributeName === 'network') {
+      console.log('network attribute changed');
+      network = mutation.target.getAttribute('network') || "mainnet";
+      initializeWalletSelector(network);
+    }
+  }
+});
+
+// Observe changes to the 'network' attribute of the 'near-social-viewer' element
+observer.observe(viewer, { attributes: true });
