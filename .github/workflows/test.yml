@@ -27,20 +27,33 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
-      # Cache Playwright dependencies and browsers
-      - name: Cache Playwright dependencies and browsers
+      # Cache Playwright browsers
+      - name: Cache Playwright browsers
         uses: actions/cache@v3
         with:
-          path: |
-            ~/.cache/ms-playwright
-            ~/.npm/_cacache
+          path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-playwright-
 
-      # Debugging step to see if Playwright dependencies and browsers cache was hit
-      - name: Check Playwright dependencies and browsers cache
-        run: if [ -d ~/.cache/ms-playwright ] && [ -d ~/.npm/_cacache ]; then echo "Playwright cache hit"; else echo "Playwright cache miss"; fi
+      # Debugging step to see if Playwright browsers cache was hit
+      - name: Check Playwright browsers cache
+        run: if [ -d ~/.cache/ms-playwright ]; then echo "Playwright cache hit"; else echo "Playwright cache miss"; fi
+
+      # Cache APT packages
+      - name: Cache APT packages
+        uses: actions/cache@v3
+        with:
+          path: /var/cache/apt
+          key: ${{ runner.os }}-apt-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-apt-
+
+      # Update and install APT dependencies
+      - name: Update and install APT dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y $(cat .apt-dependencies.txt)
 
       - name: Install Playwright dependencies
         run: yarn playwright install-deps
