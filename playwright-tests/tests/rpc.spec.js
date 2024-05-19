@@ -49,10 +49,14 @@ test("Verify custom RPC is called when provided", async ({ page }) => {
   // Verify the viewer is visible
   await waitForSelectorToBeVisible(page, "near-social-viewer");
 
-  let customRPCisCalled = false;
+  let customRPCisCalledPromiseResolve;
+  let customRPCisCalled = new Promise(resolve => {
+    customRPCisCalledPromiseResolve = resolve;
+  });
+
   // Mock the custom rpc call so that the request doesn't hang
   await page.route(CUSTOM_RPC_URL, async (route) => {
-    customRPCisCalled = true;
+    customRPCisCalledPromiseResolve(true);
     await route.continue({ url: DEFAULT_RPC_URL });
   });
 
@@ -87,5 +91,5 @@ test("Verify custom RPC is called when provided", async ({ page }) => {
   // Expect that the custom RPC is called
   const customRpcRequest = await page.waitForRequest(CUSTOM_RPC_URL);
   expect(customRpcRequest).toBeTruthy();
-  expect(customRPCisCalled).toBeTruthy();
+  expect(await customRPCisCalled).toBeTruthy();
 });
