@@ -1,10 +1,10 @@
 {
   "name": "near-bos-webcomponent",
   "version": "0.0.8",
-  "homepage": "https://github.com/petersalomonsen/near-bos-webcomponent",
+  "homepage": "https://github.com/NEARBuilders/near-bos-webcomponent",
   "repository": {
     "type": "git",
-    "url": "https://github.com/petersalomonsen/near-bos-webcomponent.git"
+    "url": "https://github.com/NEARBuilders/near-bos-webcomponent.git"
   },
   "files": [
     "dist/",

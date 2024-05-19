@@ -49,21 +49,23 @@ test("Verify custom RPC is called when provided", async ({ page }) => {
   // Verify the viewer is visible
   await waitForSelectorToBeVisible(page, "near-social-viewer");
 
+  let customRPCisCalled = false;
+  // Mock the custom rpc call so that the request doesn't hang
+  await page.route(CUSTOM_RPC_URL, async (route) => {
+    customRPCisCalled = true;
+    await route.continue({ url: DEFAULT_RPC_URL });
+  });
+
+  await page.route(DEFAULT_RPC_URL, async (route) => {
+    await route.fulfill({ body: 'You should not call the default RPC directly', status: 500 });
+  });
+
   // Set the rpc attribute to a custom rpc value
   await page.evaluate((url) => {
     document.body.innerHTML = `
     <near-social-viewer src="devs.near/widget/default" rpc="${url}"></near-social-viewer>
     `;
   }, CUSTOM_RPC_URL);
-
-  // Mock the custom rpc call so that the request doesn't hang
-  await page.route(CUSTOM_RPC_URL, (route) => {
-    route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({ result: "some valid response" }),
-    });
-  });
 
   // Get the value of the rpc attribute
   const actualRpc = await page.evaluate(() => {
@@ -89,4 +91,5 @@ test("Verify custom RPC is called when provided", async ({ page }) => {
   // Expect that the custom RPC is called
   const customRpcRequest = await page.waitForRequest(CUSTOM_RPC_URL);
   expect(customRpcRequest).toBeTruthy();
+  expect(customRPCisCalled).toBeTruthy();
 });
