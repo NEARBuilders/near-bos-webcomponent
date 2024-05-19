@@ -27,18 +27,20 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
-      # Cache Playwright browsers
-      - name: Cache Playwright browsers
+      # Cache Playwright dependencies and browsers
+      - name: Cache Playwright dependencies and browsers
         uses: actions/cache@v3
         with:
-          path: ~/.cache/ms-playwright
+          path: |
+            ~/.cache/ms-playwright
+            ~/.npm/_cacache
           key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-playwright-
 
-      # Debugging step to see if Playwright browsers cache was hit
-      - name: Check Playwright browsers cache
-        run: if [ -d ~/.cache/ms-playwright ]; then echo "Playwright cache hit"; else echo "Playwright cache miss"; fi
+      # Debugging step to see if Playwright dependencies and browsers cache was hit
+      - name: Check Playwright dependencies and browsers cache
+        run: if [ -d ~/.cache/ms-playwright ] && [ -d ~/.npm/_cacache ]; then echo "Playwright cache hit"; else echo "Playwright cache miss"; fi
 
       - name: Install Playwright dependencies
         run: yarn playwright install-deps
