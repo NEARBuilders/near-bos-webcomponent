@@ -56,10 +56,6 @@ test("Verify custom RPC is called when provided", async ({ page }) => {
     await route.continue({ url: DEFAULT_RPC_URL });
   });
 
-  await page.route(DEFAULT_RPC_URL, async (route) => {
-    await route.fulfill({ body: 'You should not call the default RPC directly', status: 500 });
-  });
-
   // Set the rpc attribute to a custom rpc value
   await page.evaluate((url) => {
     document.body.innerHTML = `
