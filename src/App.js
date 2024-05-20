@@ -66,15 +66,13 @@ function Viewer({ widgetSrc, code, initialProps }) {
 }
 
 function App(props) {
-  const { src, code, initialProps, rpc, selectorPromise } = props;
+  const { src, code, initialProps, rpc, network, selectorPromise } = props;
   const { initNear } = useInitNear();
 
   useAccount();
   useEffect(() => {
-    const networkId = "mainnet";
-
     const config = {
-      networkId: networkId,
+      networkId: network || "mainnet",
       selector: selectorPromise,
       customElements: {
         Link: (props) => {
@@ -110,7 +108,6 @@ function App(props) {
         <Viewer widgetSrc={src} code={code} initialProps={initialProps} />
       ),
     },
-    //{ path: "/*", element: <Viewer /> },
   ]);
 
   return <RouterProvider router={router} />;
