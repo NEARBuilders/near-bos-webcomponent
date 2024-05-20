@@ -10,9 +10,41 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Playwright test
-        run: |
-          yarn install
-          yarn playwright install-deps
-          yarn playwright install
-          yarn test
+
+      # Cache node_modules
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      # Debugging step to see if node_modules cache was hit
+      - name: Check node_modules cache
+        run: if [ -d "node_modules" ]; then echo "node_modules cache hit"; else echo "node_modules cache miss"; fi
+
+      - name: Install dependencies
+        run: yarn install
+
+      # Cache Playwright browsers
+      - name: Cache Playwright browsers
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
+      # Debugging step to see if Playwright browsers cache was hit
+      - name: Check Playwright browsers cache
+        run: if [ -d ~/.cache/ms-playwright ]; then echo "Playwright cache hit"; else echo "Playwright cache miss"; fi
+
+      - name: Install Playwright dependencies
+        run: yarn playwright install-deps
+
+      - name: Install Playwright browsers
+        run: yarn playwright install
+
+      - name: Run tests
+        run: yarn test
