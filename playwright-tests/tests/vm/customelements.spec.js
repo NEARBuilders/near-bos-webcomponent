@@ -25,9 +25,10 @@ test("should throw error if a custom element is referenced from code, but not de
 
   // Expect error message to be displayed
   const errorMsg = await page.getByText("Error: Unknown element: Test");
+
   expect(errorMsg).toBeTruthy();
 
-  pauseIfVideoRecording(page);
+  await pauseIfVideoRecording(page);
 });
 
 test("should render custom element when defined, with attributes and children", async ({
@@ -57,7 +58,8 @@ test("should render custom element when defined, with attributes and children", 
 
   // Verify children
   const renderedChildren = await page.getByText("go somewhere");
+
   expect(renderedChildren).toBeTruthy();
 
-  pauseIfVideoRecording(page);
+  await pauseIfVideoRecording(page);
 });
