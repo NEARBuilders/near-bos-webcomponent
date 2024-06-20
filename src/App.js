@@ -2,7 +2,7 @@ import "App.scss";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/js/bootstrap.bundle";
 import { Widget } from "near-social-vm";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import "react-bootstrap-typeahead/css/Typeahead.css";
 
 import { sanitizeUrl } from "@braintree/sanitize-url";
@@ -13,8 +13,10 @@ import {
   RouterProvider,
   useLocation,
 } from "react-router-dom";
+import useRedirectMap from "./hooks/useRedirectMap";
+import { HotReloadContext } from "./contexts/hotReloadContext";
 
-const SESSION_STORAGE_REDIRECT_MAP_KEY = 'nearSocialVMredirectMap';
+export const SESSION_STORAGE_REDIRECT_MAP_KEY = "nearSocialVMredirectMap";
 
 function Viewer({ widgetSrc, code, initialProps }) {
   const location = useLocation();
@@ -35,23 +37,7 @@ function Viewer({ widgetSrc, code, initialProps }) {
     return pathSrc;
   }, [widgetSrc, path]);
 
-  const [redirectMap, setRedirectMap] = useState(null);
-  useEffect(() => {
-    (async () => {
-      const localStorageFlags = JSON.parse(localStorage.getItem("flags"));
-
-      if (localStorageFlags?.bosLoaderUrl) {
-        setRedirectMap(
-          (await fetch(localStorageFlags.bosLoaderUrl).then((r) => r.json()))
-            .components
-        );
-      } else {
-        setRedirectMap(
-          JSON.parse(sessionStorage.getItem(SESSION_STORAGE_REDIRECT_MAP_KEY))
-        );
-      }
-    })();
-  }, []);
+  const redirectMap = useRedirectMap();
 
   return (
     <>
@@ -66,7 +52,16 @@ function Viewer({ widgetSrc, code, initialProps }) {
 }
 
 function App(props) {
-  const { src, code, initialProps, rpc, network, selectorPromise } = props;
+  const {
+    src,
+    code,
+    initialProps,
+    rpc,
+    network,
+    selectorPromise,
+    enableHotReload,
+  } = props;
+
   const { initNear } = useInitNear();
 
   useAccount();
@@ -110,7 +105,11 @@ function App(props) {
     },
   ]);
 
-  return <RouterProvider router={router} />;
+  return (
+    <HotReloadContext.Provider value={enableHotReload}>
+      <RouterProvider router={router} />
+    </HotReloadContext.Provider>
+  );
 }
 
 export default App;
