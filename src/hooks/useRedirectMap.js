@@ -14,31 +14,41 @@ function useRedirectMap() {
   });
 
   useEffect(() => {
-    if (hotReload) {
-      const socket = io(process.env.BOS_LOADER_WS || "ws://127.0.0.1:8080", {
-        reconnectionAttempts: 1, // Limit reconnection attempts
-      });
+    (async () => {
+      if (hotReload) {
+        const socket = io(process.env.BOS_LOADER_WS || "ws://127.0.0.1:8080", {
+          reconnectionAttempts: 1, // Limit reconnection attempts
+        });
 
-      socket.on("fileChange", (d) => {
-        console.log("File change detected via WebSocket", d);
-        console.log(JSON.stringify(d));
-        setDevJson(d);
-      });
+        socket.on("fileChange", (d) => {
+          console.log("File change detected via WebSocket", d);
+          setDevJson(d);
+        });
 
-      socket.on("connect_error", () => {
-        console.warn("WebSocket connection error. Switching to HTTP.");
-        setHotReload(false);
-        socket.disconnect();
-      });
+        socket.on("connect_error", () => {
+          console.warn("WebSocket connection error. Switching to HTTP.");
+          setHotReload(false);
+          socket.disconnect();
+        });
 
-      return () => {
-        socket.disconnect();
-      };
-    } else {
-      setDevJson(
-        JSON.parse(sessionStorage.getItem(SESSION_STORAGE_REDIRECT_MAP_KEY))
-      );
-    }
+        return () => {
+          socket.disconnect();
+        };
+      } else {
+        const localStorageFlags = JSON.parse(localStorage.getItem("flags"));
+
+        if (localStorageFlags?.bosLoaderUrl) {
+          setDevJson(
+            (await fetch(localStorageFlags.bosLoaderUrl).then((r) => r.json()))
+              .components
+          );
+        } else {
+          setDevJson(
+            JSON.parse(sessionStorage.getItem(SESSION_STORAGE_REDIRECT_MAP_KEY))
+          );
+        }
+      }
+    })();
   }, [enableHotReload]);
 
   return devJson;

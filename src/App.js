@@ -22,6 +22,8 @@ function Viewer({ widgetSrc, code, initialProps }) {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
 
+  // const [redirectMap, setRedirectMap] = useState(null);
+
   // create props from params
   const passProps = useMemo(() => {
     return Array.from(searchParams.entries()).reduce((props, [key, value]) => {

@@ -38,9 +38,6 @@ class NearSocialViewerElement extends HTMLElement {
     const network = this.getAttribute("network");
     const enableHotReload = this.hasAttribute("enablehotreload");
 
-    console.log("-- in render root");
-    console.log(enableHotReload);
-
     this.reactRoot.render(
       <App
         src={src}
