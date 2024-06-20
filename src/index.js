@@ -27,7 +27,7 @@ class NearSocialViewerElement extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ["src", "code", "initialprops", "rpc", "network", "enableHotReload"];
+    return ["src", "code", "initialprops", "rpc", "network", "enablehotreload"];
   }
 
   renderRoot() {
@@ -36,7 +36,10 @@ class NearSocialViewerElement extends HTMLElement {
     const initialProps = this.getAttribute("initialprops");
     const rpc = this.getAttribute("rpc");
     const network = this.getAttribute("network");
-    const enableHotReload = this.getAttribute("enablehotreload");
+    const enableHotReload = this.hasAttribute("enablehotreload");
+
+    console.log("-- in render root");
+    console.log(enableHotReload);
 
     this.reactRoot.render(
       <App

@@ -68,7 +68,8 @@ test("should use testnet network when network attribute is provided", async ({
   });
 
   // expect value to be "testnet"
-  expect(network, "testnet");
+  // expect(network, "testnet");
+  expect(network).toBe("testnet");
 
   // Wait for the widget to render
   await waitForSelectorToBeVisible(

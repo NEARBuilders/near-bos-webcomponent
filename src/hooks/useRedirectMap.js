@@ -21,6 +21,7 @@ function useRedirectMap() {
 
       socket.on("fileChange", (d) => {
         console.log("File change detected via WebSocket", d);
+        console.log(JSON.stringify(d));
         setDevJson(d);
       });
 
