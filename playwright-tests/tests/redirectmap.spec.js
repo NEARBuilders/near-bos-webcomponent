@@ -1,4 +1,5 @@
 import { test, describe, expect } from "@playwright/test";
+import { waitForSelectorToBeVisible } from "../testUtils";
 
 describe("bos-loader-url", () => {
   test.use({
