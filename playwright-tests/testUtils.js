@@ -29,3 +29,12 @@ export const clickWhenSelectorIsVisible = async (page, selector) => {
   waitForSelectorToBeVisible(page, selector);
   await page.click(selector);
 };
+
+export const escapeHtml = (html) => {
+  return html
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+};
