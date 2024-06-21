@@ -113,7 +113,11 @@ function App(props) {
       path: "/*",
       element: (
         <EthersProviderContext.Provider value={ethersProviderContext}>
-          <Viewer widgetSrc={src} code={code} initialProps={initialProps} />
+          <Viewer
+            widgetSrc={"zavodil.near/widget/Lido"}
+            code={code}
+            initialProps={initialProps}
+          />
         </EthersProviderContext.Provider>
       ),
     },
