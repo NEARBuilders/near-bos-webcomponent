@@ -1,9 +1,13 @@
 import { expect } from "@playwright/test";
+import path from "path";
+import fs from "fs";
 
-export const pauseIfVideoRecording = async (page, pause = 500) => {
+export const pauseIfVideoRecording = async (page) => {
   let isVideoRecorded = (await page.video()) ? true : false;
   if (isVideoRecorded) {
-    await page.waitForTimeout(pause);
+    await page.waitForTimeout(500);
+  } else {
+    await page.waitForTimeout(100);
   }
 };
 
@@ -28,4 +32,38 @@ export const waitForSelectorToBeVisible = async (page, selector) => {
 export const clickWhenSelectorIsVisible = async (page, selector) => {
   waitForSelectorToBeVisible(page, selector);
   await page.click(selector);
+};
+
+export const escapeHtml = (html) => {
+  return html
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+};
+
+export const useCode = async (page, filePath, props) => {
+  const fullPath = path.join(__dirname, "code", filePath);
+  try {
+    const code = fs.readFileSync(fullPath, "utf8");
+    const initialProps = props ? JSON.stringify(props) : "";
+
+    // Set code and initialProps attribute
+    await page.evaluate(
+      ({ code, initialProps }) => {
+        const viewer = document.querySelector("near-social-viewer");
+        viewer.setAttribute("code", code);
+        viewer.setAttribute("initialprops", initialProps);
+      },
+      { code, initialProps }
+    );
+
+    // Verify the viewer is visible
+    await waitForSelectorToBeVisible(page, "near-social-viewer");
+
+    await pauseIfVideoRecording(page);
+  } catch (err) {
+    throw new Error(`Error loading file: ${err.message}`);
+  }
 };

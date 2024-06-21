@@ -1,0 +1,15 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:8080",
+      "localStorage": [
+        {
+          "name": "flags",
+          "value": "{\"bosLoaderUrl\":\"http://127.0.0.1:3030\"}"
+        }
+      ]
+    }
+  ],
+  "sessionStorage": []
+}
