@@ -1,10 +1,9 @@
-import { useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import io from "socket.io-client";
 
-import { SESSION_STORAGE_REDIRECT_MAP_KEY } from "../App.js";
-import { HotReloadContext } from "../contexts/hotReloadContext.js";
+const SESSION_STORAGE_REDIRECT_MAP_KEY = "nearSocialVMredirectMap";
 
-function useRedirectMap() {
+export function useRedirectMap() {
   const enableHotReload = useContext(HotReloadContext);
 
   const [hotReload, setHotReload] = useState(enableHotReload);
@@ -54,4 +53,12 @@ function useRedirectMap() {
   return devJson;
 }
 
-export default useRedirectMap;
+const HotReloadContext = createContext(false);
+
+export const RedirectMapProvider = ({ enableHotReload, children }) => {
+  return (
+    <HotReloadContext.Provider value={enableHotReload}>
+      {children}
+    </HotReloadContext.Provider>
+  );
+};

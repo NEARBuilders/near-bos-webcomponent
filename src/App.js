@@ -13,16 +13,12 @@ import {
   RouterProvider,
   useLocation,
 } from "react-router-dom";
-import useRedirectMap from "./hooks/useRedirectMap";
-import { HotReloadContext } from "./contexts/hotReloadContext";
 
-export const SESSION_STORAGE_REDIRECT_MAP_KEY = "nearSocialVMredirectMap";
+import { useRedirectMap, RedirectMapProvider } from "./utils/redirectMap";
 
 function Viewer({ widgetSrc, code, initialProps }) {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-
-  // const [redirectMap, setRedirectMap] = useState(null);
 
   // create props from params
   const passProps = useMemo(() => {
@@ -108,9 +104,9 @@ function App(props) {
   ]);
 
   return (
-    <HotReloadContext.Provider value={enableHotReload}>
+    <RedirectMapProvider enableHotReload={enableHotReload}>
       <RouterProvider router={router} />
-    </HotReloadContext.Provider>
+    </RedirectMapProvider>
   );
 }
 
