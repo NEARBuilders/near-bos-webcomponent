@@ -15,7 +15,7 @@ export function useRedirectMap() {
   useEffect(() => {
     (async () => {
       if (hotReload) {
-        const socket = io(process.env.BOS_LOADER_WS || "ws://127.0.0.1:8080", {
+        const socket = io(`ws:${window.location}`, {
           reconnectionAttempts: 1, // Limit reconnection attempts
         });
 
