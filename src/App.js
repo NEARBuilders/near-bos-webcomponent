@@ -18,7 +18,7 @@ import {
   useLocation,
 } from "react-router-dom";
 
-import { useEthersProviderContext } from "./hooks/useWeb3";
+import { useEthersProviderContext } from "./utils/web3/useWeb3";
 
 const SESSION_STORAGE_REDIRECT_MAP_KEY = "nearSocialVMredirectMap";
 
