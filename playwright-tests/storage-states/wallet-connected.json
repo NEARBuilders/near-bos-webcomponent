@@ -2,7 +2,7 @@
   "cookies": [],
   "origins": [
     {
-      "origin": "http://localhost:8080",
+      "origin": "http://localhost:3000",
       "localStorage": [
         {
           "name": "near-wallet-selector:selectedWalletId",
@@ -15,10 +15,6 @@
         {
           "name": "near-social-vm:v01::accountId:",
           "value": "anybody.near"
-        },
-        {
-          "name": "flags",
-          "value": "{\"bosLoaderUrl\":\"http://127.0.0.1:3030\"}"
         }
       ]
     }

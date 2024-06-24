@@ -1,7 +1,5 @@
 import { expect, test, describe } from "@playwright/test";
 import {
-  waitForSelectorToBeVisible,
-  escapeHtml,
   useCode,
   pauseIfVideoRecording,
 } from "../../testUtils";
@@ -21,8 +19,8 @@ describe("Near.call", () => {
         "Uncaught (in promise) Error: No wallet selected";
 
       await useCode(page, "near-call/positional-params.js", {
-        contractName: "contractName",
-        methodName: "methodName",
+        // contractName: "contractName",
+        // methodName: "methodName",
       });
 
       // Expect error message to be displayed
@@ -51,28 +49,34 @@ describe("Near.call", () => {
     describe("arguments: (contractName, methodName, args?, gas?, deposit?)", () => {
       test("should throw error if appropriate arguments are not provided", async ({
         page,
-      }) => {});
-      test("should open confirmation modal with appropriate details", async ({
-        page,
-      }) => {});
+      }) => {
+        await useCode(page, "near-call/positional-params.js", {
+          contractName: "contractName",
+          methodName: "methodName",
+        });
+  
+      });
+      // test("should open confirmation modal with appropriate details", async ({
+      //   page,
+      // }) => {});
     });
 
     describe("arguments: ({ tx })", () => {
-      test("should throw error if transaction object argument is invalid", async ({
-        page,
-      }) => {});
-      test("should open confirmation modal with appropriate details", async ({
-        page,
-      }) => {});
+      // test("should throw error if transaction object argument is invalid", async ({
+      //   page,
+      // }) => {});
+      // test("should open confirmation modal with appropriate details", async ({
+      //   page,
+      // }) => {});
     });
 
     describe("arguments: [{ tx }, ...]", () => {
-      test("should throw error if transaction objects in array argument is valid", async ({
-        page,
-      }) => {});
-      test("should open confirmation modal with appropriate details", async ({
-        page,
-      }) => {});
+      // test("should throw error if transaction objects in array argument is valid", async ({
+      //   page,
+      // }) => {});
+      // test("should open confirmation modal with appropriate details", async ({
+      //   page,
+      // }) => {});
     });
   });
 });
