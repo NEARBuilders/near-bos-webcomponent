@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import io from "socket.io-client";
 
+
 const SESSION_STORAGE_REDIRECT_MAP_KEY = "nearSocialVMredirectMap";
 
 export function useRedirectMap() {
@@ -15,7 +16,7 @@ export function useRedirectMap() {
   useEffect(() => {
     (async () => {
       if (hotReload) {
-        const socket = io(`ws:${window.location}`, {
+        const socket = io(`ws://${window.location.host}`, {
           reconnectionAttempts: 1, // Limit reconnection attempts
         });
 
@@ -24,8 +25,10 @@ export function useRedirectMap() {
           setDevJson(d);
         });
 
-        socket.on("connect_error", () => {
+        socket.on("connect_error", (error) => {
           console.warn("WebSocket connection error. Switching to HTTP.");
+					console.warn(error)
+
           setHotReload(false);
           socket.disconnect();
         });

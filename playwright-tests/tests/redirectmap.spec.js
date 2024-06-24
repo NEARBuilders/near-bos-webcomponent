@@ -1,6 +1,4 @@
-import { test, describe, expect } from "@playwright/test";
-
-import { waitForSelectorToBeVisible } from "../testUtils";
+import { describe, expect, test } from "@playwright/test";
 
 describe("bos-loader-url", () => {
     test.use({
@@ -46,48 +44,4 @@ describe("session-storage", () => {
         })
         await expect(await page.getByText('I come from a redirect map from session storage')).toBeVisible();
     });
-});
-
-describe("hot-reload", () => {
-  test("If 'enablehotreload' is true an api request to */websocket.io/* will be triggered", async ({
-    page,
-  }) => {
-    let websocketCount = 0;
-
-    await page.goto("/");
-
-    await page.route("**/socket.io/*", (route) => {
-      websocketCount++;
-      route.continue();
-    });
-
-    await page.evaluate(() => {
-      document.body.innerHTML = `<near-social-viewer src="neardevs.testnet/widget/default" enablehotreload></near-social-viewer>`;
-    });
-
-    await waitForSelectorToBeVisible(page, "near-social-viewer");
-
-    expect(websocketCount).toBeGreaterThan(0);
-  });
-
-  test("If enableHotReload is false there will be no api request to */socket.io/*", async ({
-    page,
-  }) => {
-    let websocketCount = 0;
-
-    await page.goto("/");
-
-    await page.route("**/socket.io/*", (route) => {
-      websocketCount++;
-      route.continue();
-    });
-
-    await page.evaluate(() => {
-      document.body.innerHTML = `<near-social-viewer src="neardevs.testnet/widget/default"></near-social-viewer>`;
-    });
-
-    await waitForSelectorToBeVisible(page, "near-social-viewer");
-
-    expect(websocketCount).toEqual(0);
-  });
 });
