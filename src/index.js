@@ -34,7 +34,7 @@ class NearSocialViewerElement extends HTMLElement {
         const initialProps = this.getAttribute('initialprops');
         const rpc = this.getAttribute('rpc');
         const network = this.getAttribute('network');
-    		const enableHotReload = this.hasAttribute("enablehotreload");
+    	const enableHotReload = this.hasAttribute("enablehotreload");
 
         this.reactRoot.render(<App src={src} code={code} initialProps={JSON.parse(initialProps)} rpc={rpc} network={network} selectorPromise={this.selectorPromise} enableHotReload={enableHotReload}/>);
     }
