@@ -55,6 +55,7 @@ The `near-social-viewer` web component supports several attributes:
 * `initialprops`: initial properties to be passed to the rendered widget.
 * `rpc`: rpc url to use for requests within the VM
 * `network`: network to connect to for rpc requests & wallet connection
+* `enablehotreload`: option to connect to local web socket server for live redirect map changes
 
 ## Configuring VM Custom Elements
 
@@ -119,7 +120,17 @@ yarn test:ui:codespaces
 
 In general it is a good practice, and very helpful for reviewers and users of this project, that all use cases are covered in Playwright tests. Also, when contributing, try to make your tests as simple and clear as possible, so that they serve as examples on how to use the functionality.
 
-## Use redirectmap for development
+## Local Widget Development
+
+There are several strategies for accessing local widget code during development.
+
+### Proxy RPC
+
+The recommended, least invasive strategy is to provide a custom RPC url that proxies requests for widget code. Widget code is stored in the [socialdb](https://github.com/NearSocial/social-db), and so it involves an RPC request to get the stringified code. We can proxy this request to use our local code instead.
+
+You can build a custom proxy server, or [bos-workspace](https://github.com/nearbuilders/bos-workspace) provides a proxy by default and will automatically inject it to the `rpc` attribute if you provide the path to your web component's dist, or a link to it stored on [NEARFS](https://github.com/vgrichina/nearfs). See more in [Customizing the Gateway](https://github.com/NEARBuilders/bos-workspace?tab=readme-ov-file#customizing-the-gateway).
+
+### Redirect Map
 
 The NEAR social VM supports a feature called `redirectMap` which allows you to load widgets from other sources than the on chain social db. An example redirect map can look like this:
 
@@ -134,6 +145,12 @@ The `near-social-viewer` web component supports loading a redirect map from the 
 By setting the session storage key `nearSocialVMredirectMap` to the JSON value of the redirect map, the web component will pass this to the VM Widget config.
 
 You can also use the same mechanism as [near-discovery](https://github.com/near/near-discovery/) where you can load components from a locally hosted [bos-loader](https://github.com/near/bos-loader) by adding the key `flags` to localStorage with the value `{"bosLoaderUrl": "http://127.0.0.1:3030" }`.
+
+### Hot Reload
+
+The above strategies require changes to be reflected either on page reload, or from a fresh rpc request. For faster updates, there is an option to `enablehotreload`, which will try to connect to a web socket server on the same port and use redirectMap with most recent data.
+
+This feature works best when accompanied with [bos-workspace](https://github.com/nearbuilders/bos-workspace), which will automatically inject it to the `enablehotreload` attribute if you provide the path to your web component's dist, or a link to it stored on [NEARFS](https://github.com/vgrichina/nearfs). See more in [Customizing the Gateway](https://github.com/NEARBuilders/bos-workspace?tab=readme-ov-file#customizing-the-gateway). It can be disabled with the `--no-hot` flag.
 
 ## Landing page for SEO friendly URLs
 
