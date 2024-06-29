@@ -14,7 +14,7 @@ import {
   useLocation,
 } from "react-router-dom";
 
-const SESSION_STORAGE_REDIRECT_MAP_KEY = 'nearSocialVMredirectMap';
+const SESSION_STORAGE_REDIRECT_MAP_KEY = "nearSocialVMredirectMap";
 
 function Viewer({ widgetSrc, code, initialProps }) {
   const location = useLocation();
