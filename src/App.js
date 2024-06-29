@@ -112,7 +112,7 @@ function App(props) {
       element: (
         <EthersProvider>
           <Viewer
-            widgetSrc={"zavodil.near/widget/Lido"}
+            widgetSrc={src}
             code={code}
             initialProps={initialProps}
           />
