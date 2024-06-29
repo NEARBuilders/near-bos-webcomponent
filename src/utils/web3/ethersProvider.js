@@ -1,10 +1,11 @@
+import React, { useEffect, useState } from "react";
 import { singletonHook } from "react-singleton-hook";
-import { useEffect, useState } from "react";
 import { init, useConnectWallet } from "@web3-onboard/react";
 import injectedModule from "@web3-onboard/injected-wallets";
 import walletConnectModule from "@web3-onboard/walletconnect";
 import ledgerModule from "@web3-onboard/ledger";
 import ls from "local-storage";
+import { EthersProviderContext } from "near-social-vm";
 
 import chains from "./chains.json";
 
@@ -21,7 +22,7 @@ const ledger = ledgerModule(wcV2InitOptions);
 const injected = injectedModule();
 
 // initialize Onboard
-export const onboard = init({
+const onboard = init({
   wallets: [injected, walletConnect, ledger],
 	chains,
   appMetadata: {
@@ -40,7 +41,7 @@ const defaultEthersProviderContext = {
   setChain: onboard.setChain,
 };
 
-export const useEthersProviderContext = singletonHook(
+const useEthersProviderContext = singletonHook(
   defaultEthersProviderContext,
   () => {
     const [{ wallet }] = useConnectWallet();
@@ -81,3 +82,13 @@ export const useEthersProviderContext = singletonHook(
     return ethersProvider;
   }
 );
+
+export const EthersProvider = ({children}) => {
+  const ethersProviderContext = useEthersProviderContext();
+
+	return (
+		<EthersProviderContext.Provider value={ethersProviderContext}>
+			{children}
+		</EthersProviderContext.Provider>
+	)
+}

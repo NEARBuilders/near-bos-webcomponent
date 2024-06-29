@@ -8,7 +8,6 @@ import { sanitizeUrl } from "@braintree/sanitize-url";
 import {
   useAccount,
   useInitNear,
-  EthersProviderContext,
   Widget,
 } from "near-social-vm";
 import {
@@ -18,7 +17,7 @@ import {
   useLocation,
 } from "react-router-dom";
 
-import { useEthersProviderContext } from "./utils/web3/useWeb3";
+import { EthersProvider } from "./utils/web3/ethersProvider"
 
 const SESSION_STORAGE_REDIRECT_MAP_KEY = "nearSocialVMredirectMap";
 
@@ -74,7 +73,6 @@ function Viewer({ widgetSrc, code, initialProps }) {
 function App(props) {
   const { src, code, initialProps, rpc, network, selectorPromise } = props;
   const { initNear } = useInitNear();
-  const ethersProviderContext = useEthersProviderContext();
 
   useAccount();
   useEffect(() => {
@@ -112,13 +110,13 @@ function App(props) {
     {
       path: "/*",
       element: (
-        <EthersProviderContext.Provider value={ethersProviderContext}>
+        <EthersProvider>
           <Viewer
             widgetSrc={"zavodil.near/widget/Lido"}
             code={code}
             initialProps={initialProps}
           />
-        </EthersProviderContext.Provider>
+        </EthersProvider>
       ),
     },
   ]);
