@@ -13,8 +13,9 @@ import {
   RouterProvider,
   useLocation,
 } from "react-router-dom";
+import Wallet from "./auth/Wallet";
 
-const SESSION_STORAGE_REDIRECT_MAP_KEY = 'nearSocialVMredirectMap';
+const SESSION_STORAGE_REDIRECT_MAP_KEY = "nearSocialVMredirectMap";
 
 function Viewer({ widgetSrc, code, initialProps }) {
   const location = useLocation();
@@ -84,6 +85,9 @@ function App(props) {
             props.to = sanitizeUrl(props.to);
           }
           return <Link {...props} />;
+        },
+        Wallet: (props) => {
+          return <Wallet {...props} />;
         },
       },
       features: {

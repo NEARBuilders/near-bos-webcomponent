@@ -1,0 +1,23 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:3000",
+      "localStorage": [
+        {
+          "name": "near-wallet-selector:selectedWalletId",
+          "value": "\"my-near-wallet\""
+        },
+        {
+          "name": "near_app_wallet_auth_key",
+          "value": "{\"accountId\":\"anybody.near\"}"
+        },
+        {
+          "name": "near-social-vm:v01::accountId:",
+          "value": "anybody.near"
+        }
+      ]
+    }
+  ],
+  "sessionStorage": []
+}

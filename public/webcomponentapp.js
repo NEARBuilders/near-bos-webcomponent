@@ -14,7 +14,11 @@ const modal = setupModal(selector, {
   contractId: "social.near",
 });
 
-document.getElementById('open-walletselector-button').addEventListener('click', () => modal.show());
+document.body.addEventListener('click', (event) => {
+  if (event.target && event.target.id === 'open-walletselector-button') {
+    modal.show();
+  }
+});
 
 const viewer = document.querySelector('near-social-viewer');
 viewer.selector = selector;
