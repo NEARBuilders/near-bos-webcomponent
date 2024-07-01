@@ -50,7 +50,7 @@ test("Verify custom RPC is called when provided", async ({ page }) => {
   await waitForSelectorToBeVisible(page, "near-social-viewer");
 
   let customRPCisCalledPromiseResolve;
-  let customRPCisCalled = new Promise(resolve => {
+  let customRPCisCalled = new Promise((resolve) => {
     customRPCisCalledPromiseResolve = resolve;
   });
 

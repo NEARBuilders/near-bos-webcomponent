@@ -4,7 +4,8 @@ body {
   overflow-y: scroll;
 }
 
-body, html {
+body,
+html {
   -webkit-font-smoothing: antialiased;
 }
 
@@ -12,10 +13,11 @@ body, html {
   cursor: pointer;
 }
 
-.btn-success, .btn-primary {
+.btn-success,
+.btn-primary {
   .text-muted {
     color: #fff !important;
-  };
+  }
 }
 
 .outline-none {
@@ -31,4 +33,3 @@ a {
     text-decoration: none;
   }
 }
-
