@@ -1,9 +1,11 @@
 import { expect } from "@playwright/test";
 
-export const pauseIfVideoRecording = async (page, pause = 500) => {
+export const pauseIfVideoRecording = async (page) => {
   let isVideoRecorded = (await page.video()) ? true : false;
   if (isVideoRecorded) {
-    await page.waitForTimeout(pause);
+    await page.waitForTimeout(500);
+  } else {
+    await page.waitForTimeout(100);
   }
 };
 
@@ -28,4 +30,13 @@ export const waitForSelectorToBeVisible = async (page, selector) => {
 export const clickWhenSelectorIsVisible = async (page, selector) => {
   waitForSelectorToBeVisible(page, selector);
   await page.click(selector);
+};
+
+export const escapeHtml = (html) => {
+  return html
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 };
