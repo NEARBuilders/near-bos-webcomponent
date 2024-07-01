@@ -1,4 +1,5 @@
-import { expect, test, describe } from "@playwright/test";
+import { describe, expect, test } from "@playwright/test";
+import { useCode } from "../testUtils";
 
 describe("auth", () => {
   test.beforeEach(async ({ page }) => {
@@ -10,19 +11,23 @@ describe("auth", () => {
       storageState: "playwright-tests/storage-states/wallet-not-connected.json",
     });
 
-    test("'context.accountId' should be null and show login button", async ({ page }) => {
+    test("'context.accountId' should be null and show login button", async ({
+      page,
+    }) => {
       await useCode(page, "auth/wallet.js");
 
       const accountId = await page.textContent('[data-testid="accountId"]');
-      expect(accountId).toBe("null");
+      expect(accountId).toBe("");
     });
 
-    test("should show wallet modal after clicking login button", async ({ page }) => {
+    test("should show wallet modal after clicking login button", async ({
+      page,
+    }) => {
       await useCode(page, "auth/wallet.js");
 
       await page.click("#open-walletselector-button");
 
-      const modal = await page.waitForSelector("near-wallet-selector");
+      const modal = await page.getByText("Connect Your Wallet");
       expect(modal).not.toBeNull();
     });
   });
@@ -32,17 +37,44 @@ describe("auth", () => {
       storageState: "playwright-tests/storage-states/wallet-connected.json",
     });
 
-    test("should have 'context.accountId' be non null and show logout button", async ({ page }) => {
-     await useCode(page, "auth/wallet.js");
+    test("should have 'context.accountId' be non null and show logout button", async ({
+      page,
+    }) => {
+      await useCode(page, "auth/wallet.js");
 
-      const accountId = await page.textContent('[data-testid="accountId"]');
-      expect(accountId).toBe("anybody.near");
+      const accountId = await page.getByTestId("accountId");
+      expect(accountId).toHaveText("anybody.near");
     });
 
-    test("should prompt to disconnect wallet after clicking logout button", async ({ page }) => {
-     await useCode(page, "auth/wallet.js");
+    test("should prompt to disconnect wallet after clicking logout button", async ({
+      page,
+    }) => {
+      await useCode(page, "auth/wallet.js");
+
+      // Verify auth keys exist
+      const initialCheck = await page.evaluate(() => ({
+        near_app_wallet_auth_key: localStorage.getItem(
+          "near_app_wallet_auth_key"
+        ),
+      }));
+
+      expect(initialCheck).toEqual({
+        near_app_wallet_auth_key:
+          '{"accountId":"anybody.near","allKeys":["ed25519:CziSGowWUKiP5N5pqGUgXCJXtqpySAk29YAU6zEs5RAi"]}}',
+      });
 
       await page.getByRole("button", { name: "Log out" }).click();
+
+      // Verify auth keys are removed
+      await page.waitForFunction(
+        () => {
+          return localStorage.getItem("near_app_wallet_auth_key") === null;
+        },
+        { timeout: 1000 }
+      );
+
+      const accountId = await page.textContent('[data-testid="accountId"]');
+      expect(accountId).toBe("");
     });
   });
 });

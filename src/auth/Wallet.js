@@ -3,12 +3,12 @@ import { useCallback } from "react";
 
 function Wallet({ provides }) {
   const near = useNear();
-  const logOut = useCallback(async () => {
+  const signOut = useCallback(async () => {
     const wallet = await (await near.selector).wallet();
     wallet.signOut();
   }, [near]);
 
-  return provides({ logOut });
+  return provides({ signOut });
 }
 
 export default Wallet;
