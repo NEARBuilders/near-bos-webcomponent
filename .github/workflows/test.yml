@@ -27,6 +27,9 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
+      - name: Format code
+        run: yarn fmt
+
       # Cache Playwright browsers
       - name: Cache Playwright browsers
         uses: actions/cache@v3

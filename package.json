@@ -47,7 +47,8 @@
     "test:ui:codespaces": "npx playwright test --ui-host=0.0.0.0",
     "nearfs:publish-library:create:car": "ipfs-car pack dist/ --output dist.car",
     "nearfs:publish-library:upload:car": "NODE_ENV=mainnet node ./node_modules/nearfs/scripts/upload-car.js dist.car",
-    "lint": "yarn prettier . --write"
+    "fmt": "prettier --write '**/*.{js,jsx,ts,tsx,json}'",
+    "fmt:check": "prettier --check '**/*.{js,jsx,ts,tsx,json}'"
   },
   "eslintConfig": {
     "extends": [
