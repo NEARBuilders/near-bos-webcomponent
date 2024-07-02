@@ -142,6 +142,16 @@ By setting the session storage key `nearSocialVMredirectMap` to the JSON value o
 
 You can also use the same mechanism as [near-discovery](https://github.com/near/near-discovery/) where you can load components from a locally hosted [bos-loader](https://github.com/near/bos-loader) by adding the key `flags` to localStorage with the value `{"bosLoaderUrl": "http://127.0.0.1:3030" }`.
 
+## Configuring Ethers
+
+Since [NearSocial/VM v1.3.0](https://github.com/NearSocial/VM/blob/master/CHANGELOG.md#130), the VM has exposed Ethers and ethers in the global scope, as well as a Web3Connect custom element for bringing up wallet connect.
+
+There already exists support for most common EVM chains, but to add a new chain to your web3 provider, find your chain on [ChainList](https://chainlist.org/) and then add the necessary details to the [chains.json](./src/utils/web4/chains.json). Be sure to include a testnet configuration as well. This will enable you to connect to the specified chain when using `<Web3Connect />` within a widget running inside your custom web component.
+
+You can configure the projectId and appMetadata in [ethersProvider.js](./src/utils/web4/ethersProvider.js) as well.
+
+For more information on how to utilize [Ethers.js](https://docs.ethers.org/v6/) in your widgets, see [NEAR for Ethereum developers](https://docs.near.org/tutorials/near-components/ethers-js). To see a list of existing EVM components built by the community, see [here](https://near.social/hackerhouse.near/widget/EVMComponents).
+
 ## Landing page for SEO friendly URLs
 
 Normally, the URL path decides which component to be loaded. The path `/devhub.near/widget/app` will load the `app` component from the `devhub.near` account. DevHub is an example of a collection of many components that are part of a big app, and the `app` component is just a proxy to components that represent a `page`. Which page to display is controlled by the `page` query string parameter, which translates to `props.page` in the component.
