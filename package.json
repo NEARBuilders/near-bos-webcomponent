@@ -1,6 +1,6 @@
 {
   "name": "near-bos-webcomponent",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "homepage": "https://github.com/NEARBuilders/near-bos-webcomponent",
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
     "local-storage": "^2.0.0",
     "near-api-js": "^2.1.3",
     "near-social-vm": "NearSocial/VM#2.6.1",
-    "prettier": "^2.7.1",
+    "prettier": "3.3.2",
     "qrcode.react": "^3.1.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.5.0",
@@ -50,7 +50,9 @@
     "test:ui": "npx playwright test --ui",
     "test:ui:codespaces": "npx playwright test --ui-host=0.0.0.0",
     "nearfs:publish-library:create:car": "ipfs-car pack dist/ --output dist.car",
-    "nearfs:publish-library:upload:car": "NODE_ENV=mainnet node ./node_modules/nearfs/scripts/upload-car.js dist.car"
+    "nearfs:publish-library:upload:car": "NODE_ENV=mainnet node ./node_modules/nearfs/scripts/upload-car.js dist.car",
+    "fmt": "prettier --write '**/*.{js,jsx,ts,tsx,json}'",
+    "fmt:check": "prettier --check '**/*.{js,jsx,ts,tsx,json}'"
   },
   "eslintConfig": {
     "extends": [

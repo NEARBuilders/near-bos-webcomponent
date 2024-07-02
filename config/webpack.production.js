@@ -71,8 +71,8 @@ module.exports = () => {
       minimizer: [
         new CssMinimizerPlugin(),
         new TerserPlugin({
-          exclude: /webcomponentapp.js/
-        })
+          exclude: /webcomponentapp.js/,
+        }),
       ],
       runtimeChunk: {
         name: "runtime",
