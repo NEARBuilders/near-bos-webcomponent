@@ -1,12 +1,15 @@
 import "App.scss";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/js/bootstrap.bundle";
-import { Widget } from "near-social-vm";
 import React, { useEffect, useMemo, useState } from "react";
 import "react-bootstrap-typeahead/css/Typeahead.css";
 
 import { sanitizeUrl } from "@braintree/sanitize-url";
-import { useAccount, useInitNear } from "near-social-vm";
+import {
+  useAccount,
+  useInitNear,
+  Widget,
+} from "near-social-vm";
 import {
   createBrowserRouter,
   Link,
@@ -14,6 +17,8 @@ import {
   useLocation,
 } from "react-router-dom";
 import Wallet from "./auth/Wallet";
+
+import { EthersProvider } from "./utils/web3/ethersProvider"
 
 const SESSION_STORAGE_REDIRECT_MAP_KEY = "nearSocialVMredirectMap";
 
@@ -109,7 +114,13 @@ function App(props) {
     {
       path: "/*",
       element: (
-        <Viewer widgetSrc={src} code={code} initialProps={initialProps} />
+        <EthersProvider>
+          <Viewer
+            widgetSrc={src}
+            code={code}
+            initialProps={initialProps}
+          />
+        </EthersProvider>
       ),
     },
   ]);
