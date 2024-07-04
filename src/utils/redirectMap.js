@@ -17,21 +17,20 @@ export function useRedirectMap() {
   const enableHotReload = useContext(HotReloadContext);
 
   const [hotReload, setHotReload] = useState(enableHotReload);
-  const [devJson, setDevJson] = useState({
-    components: {},
-    data: {},
-  });
+  const [devJson, setDevJson] = useState({});
 
   useEffect(() => {
     (async () => {
       if (hotReload) {
-        const socket = io(`ws://${window.location.host}`, {
+        // const socket = io(`ws://${window.location.host}`, {
+        const socket = io(`ws://localhost:3001`, {
           reconnectionAttempts: 1, // Limit reconnection attempts
+					// transports: ['websocket'],
         });
 
         socket.on("fileChange", (d) => {
           console.log("File change detected via WebSocket", d);
-          setDevJson(d.components);
+          setDevJson(d);
         });
 
         socket.on("connect_error", (error) => {
