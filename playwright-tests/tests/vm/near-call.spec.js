@@ -135,11 +135,22 @@ describe("Near.call", () => {
         const transactionObj = JSON.parse(
           await page.locator("div.modal-body code").innerText()
         );
+        const modalBody = await page.locator(".modal-body");
+        const transactionNumber = await modalBody.locator("h4").textContent();
+        const values = await modalBody
+          .locator(".font-monospace")
+          .allInnerTexts();
+        const [contractId, methodName, deposit, gas] = values;
 
         await pauseIfVideoRecording(page);
 
         // do something with transactionObj
         expect(transactionObj).toMatchObject(expectedTransactionData);
+        expect(transactionNumber).toBe("Transaction #1");
+        expect(contractId).toBe("hello.near-examples.near");
+        expect(methodName).toBe("set_greeting");
+        expect(deposit).toBe("1 NEAR");
+        expect(gas).toBe("300 TGas");
       });
     });
 
@@ -157,25 +168,48 @@ describe("Near.call", () => {
               deposit: "1000000000000000000000000",
             },
             {
-              contractName: "hello.near-examples.near",
-              methodName: "set_greeting",
+              contractName: "goodbye.near-examples.near",
+              methodName: "set_goobye",
               args: { message: "Goodbye, World!" },
-              gas: "300000000000000",
-              deposit: "1000000000000000000000000",
+              gas: "600000000000000",
+              deposit: "2000000000000000000000000",
             },
           ],
         });
 
         await page.getByRole("button", { name: "click" }).click();
 
-        const blocks = await page.locator("div.modal-body code").allInnerTexts();
+        const blocks = await page
+          .locator("div.modal-body code")
+          .allInnerTexts();
+        const modalBody = await page.locator(".modal-body");
+        const transactionNumbers = await modalBody.locator("h4").allInnerTexts();
+        const values = await modalBody
+          .locator(".font-monospace")
+          .allInnerTexts();
 
         const [firstBlock, secondBlock] = blocks;
 
         await pauseIfVideoRecording(page);
 
-        expect(JSON.parse(firstBlock)).toMatchObject({ message: "Hello, World!" });
-        expect(JSON.parse(secondBlock)).toMatchObject({ message: "Goodbye, World!" });
+        expect(transactionNumbers).toEqual(["Transaction #1", "Transaction #2"]);
+        expect(values).toEqual([
+          "hello.near-examples.near",
+          "set_greeting",
+          "1 NEAR",
+          "300 TGas",
+          "goodbye.near-examples.near",
+          "set_goobye",
+          "2 NEAR",
+          "600 TGas",
+        ]);
+
+        expect(JSON.parse(firstBlock)).toMatchObject({
+          message: "Hello, World!",
+        });
+        expect(JSON.parse(secondBlock)).toMatchObject({
+          message: "Goodbye, World!",
+        });
       });
     });
   });
