@@ -39,7 +39,7 @@ describe("Near.call", () => {
     });
 
     describe("arguments: (contractName, methodName, args?, gas?, deposit?)", () => {
-      test("should throw error if appropriate arguments are not provided", async ({
+      test("should throw error if appropriate arguments are not provide (over 5 args)", async ({
         page,
       }) => {
         const expectedErrorMessage =
@@ -105,7 +105,7 @@ describe("Near.call", () => {
     });
 
     describe("arguments: ({ tx })", () => {
-      test("should throw error if transaction object argument is invalid", async ({
+      test("should throw error if transaction object argument is invalid (single string provided)", async ({
         page,
       }) => {
         const expectedErrorMessage =
@@ -168,7 +168,7 @@ describe("Near.call", () => {
     });
 
     describe("arguments: [{ tx }, ...]", () => {
-      test("should open confirmation modal with appropriate details", async ({
+      test("should open confirmation modal with appropriate details, multiple transactions", async ({
         page,
       }) => {
         const expectedTransactionData = {
