@@ -63,4 +63,5 @@ class NearSocialViewerElement extends HTMLElement {
 }
 
 // other custom versions of near-bos-webcomponent should define their own element tag
-customElements.define("near-webcam-viewer", NearSocialViewerElement);
+// near-webcam-viewer
+customElements.define("near-social-viewer", NearSocialViewerElement);
