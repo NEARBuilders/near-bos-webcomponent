@@ -39,7 +39,7 @@
   },
   "scripts": {
     "webpack": "webpack",
-    "dev": "yarn run webpack --env mode=development --watch",
+    "dev": "yarn run webpack --env mode=development",
     "prod": "yarn run webpack --env mode=production",
     "prod:analyze": "yarn run prod --env presets=analyze",
     "build": "yarn run prod",

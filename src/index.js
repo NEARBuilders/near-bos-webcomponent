@@ -1,7 +1,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import App from "./App"; // what if this was bundled?
+import App from "./App"; // what if this was bundled and published separately?
 import Camera from "./Camera";
 
 // should NearSocialViewerElement be a newly defined and extendable class? to maintain consistency?
