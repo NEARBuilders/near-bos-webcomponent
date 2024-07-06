@@ -34,12 +34,11 @@
     "react-bootstrap-typeahead": "^6.1.2",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.20.0",
-    "react-webcam": "^7.2.0",
     "styled-components": "^5.3.6"
   },
   "scripts": {
     "webpack": "webpack",
-    "dev": "yarn run webpack --env mode=development --watch",
+    "dev": "yarn run webpack --env mode=development",
     "prod": "yarn run webpack --env mode=production",
     "prod:analyze": "yarn run prod --env presets=analyze",
     "build": "yarn run prod",

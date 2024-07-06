@@ -2,7 +2,6 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App";
-import Camera from "./Camera";
 
 class NearSocialViewerElement extends HTMLElement {
   constructor() {
@@ -46,9 +45,6 @@ class NearSocialViewerElement extends HTMLElement {
         rpc={rpc}
         network={network}
         selectorPromise={this.selectorPromise}
-        customElements={{
-          Camera: (props) => <Camera {...props} />,
-        }}
       />
     );
   }
