@@ -24,7 +24,7 @@ const OverlayZone = styled.div`
   grid-area: ${(props) => props.area};
 `;
 
-class Camera extends React.Component {
+class Camera extends React.Component { // This needs to be a class component
   constructor(props) {
     super(props);
     this.containerRef = React.createRef();
@@ -35,6 +35,8 @@ class Camera extends React.Component {
     };
   }
 
+  // (and cannot use hooks, like useState or useEffect)
+  // or access contexts
   componentDidMount() {
     this.updateVideoConstraints();
   }

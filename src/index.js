@@ -1,9 +1,11 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import App from "./App";
+import App from "./App"; // what if this was bundled?
 import Camera from "./Camera";
 
+// should NearSocialViewerElement be a newly defined and extendable class? to maintain consistency?
+// so this would could be "class NearWebcamViewerElement extends NearSocialViewerElement"
 class NearSocialViewerElement extends HTMLElement {
   constructor() {
     super();
@@ -46,7 +48,7 @@ class NearSocialViewerElement extends HTMLElement {
         rpc={rpc}
         network={network}
         selectorPromise={this.selectorPromise}
-        customElements={{
+        customElements={{ // defining and importing custom elements here
           Camera: (props) => <Camera {...props} />,
         }}
       />
@@ -60,4 +62,5 @@ class NearSocialViewerElement extends HTMLElement {
   }
 }
 
-customElements.define("near-social-viewer", NearSocialViewerElement);
+// other custom versions of near-bos-webcomponent should define their own element tag
+customElements.define("near-webcam-viewer", NearSocialViewerElement);
