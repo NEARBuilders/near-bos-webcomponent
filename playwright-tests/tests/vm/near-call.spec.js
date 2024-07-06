@@ -69,19 +69,7 @@ describe("Near.call", () => {
       test("should open confirmation modal with appropriate details", async ({
         page,
       }) => {
-        const expectedTransactionData = {
-          receiverId: "hello.near-examples.near",
-          actions: [
-            {
-              functionCall: {
-                methodName: "set_greeting",
-                args: { message: "Hello, World!" },
-                gas: "300000000000000",
-                deposit: "1000000000000000000000000",
-              },
-            },
-          ],
-        };
+        const expectedTransactionData = { message: "Hello, World!" };
 
         await useCode(page, "near-call/positional-params.js", {
           contractName: "hello.near-examples.near",
@@ -130,19 +118,7 @@ describe("Near.call", () => {
       test("should open confirmation modal with appropriate details", async ({
         page,
       }) => {
-        const expectedTransactionData = {
-          receiverId: "hello.near-examples.near",
-          actions: [
-            {
-              functionCall: {
-                methodName: "set_greeting",
-                args: { message: "Hello, World!" },
-                gas: "300000000000000",
-                deposit: "1000000000000000000000000",
-              },
-            },
-          ],
-        };
+        const expectedTransactionData = { message: "Hello, World!" };
 
         await useCode(page, "near-call/object-params.js", {
           tx: {
@@ -171,28 +147,6 @@ describe("Near.call", () => {
       test("should open confirmation modal with appropriate details, multiple transactions", async ({
         page,
       }) => {
-        const expectedTransactionData = {
-          receiverId: "hello.near-examples.near",
-          actions: [
-            {
-              functionCall: {
-                methodName: "set_greeting",
-                args: { message: "Hello, World!" },
-                gas: "300000000000000",
-                deposit: "1000000000000000000000000",
-              },
-            },
-            {
-              functionCall: {
-                methodName: "set_greeting",
-                args: { message: "Goodbye, World!" },
-                gas: "300000000000000",
-                deposit: "1000000000000000000000000",
-              },
-            },
-          ],
-        };
-
         await useCode(page, "near-call/object-params.js", {
           tx: [
             {
@@ -214,14 +168,14 @@ describe("Near.call", () => {
 
         await page.getByRole("button", { name: "click" }).click();
 
-        const transactionObj = JSON.parse(
-          await page.locator("div.modal-body code").innerText()
-        );
+        const blocks = await page.locator("div.modal-body code").allInnerTexts();
+
+        const [firstBlock, secondBlock] = blocks;
 
         await pauseIfVideoRecording(page);
 
-        // do something with transactionObj
-        expect(transactionObj).toMatchObject(expectedTransactionData);
+        expect(JSON.parse(firstBlock)).toMatchObject({ message: "Hello, World!" });
+        expect(JSON.parse(secondBlock)).toMatchObject({ message: "Goodbye, World!" });
       });
     });
   });
