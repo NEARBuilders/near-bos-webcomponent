@@ -1,0 +1,1 @@
+return (<><p>I am the child</p><p>I wasn't passed the redirectMap directly, even in</p></>)

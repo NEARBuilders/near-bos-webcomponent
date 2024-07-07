@@ -15,6 +15,7 @@ import {
 } from "react-router-dom";
 
 import { useRedirectMap, RedirectMapProvider } from "./utils/redirectMap";
+import { Workspace } from "./Workspace";
 
 function Viewer({ widgetSrc, code, initialProps }) {
   const location = useLocation();
@@ -78,6 +79,9 @@ function App(props) {
           }
           return <Link {...props} />;
         },
+        Workspace: (props) => {
+          return <Workspace {...props} />;
+        }
       },
       features: {
         enableComponentSrcDataKey: true,
