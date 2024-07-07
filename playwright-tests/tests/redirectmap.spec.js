@@ -3,8 +3,6 @@ import { waitForSelectorToBeVisible } from "../testUtils";
 import { Server } from "socket.io";
 import http from 'http';
 
-const redirectMap = {"anybody.near/widget/test": { code: "return <p>Hello world</p>;" }}
-const redirectMapGoodbye = {"anybody.near/widget/test": { code: "return <p>Goodbye world</p>;" }}
 
 describe("bos-loader-url", () => {
     test.use({
@@ -98,6 +96,9 @@ describe("hot-reload", () => {
 
 
 describe("hot-reload-file", () => {
+ const redirectMap = {"anybody.near/widget/test": { code: "return <p id='hello-world'>Hello world</p>;" }}
+ const redirectMapGoodbye = {"anybody.near/widget/test": { code: "return <p>Goodbye world</p>;" }}
+
 	test("enable hot reload", async ({ page }) => {
 		await page.goto("/");
 	
@@ -151,97 +152,74 @@ describe("hot-reload-file", () => {
 	});
 
 describe("hot-reload-file-with-socket", () => {
-	let io, httpServer;
-	const PORT = 3001;
-  const HOST = 'localhost'; 
+  let io, httpServer;
+  const PORT = 3001;
+  const HOST = "localhost";
 
-
-	test.beforeAll(async () => {
-		httpServer = http.createServer();
-		io = new Server(httpServer, {
-			cors: {
+  test.beforeAll(async () => {
+    httpServer = http.createServer();
+    io = new Server(httpServer, {
+      cors: {
         origin: "http://localhost:3000",
         methods: ["GET", "POST"],
-      }
-		});
-
-		io.on("connection", (socket) => {
-			setTimeout(() => {
-				console.log("-- emitting fileChange event")
-				const redirectMap = {"anybody.near/widget/test": { code: "return <p>Hello world</p>;" }};
-				io.emit("fileChange", redirectMap);
-			}, 3000);
-
-				//setTimeout(() => {
-				//	console.log("-- emitting second fileChange event")
-				//	const redirectMap = {"anybody.near/widget/test": { code: "return <p>Goodbye world</p>;" }};
-				//	io.emit("fileChange", redirectMap);
-				//}, 3000);
-
+      },
     });
 
-	// wait for socket start
-	 	await new Promise((resolve) => {
-	 		httpServer.listen(PORT, HOST, () => {
-	 			console.log(`Socket.IO server running at http://${HOST}:${PORT}/`);
-	 			resolve();
-	 		});
-	 	});
-	 });
-	test("enable hot reload", async ({ page }) => {
-		await page.goto("/");
-	
-		// Verify the viewer is visible
-		await waitForSelectorToBeVisible(page, "near-social-viewer");
-	
-		await page.evaluate(() => {
-			const viewer = document.querySelector("near-social-viewer");
-			viewer.setAttribute("src", "anybody.near/widget/test"); // this code does not exist
-		});
-	
-		await page.waitForTimeout(2000);
-		
-		// Verify error, code not found
-		const errMsg = await page.getByText("is not found");
-	
-		expect(await errMsg.isVisible()).toBe(true);
-	
-		// Turn on hot reload
-		// Set attribute enablehotreload to true
-		//await page.evaluate(() => {
-		//	const viewer = document.querySelector("near-social-viewer");
-		//	viewer.setAttribute("src", "anybody.near/widget/test"); // this code does not exist
-		//	viewer.setAttribute("enablehotreload", "true");
-		//});
+    const redirectMap = {
+      "anybody.near/widget/test": {
+        code: "return <p id='hello-world'>Hello world</p>;",
+      },
+    };
+
+    io.on("connection", (socket) => {
+      io.emit("fileChange", redirectMap);
+    });
+
+    // wait for socket start
+    await new Promise((resolve) => {
+      httpServer.listen(PORT, HOST, () => {
+        console.log(`Socket.IO server running at http://${HOST}:${PORT}/`);
+        resolve();
+      });
+    });
+  });
+  test("enable hot reload", async ({ page }) => {
+    await page.goto("/");
+
+    // Verify the viewer is visible
+    await waitForSelectorToBeVisible(page, "near-social-viewer");
+
+    await page.evaluate(() => {
+      const viewer = document.querySelector("near-social-viewer");
+      viewer.setAttribute("src", "anybody.near/widget/test"); // this code does not exist
+    });
+
+    await page.waitForSelector(
+      'div.alert.alert-danger:has-text("is not found")'
+    );
+
+    // Verify error
+    const errMsg = await page.locator(
+      'div.alert.alert-danger:has-text("is not found")'
+    );
+
+    expect(await errMsg.isVisible()).toBe(true);
 
     await page.evaluate(() => {
       document.body.innerHTML = `<near-social-viewer src="anybody.near/widget/test" enablehotreload></near-social-viewer>`;
     });
-	
-		await page.waitForTimeout(4000);
-		// Verify that the code is now found
-		// We should see "Hello world"
-		const helloWorld = await page.getByText("Hello world");
 
-		expect(await helloWorld.isVisible()).toBe(true);
-	
-		// Simulate WebSocket message for updated code
-		// await page.evaluate((code) => {
-		// 	const event = new CustomEvent('fileChange', { detail: JSON.stringify(code) });
-		// 	window.dispatchEvent(event);
-		// }, redirectMapGoodbye);
+    await page.waitForSelector("near-social-viewer");
 
-		// await page.waitForTimeout(7000);
-	
-		// Verify "Goodbye world" is visible
-		// const goodbyeWorld = await page.getByText("Goodbye world");
+    const paragraph = page.locator("near-social-viewer >> p#hello-world");
+    await paragraph.waitFor({ state: "visible", timeout: 5000 });
 
-		// expect(await goodbyeWorld.isVisible()).toBe(true);
-	});
-	
-	test.afterAll(() => {
-		console.log('-- closing sockets after test')
-		io.close();
-		httpServer.close();
-	});
-	});
+    const paragraphContent = await paragraph.textContent();
+    expect(paragraphContent).toBe("Hello world");
+  });
+
+  test.afterAll(() => {
+    io.close();
+    httpServer.close();
+  });
+});
