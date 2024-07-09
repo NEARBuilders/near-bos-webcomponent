@@ -25,7 +25,7 @@ class NearSocialViewerElement extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ['src', 'code', 'initialprops', 'rpc', 'network', 'enablehotreload'];
+        return ['src', 'code', 'initialprops', 'rpc', 'network', 'enabledhotreload', 'hotreloadwss'];
     }
 
     renderRoot() {
@@ -34,9 +34,10 @@ class NearSocialViewerElement extends HTMLElement {
         const initialProps = this.getAttribute('initialprops');
         const rpc = this.getAttribute('rpc');
         const network = this.getAttribute('network');
-    	const enableHotReload = this.hasAttribute("enablehotreload");
+				const enabled = this.hasAttribute("enablehotreload");
+				const wss = this.getAttribute('hotreloadwss');
 
-        this.reactRoot.render(<App src={src} code={code} initialProps={JSON.parse(initialProps)} rpc={rpc} network={network} selectorPromise={this.selectorPromise} enableHotReload={enableHotReload}/>);
+        this.reactRoot.render(<App src={src} code={code} initialProps={JSON.parse(initialProps)} rpc={rpc} network={network} selectorPromise={this.selectorPromise} enableHotReload={enabled} hotReloadWss={wss} />);
     }
 
     attributeChangedCallback(name, oldValue, newValue) {

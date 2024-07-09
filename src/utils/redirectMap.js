@@ -13,7 +13,7 @@ export const RedirectMapProvider = ({ enableHotReload, children }) => {
   );
 };
 
-export function useRedirectMap() {
+export function useRedirectMap(wss) {
   const enableHotReload = useContext(HotReloadContext);
 
   const [hotReload, setHotReload] = useState(enableHotReload);
@@ -22,8 +22,7 @@ export function useRedirectMap() {
   useEffect(() => {
     (async () => {
       if (hotReload) {
-        // const socket = io(`ws://${window.location.host}`, {
-        const socket = io(`ws://localhost:3001`, {
+        const socket = io(wss || `ws://${window.location.host}`, {
           reconnectionAttempts: 1, // Limit reconnection attempts
 					// transports: ['websocket'],
         });

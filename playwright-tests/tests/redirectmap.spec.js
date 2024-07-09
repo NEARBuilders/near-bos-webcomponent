@@ -122,6 +122,7 @@ describe("hot-reload-file", () => {
 		await page.evaluate(() => {
 			const viewer = document.querySelector("near-social-viewer");
 			viewer.setAttribute("enablehotreload", "true");
+			viewer.setAttribute("hotreloadwss", "ws://localhost:3001");
 		});
 	
 		// Simulate WebSocket message for initial code
@@ -206,7 +207,7 @@ describe("hot-reload-file-with-socket", () => {
     expect(await errMsg.isVisible()).toBe(true);
 
     await page.evaluate(() => {
-      document.body.innerHTML = `<near-social-viewer src="anybody.near/widget/test" enablehotreload></near-social-viewer>`;
+      document.body.innerHTML = `<near-social-viewer src="anybody.near/widget/test" enablehotreload hotreloadwss="ws://localhost:3001"></near-social-viewer>`;
     });
 
     await page.waitForSelector("near-social-viewer");
