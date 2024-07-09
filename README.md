@@ -171,9 +171,9 @@ You can also use the same mechanism as [near-discovery](https://github.com/near/
 
 ### Hot Reload
 
-The above strategies require changes to be reflected either on page reload, or from a fresh rpc request. For faster updates, there is an option to `enablehotreload`, which will try to connect to a web socket server on the same port and use redirectMap with most recent data.
+The above strategies require changes to be reflected either on page reload, or from a fresh rpc request. For faster updates, there is an option in `config` to enable hot reload via dev.hotreload (see [configurations](#configuration-options)), which will try to connect to a web socket server on the same port and use redirectMap with most recent data.
 
-This feature works best when accompanied with [bos-workspace](https://github.com/nearbuilders/bos-workspace), which will automatically inject it to the `enablehotreload` attribute if you provide the path to your web component's dist, or a link to it stored on [NEARFS](https://github.com/vgrichina/nearfs). See more in [Customizing the Gateway](https://github.com/NEARBuilders/bos-workspace?tab=readme-ov-file#customizing-the-gateway). It can be disabled with the `--no-hot` flag.
+This feature works best when accompanied with [bos-workspace](https://github.com/nearbuilders/bos-workspace), which will automatically inject a config to the attribute if you provide the path to your web component's dist, or a link to it stored on [NEARFS](https://github.com/vgrichina/nearfs). See more in [Customizing the Gateway](https://github.com/NEARBuilders/bos-workspace?tab=readme-ov-file#customizing-the-gateway). It can be disabled with the `--no-hot` flag.
 
 ## Configuring Ethers
 
