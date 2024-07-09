@@ -64,7 +64,7 @@ describe("hot-reload", () => {
     });
 
     await page.evaluate(() => {
-      document.body.innerHTML = `<near-social-viewer src="neardevs.testnet/widget/default" enablehotreload></near-social-viewer>`;
+      document.body.innerHTML = `<near-social-viewer src="neardevs.testnet/widget/default" hotreload='{"enabled": true, "wss": "ws://localhost:3001"}'></near-social-viewer>`;
     });
 
     await waitForSelectorToBeVisible(page, "near-social-viewer");
@@ -121,8 +121,7 @@ describe("hot-reload-file", () => {
 		// Set attribute enablehotreload to true
 		await page.evaluate(() => {
 			const viewer = document.querySelector("near-social-viewer");
-			viewer.setAttribute("enablehotreload", "true");
-			viewer.setAttribute("hotreloadwss", "ws://localhost:3001");
+			viewer.setAttribute("hotreload", '{"enabled": true, "wss": "ws://localhost:3001"}');
 		});
 	
 		// Simulate WebSocket message for initial code
@@ -207,7 +206,7 @@ describe("hot-reload-file-with-socket", () => {
     expect(await errMsg.isVisible()).toBe(true);
 
     await page.evaluate(() => {
-      document.body.innerHTML = `<near-social-viewer src="anybody.near/widget/test" enablehotreload hotreloadwss="ws://localhost:3001"></near-social-viewer>`;
+      document.body.innerHTML = `<near-social-viewer src="anybody.near/widget/test" hotreload='{"enabled": true, "wss": "ws://localhost:3001"}'></near-social-viewer>`;
     });
 
     await page.waitForSelector("near-social-viewer");

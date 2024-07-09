@@ -17,8 +17,6 @@ import {
 import { useRedirectMap, RedirectMapProvider } from "./utils/redirectMap";
 
 function Viewer({ widgetSrc, code, initialProps, config }) {
-	const { wss } = config;
-
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
 
@@ -37,7 +35,7 @@ function Viewer({ widgetSrc, code, initialProps, config }) {
     return pathSrc;
   }, [widgetSrc, path]);
 
-  const redirectMap = useRedirectMap(wss);
+  const redirectMap = useRedirectMap(config?.wss || null);
 
   return (
     <>
@@ -59,8 +57,7 @@ function App(props) {
     rpc,
     network,
     selectorPromise,
-    enableHotReload,
-		hotReloadWss,
+		hotReload,
   } = props;
 
   const { initNear } = useInitNear();
@@ -88,10 +85,7 @@ function App(props) {
       },
       config: {
         defaultFinality: undefined,
-				hotReload: {
-					enabled: enableHotReload,
-					wss: hotReloadWss,
-				}
+				hotReload,
       },
     };
 
@@ -106,13 +100,13 @@ function App(props) {
     {
       path: "/*",
       element: (
-        <Viewer widgetSrc={src} code={code} initialProps={initialProps} config={{enabled: enableHotReload, wss: hotReloadWss}} />
+        <Viewer widgetSrc={src} code={code} initialProps={initialProps} config={hotReload} />
       ),
     },
-  ]);
+  ])
 
   return (
-    <RedirectMapProvider enableHotReload={enableHotReload}>
+    <RedirectMapProvider enableHotReload={hotReload?.enabled || false}>
       <RouterProvider router={router} />
     </RedirectMapProvider>
   );
