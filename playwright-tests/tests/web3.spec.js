@@ -27,7 +27,5 @@ test("should be possible to interact with web3 widgets", async ({ page }) => {
 
   await Web3ConnectButton.click();
 
-  await expect(
-    page.getByRole("button", { name: "Connecting" })
-  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Connecting" })).toBeVisible();
 });

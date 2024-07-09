@@ -6,9 +6,7 @@ return (
         return context.accountId ? (
           <button onClick={signOut}>Log out</button>
         ) : (
-          <button onClick={signIn}>
-            Open wallet selector
-          </button>
+          <button onClick={signIn}>Open wallet selector</button>
         );
       }}
     />
