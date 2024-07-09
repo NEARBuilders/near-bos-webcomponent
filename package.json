@@ -12,6 +12,7 @@
     "LICENSE"
   ],
   "dependencies": {
+    "@near-wallet-selector/modal-ui-js": "^8.9.10",
     "@playwright/test": "^1.38.1",
     "@web3-onboard/injected-wallets": "^2.11.1",
     "@web3-onboard/ledger": "^2.7.1",
