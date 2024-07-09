@@ -1,9 +1,9 @@
 name: CI
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 jobs:
   test:
     name: Playwright test
@@ -26,6 +26,9 @@ jobs:
 
       - name: Install dependencies
         run: yarn install
+
+      - name: Format code
+        run: yarn fmt
 
       # Cache Playwright browsers
       - name: Cache Playwright browsers

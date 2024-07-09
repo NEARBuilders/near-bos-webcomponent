@@ -5,14 +5,21 @@ This is a Proof of Concept of embedding a NEAR BOS widget into any web applicati
 Just load react production react bundles into your index.html as shown below, and use the `near-social-viewer` custom element to embed the BOS widget.
 
 ```html
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Near social</title>
-    <script defer="defer" src="/runtime.REPLACE_WITH_BUNDLE_HASH.bundle.js"></script>
-    <script defer="defer" src="/main.REPLACE_WITH_BUNDLE_HASH.bundle.js"></script></head>
+    <script
+      defer="defer"
+      src="/runtime.REPLACE_WITH_BUNDLE_HASH.bundle.js"
+    ></script>
+    <script
+      defer="defer"
+      src="/main.REPLACE_WITH_BUNDLE_HASH.bundle.js"
+    ></script>
+  </head>
   <body>
     <h1>NEAR BOS embeddable custom element</h1>
     <near-social-viewer></near-social-viewer>
@@ -151,7 +158,7 @@ You can build a custom proxy server, or [bos-workspace](https://github.com/nearb
 The NEAR social VM supports a feature called `redirectMap` which allows you to load widgets from other sources than the on chain social db. An example redirect map can look like this:
 
 ```json
-{"devhub.near/widget/devhub.page.feed": {"code": "return 'hello';"}}
+{ "devhub.near/widget/devhub.page.feed": { "code": "return 'hello';" } }
 ```
 
 The result of applying this redirect map is that the widget `devhub.near/widget/devhub.page.feed` will be replaced by a string that says `hello`.
@@ -168,6 +175,16 @@ The above strategies require changes to be reflected either on page reload, or f
 
 This feature works best when accompanied with [bos-workspace](https://github.com/nearbuilders/bos-workspace), which will automatically inject it to the `enablehotreload` attribute if you provide the path to your web component's dist, or a link to it stored on [NEARFS](https://github.com/vgrichina/nearfs). See more in [Customizing the Gateway](https://github.com/NEARBuilders/bos-workspace?tab=readme-ov-file#customizing-the-gateway). It can be disabled with the `--no-hot` flag.
 
+## Configuring Ethers
+
+Since [NearSocial/VM v1.3.0](https://github.com/NearSocial/VM/blob/master/CHANGELOG.md#130), the VM has exposed Ethers and ethers in the global scope, as well as a Web3Connect custom element for bringing up wallet connect.
+
+There already exists support for most common EVM chains, but to add a new chain to your web3 provider, find your chain on [ChainList](https://chainlist.org/) and then add the necessary details to the [chains.json](./src/utils/web4/chains.json). Be sure to include a testnet configuration as well. This will enable you to connect to the specified chain when using `<Web3Connect />` within a widget running inside your custom web component.
+
+You can configure the projectId and appMetadata in [ethersProvider.js](./src/utils/web4/ethersProvider.js) as well.
+
+For more information on how to utilize [Ethers.js](https://docs.ethers.org/v6/) in your widgets, see [NEAR for Ethereum developers](https://docs.near.org/tutorials/near-components/ethers-js). To see a list of existing EVM components built by the community, see [here](https://near.social/hackerhouse.near/widget/EVMComponents).
+
 ## Landing page for SEO friendly URLs
 
 Normally, the URL path decides which component to be loaded. The path `/devhub.near/widget/app` will load the `app` component from the `devhub.near` account. DevHub is an example of a collection of many components that are part of a big app, and the `app` component is just a proxy to components that represent a `page`. Which page to display is controlled by the `page` query string parameter, which translates to `props.page` in the component.
@@ -179,15 +196,22 @@ We can obtain this by setting the `src` attribute pointing to the component we w
 An example of this can be found in [router.spec.js](./playwright-tests/tests/router.spec.js).
 
 ```javascript
-test("for supporting SEO friendly URLs, it should be possible to set initialProps and src widget from any path", async ({ page }) => {
+test("for supporting SEO friendly URLs, it should be possible to set initialProps and src widget from any path", async ({
+  page,
+}) => {
   await page.goto("/community/webassemblymusic");
   await page.evaluate(() => {
-    const viewerElement = document.querySelector('near-social-viewer');
+    const viewerElement = document.querySelector("near-social-viewer");
     viewerElement.setAttribute("src", "devhub.near/widget/app");
     const pathparts = location.pathname.split("/");
-    viewerElement.setAttribute("initialProps", JSON.stringify({ page: pathparts[1], handle: pathparts[2] }));
+    viewerElement.setAttribute(
+      "initialProps",
+      JSON.stringify({ page: pathparts[1], handle: pathparts[2] })
+    );
   });
-  await expect(await page.getByText('WebAssembly Music', { exact: true })).toBeVisible();
+  await expect(
+    await page.getByText("WebAssembly Music", { exact: true })
+  ).toBeVisible();
 });
 ```
 
@@ -197,7 +221,7 @@ Here you can see that the viewer element `src` attribute is set to use the `devh
 
 For testing how the library would work when used from CDN, you may publish it to NEARFS.
 
- ```bash
+```bash
 yarn nearfs:publish-library:create:car
 ```
 
