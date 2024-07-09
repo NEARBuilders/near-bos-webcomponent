@@ -14,7 +14,7 @@ import {
 } from "react-router-dom";
 
 import { BosWorkspaceProvider, useRedirectMap } from "./utils/bos-workspace";
-import { EthersProvider } from "./utils/web3/ethersProvider";
+import { EthersProvider } from "./utils/web3/ethers";
 
 function Viewer({ widgetSrc, code, initialProps }) {
   const location = useLocation();
