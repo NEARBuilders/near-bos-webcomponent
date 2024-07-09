@@ -118,7 +118,6 @@ describe("hot-reload", () => {
       // wait for socket start
       await new Promise((resolve) => {
         httpServer.listen(PORT, HOST, () => {
-          console.log(`Socket.IO server running at http://${HOST}:${PORT}/`);
           resolve();
         });
       });

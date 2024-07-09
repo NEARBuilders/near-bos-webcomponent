@@ -1,16 +1,11 @@
 import "App.scss";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/js/bootstrap.bundle";
-import { Widget } from "near-social-vm";
 import React, { useEffect, useMemo } from "react";
 import "react-bootstrap-typeahead/css/Typeahead.css";
 
 import { isValidAttribute } from "dompurify";
-import {
-  useAccount,
-  useInitNear,
-  Widget,
-} from "near-social-vm";
+import { useAccount, useInitNear, Widget } from "near-social-vm";
 import {
   createBrowserRouter,
   Link,
@@ -18,8 +13,8 @@ import {
   useLocation,
 } from "react-router-dom";
 
-import { useRedirectMap, BosWorkspaceProvider } from "./utils/bos-workspace";
-import { EthersProvider } from "./utils/web3/ethersProvider"
+import { BosWorkspaceProvider, useRedirectMap } from "./utils/bos-workspace";
+import { EthersProvider } from "./utils/web3/ethersProvider";
 
 function Viewer({ widgetSrc, code, initialProps }) {
   const location = useLocation();
@@ -55,15 +50,8 @@ function Viewer({ widgetSrc, code, initialProps }) {
 }
 
 function App(props) {
-  const {
-    src,
-    code,
-    initialProps,
-    rpc,
-    network,
-    selectorPromise,
-		config,
-  } = props;
+  const { src, code, initialProps, rpc, network, selectorPromise, config } =
+    props;
 
   const { initNear } = useInitNear();
 
@@ -109,15 +97,11 @@ function App(props) {
       path: "/*",
       element: (
         <EthersProvider>
-          <Viewer
-            widgetSrc={src}
-            code={code}
-            initialProps={initialProps}
-          />
+          <Viewer widgetSrc={src} code={code} initialProps={initialProps} />
         </EthersProvider>
       ),
     },
-  ])
+  ]);
 
   return (
     <BosWorkspaceProvider config={config?.dev}>

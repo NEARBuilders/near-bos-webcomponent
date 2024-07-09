@@ -44,7 +44,7 @@ class NearSocialViewerElement extends HTMLElement {
             this.renderRoot();
         }
     }
-  }
+}
 
 
 customElements.define('near-social-viewer', NearSocialViewerElement);
