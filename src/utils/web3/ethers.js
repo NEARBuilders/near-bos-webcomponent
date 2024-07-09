@@ -24,7 +24,7 @@ const injected = injectedModule();
 // initialize Onboard
 const onboard = init({
   wallets: [injected, walletConnect, ledger],
-	chains,
+  chains,
   appMetadata: {
     name: "NEAR Social",
     description: "NEAR Social",
@@ -83,12 +83,12 @@ const useEthersProviderContext = singletonHook(
   }
 );
 
-export const EthersProvider = ({children}) => {
+export const EthersProvider = ({ children }) => {
   const ethersProviderContext = useEthersProviderContext();
 
-	return (
-		<EthersProviderContext.Provider value={ethersProviderContext}>
-			{children}
-		</EthersProviderContext.Provider>
-	)
-}
+  return (
+    <EthersProviderContext.Provider value={ethersProviderContext}>
+      {children}
+    </EthersProviderContext.Provider>
+  );
+};

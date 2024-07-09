@@ -5,11 +5,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import "react-bootstrap-typeahead/css/Typeahead.css";
 
 import { isValidAttribute } from "dompurify";
-import {
-  useAccount,
-  useInitNear,
-  Widget,
-} from "near-social-vm";
+import { useAccount, useInitNear, Widget } from "near-social-vm";
 import {
   createBrowserRouter,
   Link,
@@ -18,7 +14,7 @@ import {
 } from "react-router-dom";
 import Wallet from "./auth/Wallet";
 
-import { EthersProvider } from "./utils/web3/ethersProvider"
+import { EthersProvider } from "./utils/web3/ethers";
 
 const SESSION_STORAGE_REDIRECT_MAP_KEY = "nearSocialVMredirectMap";
 
@@ -119,11 +115,7 @@ function App(props) {
       path: "/*",
       element: (
         <EthersProvider>
-          <Viewer
-            widgetSrc={src}
-            code={code}
-            initialProps={initialProps}
-          />
+          <Viewer widgetSrc={src} code={code} initialProps={initialProps} />
         </EthersProvider>
       ),
     },
