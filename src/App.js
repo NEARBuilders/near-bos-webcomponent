@@ -71,7 +71,7 @@ function Viewer({ widgetSrc, code, initialProps }) {
 }
 
 function App(props) {
-  const { src, code, initialProps, rpc, network, selectorPromise } = props;
+  const { src, code, initialProps, rpc, network, selectorPromise, customElements } = props;
   const { initNear } = useInitNear();
 
   useAccount();
@@ -90,6 +90,7 @@ function App(props) {
           }
           return <Link {...props} />;
         },
+        ...customElements
       },
       features: {
         enableComponentSrcDataKey: true,
