@@ -4,7 +4,7 @@ import "bootstrap/dist/js/bootstrap.bundle";
 import React, { useEffect, useMemo, useState } from "react";
 import "react-bootstrap-typeahead/css/Typeahead.css";
 
-import { sanitizeUrl } from "@braintree/sanitize-url";
+import { isValidAttribute } from "dompurify";
 import {
   useAccount,
   useInitNear,
@@ -87,7 +87,11 @@ function App(props) {
             delete props.href;
           }
           if (props.to) {
-            props.to = sanitizeUrl(props.to);
+            props.to =
+              typeof props.to === "string" &&
+              isValidAttribute("a", "href", props.to)
+                ? props.to
+                : "about:blank";
           }
           return <Link {...props} />;
         },
