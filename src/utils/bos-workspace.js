@@ -3,28 +3,37 @@ import io from "socket.io-client";
 
 const SESSION_STORAGE_REDIRECT_MAP_KEY = "nearSocialVMredirectMap";
 
-const HotReloadContext = createContext(false);
+const defaultContext = {
+  hotreload: {
+    enabled: false,
+  },
+};
 
-export const RedirectMapProvider = ({ enableHotReload, children }) => {
+const BosWorkspaceContext = createContext(defaultContext);
+
+export const BosWorkspaceProvider = ({ config, children }) => {
   return (
-    <HotReloadContext.Provider value={enableHotReload}>
+    <BosWorkspaceContext.Provider value={config || defaultContext}>
       {children}
-    </HotReloadContext.Provider>
+    </BosWorkspaceContext.Provider>
   );
 };
 
-export function useRedirectMap(wss) {
-  const enableHotReload = useContext(HotReloadContext);
+export function useRedirectMap() {
+  const { hotreload } = useContext(BosWorkspaceContext);
 
-  const [hotReload, setHotReload] = useState(enableHotReload);
+  const [hotReloadEnabled, setHotReloadEnabled] = useState(hotreload?.enabled);
   const [devJson, setDevJson] = useState({});
 
   useEffect(() => {
+    setHotReloadEnabled(hotreload?.enabled);
+  }, [hotreload]);
+
+  useEffect(() => {
     (async () => {
-      if (hotReload) {
-        const socket = io(wss || `ws://${window.location.host}`, {
+      if (hotReloadEnabled) {
+        const socket = io(hotreload?.wss || `ws://${window.location.host}`, {
           reconnectionAttempts: 1, // Limit reconnection attempts
-					// transports: ['websocket'],
         });
 
         socket.on("fileChange", (d) => {
@@ -34,9 +43,9 @@ export function useRedirectMap(wss) {
 
         socket.on("connect_error", (error) => {
           console.warn("WebSocket connection error. Switching to HTTP.");
-					console.warn(error)
+          console.warn(error);
 
-          setHotReload(false);
+          setHotReloadEnabled(false);
           socket.disconnect();
         });
 
@@ -58,7 +67,7 @@ export function useRedirectMap(wss) {
         }
       }
     })();
-  }, [enableHotReload]);
+  }, [hotReloadEnabled]);
 
   return devJson;
 }

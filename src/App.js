@@ -14,9 +14,9 @@ import {
   useLocation,
 } from "react-router-dom";
 
-import { useRedirectMap, RedirectMapProvider } from "./utils/redirectMap";
+import { useRedirectMap, BosWorkspaceProvider } from "./utils/bos-workspace";
 
-function Viewer({ widgetSrc, code, initialProps, config }) {
+function Viewer({ widgetSrc, code, initialProps }) {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
 
@@ -35,7 +35,7 @@ function Viewer({ widgetSrc, code, initialProps, config }) {
     return pathSrc;
   }, [widgetSrc, path]);
 
-  const redirectMap = useRedirectMap(config?.wss || null);
+  const redirectMap = useRedirectMap();
 
   return (
     <>
@@ -57,7 +57,7 @@ function App(props) {
     rpc,
     network,
     selectorPromise,
-		hotReload,
+		config,
   } = props;
 
   const { initNear } = useInitNear();
@@ -65,7 +65,7 @@ function App(props) {
   useAccount();
 
   useEffect(() => {
-    const config = {
+    const VM = {
       networkId: network || "mainnet",
       selector: selectorPromise,
       customElements: {
@@ -85,30 +85,29 @@ function App(props) {
       },
       config: {
         defaultFinality: undefined,
-				hotReload,
       },
     };
 
     if (rpc) {
-      config.config.nodeUrl = rpc;
+      VM.config.nodeUrl = rpc;
     }
 
-    initNear && initNear(config);
+    initNear && initNear(VM);
   }, [initNear, rpc]);
 
   const router = createBrowserRouter([
     {
       path: "/*",
       element: (
-        <Viewer widgetSrc={src} code={code} initialProps={initialProps} config={hotReload} />
+        <Viewer widgetSrc={src} code={code} initialProps={initialProps} />
       ),
     },
   ])
 
   return (
-    <RedirectMapProvider enableHotReload={hotReload?.enabled || false}>
+    <BosWorkspaceProvider config={config?.dev}>
       <RouterProvider router={router} />
-    </RedirectMapProvider>
+    </BosWorkspaceProvider>
   );
 }
 

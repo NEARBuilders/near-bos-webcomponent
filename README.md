@@ -52,12 +52,28 @@ The `near-social-viewer` web component supports several attributes:
 
 * `src`: the src of the widget to render (e.g. `devs.near/widget/default`)
 * `code`: raw, valid, stringified widget code to render (e.g. `"return <p>hello world</p>"`)
-* `initialprops`: initial properties to be passed to the rendered widget.
+* `initialprops`: initial properties to be passed to the rendered widget
 * `rpc`: rpc url to use for requests within the VM
 * `network`: network to connect to for rpc requests & wallet connection
-* `enablehotreload`: option to connect to local web socket server for live redirect map changes
+* `config`: options to modify the underlying VM or usage with devtools, see available [configurations](#configuration-options)
 
-## Configuring VM Custom Elements
+## Configuration Options
+
+To support specific features of the VM or an accompanying development server, provide a configuration following this structure:
+
+```jsonc
+{
+  "dev": { 
+    // Configuration options dedicated to the development server
+    "hotreload": { 
+      "enabled": boolean, // Determines if hot reload is enabled (e.g., true)
+      "wss": string // WebSocket server URL to connect to. Optional. Defaults to `ws://${window.location.host}` (e.g., "ws://localhost:3001")
+    }
+  }
+}
+```
+
+## Adding VM Custom Elements
 
 Since [NearSocial/VM v2.1.0](https://github.com/NearSocial/VM/blob/master/CHANGELOG.md#210), a gateway can register custom elements where the key is the name of the element, and the value is a function that returns a React component. For example:
 

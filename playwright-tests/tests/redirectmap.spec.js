@@ -1,7 +1,7 @@
 import { describe, expect, test } from "@playwright/test";
-import { waitForSelectorToBeVisible } from "../testUtils";
-import { Server } from "socket.io";
 import http from 'http';
+import { Server } from "socket.io";
+import { waitForSelectorToBeVisible } from "../testUtils";
 
 
 describe("bos-loader-url", () => {
@@ -51,12 +51,15 @@ describe("session-storage", () => {
 });
 
 describe("hot-reload", () => {
-  test("should trigger api request to */socket.io/* if 'enablehotreload' is true", async ({
+
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/");
+  });
+
+  test("should trigger api request to */socket.io/* if hot reload is enabled", async ({
     page,
   }) => {
     let websocketCount = 0;
-
-    await page.goto("/");
 
     await page.route("**/socket.io/*", (route) => {
       websocketCount++;
@@ -64,7 +67,7 @@ describe("hot-reload", () => {
     });
 
     await page.evaluate(() => {
-      document.body.innerHTML = `<near-social-viewer src="neardevs.testnet/widget/default" hotreload='{"enabled": true, "wss": "ws://localhost:3001"}'></near-social-viewer>`;
+      document.body.innerHTML = `<near-social-viewer src="neardevs.testnet/widget/default" config='{"dev": { "hotreload": { "enabled": true } } }'></near-social-viewer>`;
     });
 
     await waitForSelectorToBeVisible(page, "near-social-viewer");
@@ -72,12 +75,10 @@ describe("hot-reload", () => {
     expect(websocketCount).toBeGreaterThan(0);
   });
 
-  test("should not trigger api request to */socket.io/* if 'enablehotreload' is false", async ({
+  test("should not trigger api request to */socket.io/* if hot reload is not enabled", async ({
     page,
   }) => {
     let websocketCount = 0;
-
-    await page.goto("/");
 
     await page.route("**/socket.io/*", (route) => {
       websocketCount++;
@@ -92,134 +93,99 @@ describe("hot-reload", () => {
 
     expect(websocketCount).toEqual(0);
   });
-});
 
-
-describe("hot-reload-file", () => {
- const redirectMap = {"anybody.near/widget/test": { code: "return <p id='hello-world'>Hello world</p>;" }}
- const redirectMapGoodbye = {"anybody.near/widget/test": { code: "return <p>Goodbye world</p>;" }}
-
-	test("enable hot reload", async ({ page }) => {
-		await page.goto("/");
-	
-		// Verify the viewer is visible
-		await waitForSelectorToBeVisible(page, "near-social-viewer");
-	
-		await page.evaluate(() => {
-			const viewer = document.querySelector("near-social-viewer");
-			viewer.setAttribute("src", "anybody.near/widget/test"); // this code does not exist
-		});
-	
-		await page.waitForTimeout(3000);
-		
-		// Verify error, code not found
-		const errMsg = await page.getByText("is not found");
-	
-		expect(await errMsg.isVisible()).toBe(true);
-	
-		// Turn on hot reload
-		// Set attribute enablehotreload to true
-		await page.evaluate(() => {
-			const viewer = document.querySelector("near-social-viewer");
-			viewer.setAttribute("hotreload", '{"enabled": true, "wss": "ws://localhost:3001"}');
-		});
-	
-		// Simulate WebSocket message for initial code
-		await page.evaluate((code) => {
-			const event = new CustomEvent('fileChange', { detail: JSON.stringify(code) });
-			window.dispatchEvent(event);
-		}, redirectMap);
-	
-		await page.waitForTimeout(3000);
-		// Verify that the code is now found
-		// We should see "Hello world"
-		const helloWorld = await page.getByText("Hello world");
-		expect(await helloWorld.isVisible()).toBe(true);
-	
-		// Simulate WebSocket message for updated code
-		await page.evaluate((code) => {
-			const event = new CustomEvent('fileChange', { detail: JSON.stringify(code) });
-			window.dispatchEvent(event);
-		}, redirectMapGoodbye);
-
-		await page.waitForTimeout(3000);
-	
-		// Verify "Goodbye world" is visible
-		const goodbyeWorld = await page.getByText("Goodbye world");
-
-		expect(await goodbyeWorld.isVisible()).toBe(true);
-	});
-	});
-
-describe("hot-reload-file-with-socket", () => {
-  let io, httpServer;
-  const PORT = 3001;
-  const HOST = "localhost";
-
-  test.beforeAll(async () => {
-    httpServer = http.createServer();
-    io = new Server(httpServer, {
-      cors: {
-        origin: "http://localhost:3000",
-        methods: ["GET", "POST"],
-      },
-    });
-
-    const redirectMap = {
-      "anybody.near/widget/test": {
-        code: "return <p id='hello-world'>Hello world</p>;",
-      },
-    };
-
-    io.on("connection", (socket) => {
-      io.emit("fileChange", redirectMap);
-    });
-
-    // wait for socket start
-    await new Promise((resolve) => {
-      httpServer.listen(PORT, HOST, () => {
-        console.log(`Socket.IO server running at http://${HOST}:${PORT}/`);
-        resolve();
+  describe("with running socket server", () => {
+    let io, httpServer;
+    const PORT = 3001;
+    let HOST = "localhost";
+    
+    test.beforeAll(async () => {
+      httpServer = http.createServer();
+      
+      io = new Server(httpServer, {
+        cors: {
+          origin: `http://${HOST}:3000`,
+          methods: ["GET", "POST"],
+        },
       });
+  
+      io.on("connection", () => {
+        io.emit("fileChange", {
+          "anybody.near/widget/test": {
+            code: "return <p>hello world</p>;",
+          },
+        });
+      });
+  
+      // wait for socket start
+      await new Promise((resolve) => {
+        httpServer.listen(PORT, HOST, () => {
+          console.log(`Socket.IO server running at http://${HOST}:${PORT}/`);
+          resolve();
+        });
+      });
+      
     });
-  });
-  test("enable hot reload", async ({ page }) => {
-    await page.goto("/");
+    
+    test("should show local redirect map and react to changes", async ({ page }) => {
+      // Verify the viewer is visible
+      await waitForSelectorToBeVisible(page, "near-social-viewer");
+  
+      await page.evaluate(() => {
+        const viewer = document.querySelector("near-social-viewer");
+        viewer.setAttribute("src", "anybody.near/widget/test"); // this code does not exist
+      });
+  
+      await page.waitForSelector(
+        'div.alert.alert-danger:has-text("is not found")'
+      );
+  
+      // Verify error
+      const errMsg = await page.locator(
+        'div.alert.alert-danger:has-text("is not found")'
+      );
+  
+      expect(await errMsg.isVisible()).toBe(true);
 
-    // Verify the viewer is visible
-    await waitForSelectorToBeVisible(page, "near-social-viewer");
+      let websocketCount = 0;
 
-    await page.evaluate(() => {
-      const viewer = document.querySelector("near-social-viewer");
-      viewer.setAttribute("src", "anybody.near/widget/test"); // this code does not exist
+      await page.route("**/socket.io/*", (route) => {
+        websocketCount++;
+        route.continue();
+      });
+
+      const config = {"dev": { "hotreload": { "enabled": true, "wss": `ws://${HOST}:${PORT}`} } };
+  
+      // Enable hot reload
+      await page.evaluate(({ config }) => {
+        const viewer = document.querySelector("near-social-viewer");
+        viewer.setAttribute("config", JSON.stringify(config));
+      }, { config });
+  
+      await page.waitForSelector("near-social-viewer");
+
+      // Get the value of the config attribute
+      const actualConfig = await page.evaluate(() => {
+        const viewer = document.querySelector("near-social-viewer");
+        return viewer.getAttribute("config");
+      });
+
+      // Assert it is set and equals custom value
+      expect(actualConfig).toBe(JSON.stringify(config));
+
+      // Assert web socket was hit
+      expect(websocketCount).toBeGreaterThan(0);
+
+      await expect(await page.getByText("hello world")).toBeVisible();
+
+      io.emit("fileChange", {"anybody.near/widget/test": { code: "return <p>goodbye world</p>;" }});
+
+      await expect(await page.getByText("goodbye world")).toBeVisible();
     });
-
-    await page.waitForSelector(
-      'div.alert.alert-danger:has-text("is not found")'
-    );
-
-    // Verify error
-    const errMsg = await page.locator(
-      'div.alert.alert-danger:has-text("is not found")'
-    );
-
-    expect(await errMsg.isVisible()).toBe(true);
-
-    await page.evaluate(() => {
-      document.body.innerHTML = `<near-social-viewer src="anybody.near/widget/test" hotreload='{"enabled": true, "wss": "ws://localhost:3001"}'></near-social-viewer>`;
+  
+    test.afterAll(() => {
+      io.close();
+      httpServer.close();
     });
-
-    await page.waitForSelector("near-social-viewer");
-
-    const paragraph = page.locator("near-social-viewer >> p#hello-world");
-    await paragraph.waitFor({ state: "visible", timeout: 5000 });
-
-    const paragraphContent = await paragraph.textContent();
-    expect(paragraphContent).toBe("Hello world");
-  });
-
-  test.afterAll(() => {
-    io.close();
-    httpServer.close();
   });
 });
