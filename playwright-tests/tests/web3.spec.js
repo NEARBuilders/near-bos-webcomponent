@@ -21,9 +21,13 @@ test("should be possible to interact with web3 widgets", async ({ page }) => {
     "body > near-social-viewer > div > div > div > div.LidoStakeForm"
   );
 
-  const Web3ConnectButton = await page.getByRole("button", { name: "Connect with Web3" });
+  const Web3ConnectButton = page.getByRole("button", {
+    name: "Connect with Web3",
+  });
 
   await Web3ConnectButton.click();
 
-  await expect(await page.getByRole("button", { name: "Connecting"})).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Connecting" })
+  ).toBeVisible();
 });
