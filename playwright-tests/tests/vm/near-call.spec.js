@@ -183,7 +183,9 @@ describe("Near.call", () => {
           .locator("div.modal-body code")
           .allInnerTexts();
         const modalBody = await page.locator(".modal-body");
-        const transactionNumbers = await modalBody.locator("h4").allInnerTexts();
+        const transactionNumbers = await modalBody
+          .locator("h4")
+          .allInnerTexts();
         const values = await modalBody
           .locator(".font-monospace")
           .allInnerTexts();
@@ -192,7 +194,10 @@ describe("Near.call", () => {
 
         await pauseIfVideoRecording(page);
 
-        expect(transactionNumbers).toEqual(["Transaction #1", "Transaction #2"]);
+        expect(transactionNumbers).toEqual([
+          "Transaction #1",
+          "Transaction #2",
+        ]);
         expect(values).toEqual([
           "hello.near-examples.near",
           "set_greeting",

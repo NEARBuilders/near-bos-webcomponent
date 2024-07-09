@@ -148,7 +148,7 @@ Since [NearSocial/VM v1.3.0](https://github.com/NearSocial/VM/blob/master/CHANGE
 
 There already exists support for most common EVM chains, but to add a new chain to your web3 provider, find your chain on [ChainList](https://chainlist.org/) and then add the necessary details to the [chains.json](./src/utils/web4/chains.json). Be sure to include a testnet configuration as well. This will enable you to connect to the specified chain when using `<Web3Connect />` within a widget running inside your custom web component.
 
-You can configure the projectId and appMetadata in [ethersProvider.js](./src/utils/web4/ethersProvider.js) as well.
+You can configure the projectId and appMetadata in [utils/web4/ethers.js](./src/utils/web3/ethers.js) as well.
 
 For more information on how to utilize [Ethers.js](https://docs.ethers.org/v6/) in your widgets, see [NEAR for Ethereum developers](https://docs.near.org/tutorials/near-components/ethers-js). To see a list of existing EVM components built by the community, see [here](https://near.social/hackerhouse.near/widget/EVMComponents).
 
