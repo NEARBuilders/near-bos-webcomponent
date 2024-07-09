@@ -1,6 +1,6 @@
+import { setupModal } from "@near-wallet-selector/modal-ui-js";
 import { useNear } from "near-social-vm";
 import { useCallback } from "react";
-import { setupModal } from "@near-wallet-selector/modal-ui-js";
 
 function Wallet({ provides, config }) {
   const near = useNear();
@@ -11,10 +11,7 @@ function Wallet({ provides, config }) {
   }, [near]);
 
   const signIn = useCallback(async () => {
-    const modal = setupModal(
-      await near.selector,
-      config
-    );
+    const modal = setupModal(await near.selector, config);
     modal.show();
   }, [near]);
 
