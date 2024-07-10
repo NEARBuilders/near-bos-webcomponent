@@ -1,7 +1,7 @@
 import "App.scss";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/js/bootstrap.bundle";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import "react-bootstrap-typeahead/css/Typeahead.css";
 
 import { isValidAttribute } from "dompurify";
@@ -13,9 +13,8 @@ import {
   useLocation,
 } from "react-router-dom";
 
+import { BosWorkspaceProvider, useRedirectMap } from "./utils/bos-workspace";
 import { EthersProvider } from "./utils/web3/ethers";
-
-const SESSION_STORAGE_REDIRECT_MAP_KEY = "nearSocialVMredirectMap";
 
 function Viewer({ widgetSrc, code, initialProps }) {
   const location = useLocation();
@@ -36,23 +35,7 @@ function Viewer({ widgetSrc, code, initialProps }) {
     return pathSrc;
   }, [widgetSrc, path]);
 
-  const [redirectMap, setRedirectMap] = useState(null);
-  useEffect(() => {
-    (async () => {
-      const localStorageFlags = JSON.parse(localStorage.getItem("flags"));
-
-      if (localStorageFlags?.bosLoaderUrl) {
-        setRedirectMap(
-          (await fetch(localStorageFlags.bosLoaderUrl).then((r) => r.json()))
-            .components
-        );
-      } else {
-        setRedirectMap(
-          JSON.parse(sessionStorage.getItem(SESSION_STORAGE_REDIRECT_MAP_KEY))
-        );
-      }
-    })();
-  }, []);
+  const redirectMap = useRedirectMap();
 
   return (
     <>
@@ -67,12 +50,15 @@ function Viewer({ widgetSrc, code, initialProps }) {
 }
 
 function App(props) {
-  const { src, code, initialProps, rpc, network, selectorPromise } = props;
+  const { src, code, initialProps, rpc, network, selectorPromise, config } =
+    props;
+
   const { initNear } = useInitNear();
 
   useAccount();
+
   useEffect(() => {
-    const config = {
+    const VM = {
       networkId: network || "mainnet",
       selector: selectorPromise,
       customElements: {
@@ -100,10 +86,10 @@ function App(props) {
     };
 
     if (rpc) {
-      config.config.nodeUrl = rpc;
+      VM.config.nodeUrl = rpc;
     }
 
-    initNear && initNear(config);
+    initNear && initNear(VM);
   }, [initNear, rpc]);
 
   const router = createBrowserRouter([
@@ -117,7 +103,11 @@ function App(props) {
     },
   ]);
 
-  return <RouterProvider router={router} />;
+  return (
+    <BosWorkspaceProvider config={config?.dev}>
+      <RouterProvider router={router} />
+    </BosWorkspaceProvider>
+  );
 }
 
 export default App;

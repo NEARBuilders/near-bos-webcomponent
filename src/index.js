@@ -1,7 +1,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import "./index.css";
 import App from "./App";
+import "./index.css";
 
 class NearSocialViewerElement extends HTMLElement {
   constructor() {
@@ -27,7 +27,7 @@ class NearSocialViewerElement extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ["src", "code", "initialprops", "rpc", "network"];
+    return ["src", "code", "initialprops", "rpc", "network", "config"];
   }
 
   renderRoot() {
@@ -36,6 +36,7 @@ class NearSocialViewerElement extends HTMLElement {
     const initialProps = this.getAttribute("initialprops");
     const rpc = this.getAttribute("rpc");
     const network = this.getAttribute("network");
+    const config = this.getAttribute("config");
 
     this.reactRoot.render(
       <App
@@ -45,6 +46,7 @@ class NearSocialViewerElement extends HTMLElement {
         rpc={rpc}
         network={network}
         selectorPromise={this.selectorPromise}
+        config={JSON.parse(config)}
       />
     );
   }
