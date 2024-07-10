@@ -78,6 +78,7 @@ function App(props) {
         },
       },
       features: {
+        // enableComponentSrcDataKey: config?.enableComponentSrcDataKey,
         enableComponentSrcDataKey: true,
       },
       config: {

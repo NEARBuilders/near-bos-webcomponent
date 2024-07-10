@@ -38,6 +38,14 @@ class NearSocialViewerElement extends HTMLElement {
     const network = this.getAttribute("network");
     const config = this.getAttribute("config");
 
+		console.log('-- in index.js')
+		console.log('-- config param')
+		console.log(config)
+
+		// const config = '{"enableComponentSrcDataKey": true}'
+
+		// const src="zavodil.near/widget/Lido"
+
     this.reactRoot.render(
       <App
         src={src}
