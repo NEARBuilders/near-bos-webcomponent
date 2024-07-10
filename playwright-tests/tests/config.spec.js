@@ -1,27 +1,47 @@
 import { describe, expect, test } from "@playwright/test";
 import { waitForSelectorToBeVisible } from "../testUtils";
 
-  describe("test data-component attribute", () => {
-    test.beforeEach(async ({ page }) => {
-      await page.goto("/");
+async function setupNearSocialViewer(page, src, config) {
+  await page.evaluate(
+    ({ src, config }) => {
+      document.body.innerHTML = `<near-social-viewer src="${src}" config='${JSON.stringify(config)}'></near-social-viewer>`;
+    },
+    { src, config }
+  );
+}
+
+describe("test data-component attribute", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/");
+  });
+
+  test("by default there will be no data-component attribute", async ({
+    page,
+  }) => {
+    await page.evaluate(() => {
+      const src = "zavodil.near/widget/Lido";
+
+      document.body.innerHTML = `<near-social-viewer src="${src}"></near-social-viewer>`;
     });
 
-    test("test", async ({
-      page,
-    }) => {
-			const src="neardevs.testnet/widget/default"
-			const config = '{"enableComponentSrcDataKey": true}'
+    const dataComponentElements = page.locator("div[data-component]");
+    await expect(dataComponentElements).toHaveCount(0);
+  });
 
-      await page.evaluate(() => {
-				const src="zavodil.near/widget/Lido"
-				// const config = '{"enableComponentSrcDataKey": true}'
-				const config = JSON.stringify({ enableComponentSrcDataKey: true });
-        document.body.innerHTML = `<near-social-viewer src="${src}" config='${config}'}></near-social-viewer>`;
-			});
+  test("with the correct configuration there will be a data-component property in the components", async ({
+    page,
+  }) => {
+    const src = "zavodil.near/widget/Lido";
+    const config = { enableComponentSrcDataKey: true };
 
-			await waitForSelectorToBeVisible(page, 'div[data-component]');
-  		const dataComponentValue = await page.getAttribute('div[data-component]', 'data-component');
-  
-			expect(dataComponentValue).toBe(src);
-    });
+    await setupNearSocialViewer(page, src, config);
+
+    await waitForSelectorToBeVisible(page, "div[data-component]");
+    const dataComponentValue = await page.getAttribute(
+      "div[data-component]",
+      "data-component"
+    );
+
+    expect(dataComponentValue).toBe(src);
+  });
 });
