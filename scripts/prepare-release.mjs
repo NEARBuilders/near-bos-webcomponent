@@ -20,9 +20,14 @@ class ValidationError extends Error {
 function parseArgs() {
   const [signerAccount, signerKey, network = "mainnet"] = process.argv.slice(2);
 
-  if (!signerAccount || !signerKey) {
+  if (!signerAccount) {
+    throw new ValidationError("Missing argument: signer account\n" +
+        "Usage: node release.js <signer account> <signer key> [network]\n\n" +
+      "Please provide the NEAR account to sign for the release.");
+  } 
+  if (!signerKey) {
     console.warn(
-      "Missing arguments: signer account and signer key\n" +
+      "Missing argument: signer key\n" +
         "Usage: node release.js <signer account> <signer key> [network]\n\n" +
         "Will attempt to sign from keychain..."
     );
