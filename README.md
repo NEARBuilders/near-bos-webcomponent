@@ -171,32 +171,6 @@ You can configure the projectId and appMetadata in [utils/web4/ethers.js](./src/
 
 For more information on how to utilize [Ethers.js](https://docs.ethers.org/v6/) in your widgets, see [NEAR for Ethereum developers](https://docs.near.org/tutorials/near-components/ethers-js). To see a list of existing EVM components built by the community, see [here](https://near.social/hackerhouse.near/widget/EVMComponents).
 
-## Running Playwright tests
-
-To be able to run the [playwright](https://playwright.dev) tests, you first need to install the dependencies. You can see how this is done in [.devcontainer/post-create.sh](./.devcontainer/post-create.sh) which is automatically executed when opening this repository in a github codespace.
-
-When the dependencies are set up, you can run the test suite in your terminal:
-
-```bash
-yarn test
-```
-
-To run tests visually in the playwright UI, you can use the following command:
-
-```bash
-yarn test:ui
-```
-
-This will open the playwright UI in a browser, where you can run single tests, and also inspect visually.
-
-If you want to use the playwright UI from a github codespace, you can use this command:
-
-```bash
-yarn test:ui:codespaces
-```
-
-In general it is a good practice, and very helpful for reviewers and users of this project, that all use cases are covered in Playwright tests. Also, when contributing, try to make your tests as simple and clear as possible, so that they serve as examples on how to use the functionality.
-
 ## Landing page for SEO friendly URLs
 
 Normally, the URL path decides which component to be loaded. The path `/devhub.near/widget/app` will load the `app` component from the `devhub.near` account. DevHub is an example of a collection of many components that are part of a big app, and the `app` component is just a proxy to components that represent a `page`. Which page to display is controlled by the `page` query string parameter, which translates to `props.page` in the component.
