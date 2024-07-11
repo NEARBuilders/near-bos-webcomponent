@@ -98,7 +98,7 @@ async function main() {
 
     if (!cid) throw new Error("Failed to extract CID from output");
 
-    console.log(`Extracted CID: ${cid}`);
+    console.log(`CID: ${cid}`);
 
     await runWithSpinner("Uploading CAR file", () =>
       exec("yarn nearfs:publish-library:upload:car", {
@@ -110,7 +110,7 @@ async function main() {
 
     await runWithSpinner("Updating package.json", () => updatePackageJson(cid));
 
-    console.log("Release process completed successfully!");
+    console.log("Release successfully prepared!");
   } catch (error) {
     if (error instanceof ValidationError) {
       console.error(error.message);

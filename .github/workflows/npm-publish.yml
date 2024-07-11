@@ -22,12 +22,15 @@ jobs:
       - run: yarn install
       - name: Run release script
         run: yarn release
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      - name: Commit and push updated package.json
+      - name: Commit and push updated package.json (nearfs cid)
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add package.json
           git commit -m "Update package.json with new CID [skip ci]"
           git push
+      - name: Publish to NPM
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      
