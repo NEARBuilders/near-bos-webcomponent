@@ -1,6 +1,7 @@
 <!-- markdownlint-disable MD014 -->
 <!-- markdownlint-disable MD033 -->
 <!-- markdownlint-disable MD041 -->
+<!-- markdownlint-disable MD029 -->
 
 <div align="center">
 
@@ -65,6 +66,38 @@ To support specific features of the VM or an accompanying development server, pr
 }
 ```
 
+## Local Widget Development
+
+There are several strategies for accessing local widget code during development.
+
+### Proxy RPC
+
+The recommended, least invasive strategy is to provide a custom RPC url that proxies requests for widget code. Widget code is stored in the [socialdb](https://github.com/NearSocial/social-db), and so it involves an RPC request to get the stringified code. We can proxy this request to use local data instead.
+
+Either build a custom proxy server, or use [bos-workspace](https://github.com/nearbuilders/bos-workspace) which provides a proxy by default and will automatically inject it to the `rpc` attribute if you provide the path to your web component's dist, or a link to it stored on [NEARFS](https://github.com/vgrichina/nearfs). See more in [Customizing the Gateway](https://github.com/NEARBuilders/bos-workspace?tab=readme-ov-file#customizing-the-gateway).
+
+### Redirect Map
+
+The NEAR Social VM supports a feature called `redirectMap` which allows you to load widgets from other sources than the on-chain social db. An example redirect map can look like this:
+
+```json
+{ "devhub.near/widget/devhub.page.feed": { "code": "return 'hello';" } }
+```
+
+The result of applying this redirect map is that the widget `devhub.near/widget/devhub.page.feed` will be replaced by a string that says `hello`.
+
+The `near-social-viewer` web component supports loading a redirect map from the session storage, which is useful when using the viewer for local development or test pipelines.
+
+By setting the session storage key `nearSocialVMredirectMap` to the JSON value of the redirect map, the web component will pass this to the VM Widget config.
+
+Another option is to use the same mechanism as [near-discovery](https://github.com/near/near-discovery/), where you can load components from a locally hosted [bos-loader](https://github.com/near/bos-loader) by adding the key `flags` to localStorage with the value `{"bosLoaderUrl": "http://127.0.0.1:3030" }`. There also exists an input at [dev.near.org/flags](https://dev.near.org/flags) to input this url.
+
+### Hot Reload
+
+The above strategies require changes to be reflected either on page reload, or from a fresh rpc request. For faster updates, there is an option in `config` to enable hot reload via dev.hotreload (see [configurations](#configuration-options)). This will try to connect to a web socket server on the same port, or via the provided url, to use redirectMap with most recent data.
+
+This feature works best when accompanied with [bos-workspace](https://github.com/nearbuilders/bos-workspace), which will automatically inject a config to the attribute if you provide the path to your web component's dist, or a link to it stored on [NEARFS](https://github.com/vgrichina/nearfs). See more in [Customizing the Gateway](https://github.com/NEARBuilders/bos-workspace?tab=readme-ov-file#customizing-the-gateway). It can be disabled with the `--no-hot` flag.
+
 ## Setup & Local Development
 
 Initialize repo:
@@ -73,7 +106,7 @@ Initialize repo:
 yarn
 ```
 
-Start development version:
+Start the development version:
 
 ```cmd
 yarn start
@@ -88,7 +121,7 @@ yarn prod
 Serve the production build:
 
 ```cmd
-yarn serve prod
+yarn serve:prod
 ```
 
 ## Adding VM Custom Elements
@@ -128,6 +161,16 @@ bos-workspace dev -g ./path/to/dist
 
 This will start a local dev server using the custom gateway, so you may develop your local widgets through it with access to the custom element.
 
+## Configuring Ethers
+
+Since [NearSocial/VM v1.3.0](https://github.com/NearSocial/VM/blob/master/CHANGELOG.md#130), the VM has exposed Ethers and ethers in the global scope, as well as a Web3Connect custom element for bringing up wallet connect.
+
+There already exists support for most common EVM chains, but to add a new chain to your web3 provider, find your chain on [ChainList](https://chainlist.org/) and then add the necessary details to the [chains.json](./src/utils/web4/chains.json). Be sure to include a testnet configuration as well. This will enable you to connect to the specified chain when using `<Web3Connect />` within a widget running inside your custom web component.
+
+You can configure the projectId and appMetadata in [utils/web4/ethers.js](./src/utils/web3/ethers.js) as well.
+
+For more information on how to utilize [Ethers.js](https://docs.ethers.org/v6/) in your widgets, see [NEAR for Ethereum developers](https://docs.near.org/tutorials/near-components/ethers-js). To see a list of existing EVM components built by the community, see [here](https://near.social/hackerhouse.near/widget/EVMComponents).
+
 ## Running Playwright tests
 
 To be able to run the [playwright](https://playwright.dev) tests, you first need to install the dependencies. You can see how this is done in [.devcontainer/post-create.sh](./.devcontainer/post-create.sh) which is automatically executed when opening this repository in a github codespace.
@@ -153,48 +196,6 @@ yarn test:ui:codespaces
 ```
 
 In general it is a good practice, and very helpful for reviewers and users of this project, that all use cases are covered in Playwright tests. Also, when contributing, try to make your tests as simple and clear as possible, so that they serve as examples on how to use the functionality.
-
-## Local Widget Development
-
-There are several strategies for accessing local widget code during development.
-
-### Proxy RPC
-
-The recommended, least invasive strategy is to provide a custom RPC url that proxies requests for widget code. Widget code is stored in the [socialdb](https://github.com/NearSocial/social-db), and so it involves an RPC request to get the stringified code. We can proxy this request to use our local code instead.
-
-You can build a custom proxy server, or [bos-workspace](https://github.com/nearbuilders/bos-workspace) provides a proxy by default and will automatically inject it to the `rpc` attribute if you provide the path to your web component's dist, or a link to it stored on [NEARFS](https://github.com/vgrichina/nearfs). See more in [Customizing the Gateway](https://github.com/NEARBuilders/bos-workspace?tab=readme-ov-file#customizing-the-gateway).
-
-### Redirect Map
-
-The NEAR social VM supports a feature called `redirectMap` which allows you to load widgets from other sources than the on chain social db. An example redirect map can look like this:
-
-```json
-{ "devhub.near/widget/devhub.page.feed": { "code": "return 'hello';" } }
-```
-
-The result of applying this redirect map is that the widget `devhub.near/widget/devhub.page.feed` will be replaced by a string that says `hello`.
-
-The `near-social-viewer` web component supports loading a redirect map from the session storage, which is useful when using the viewer for local development or test pipelines.
-
-By setting the session storage key `nearSocialVMredirectMap` to the JSON value of the redirect map, the web component will pass this to the VM Widget config.
-
-You can also use the same mechanism as [near-discovery](https://github.com/near/near-discovery/) where you can load components from a locally hosted [bos-loader](https://github.com/near/bos-loader) by adding the key `flags` to localStorage with the value `{"bosLoaderUrl": "http://127.0.0.1:3030" }`.
-
-### Hot Reload
-
-The above strategies require changes to be reflected either on page reload, or from a fresh rpc request. For faster updates, there is an option in `config` to enable hot reload via dev.hotreload (see [configurations](#configuration-options)), which will try to connect to a web socket server on the same port and use redirectMap with most recent data.
-
-This feature works best when accompanied with [bos-workspace](https://github.com/nearbuilders/bos-workspace), which will automatically inject a config to the attribute if you provide the path to your web component's dist, or a link to it stored on [NEARFS](https://github.com/vgrichina/nearfs). See more in [Customizing the Gateway](https://github.com/NEARBuilders/bos-workspace?tab=readme-ov-file#customizing-the-gateway). It can be disabled with the `--no-hot` flag.
-
-## Configuring Ethers
-
-Since [NearSocial/VM v1.3.0](https://github.com/NearSocial/VM/blob/master/CHANGELOG.md#130), the VM has exposed Ethers and ethers in the global scope, as well as a Web3Connect custom element for bringing up wallet connect.
-
-There already exists support for most common EVM chains, but to add a new chain to your web3 provider, find your chain on [ChainList](https://chainlist.org/) and then add the necessary details to the [chains.json](./src/utils/web4/chains.json). Be sure to include a testnet configuration as well. This will enable you to connect to the specified chain when using `<Web3Connect />` within a widget running inside your custom web component.
-
-You can configure the projectId and appMetadata in [utils/web4/ethers.js](./src/utils/web3/ethers.js) as well.
-
-For more information on how to utilize [Ethers.js](https://docs.ethers.org/v6/) in your widgets, see [NEAR for Ethereum developers](https://docs.near.org/tutorials/near-components/ethers-js). To see a list of existing EVM components built by the community, see [here](https://near.social/hackerhouse.near/widget/EVMComponents).
 
 ## Landing page for SEO friendly URLs
 
