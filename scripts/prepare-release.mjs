@@ -84,7 +84,7 @@ async function main() {
   try {
     const { signerAccount, signerKey, network } = parseArgs();
 
-    console.log("Starting release process...");
+    console.log("Preparing a release...");
 
     await runWithSpinner("Building production version", () =>
       exec("yarn prod")
@@ -110,7 +110,7 @@ async function main() {
 
     await runWithSpinner("Updating package.json", () => updatePackageJson(cid));
 
-    console.log("Release successfully prepared!");
+    console.log("Release prepared successfully!");
   } catch (error) {
     if (error instanceof ValidationError) {
       console.error(error.message);
