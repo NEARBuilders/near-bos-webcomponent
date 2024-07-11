@@ -117,5 +117,8 @@
     "webpack-dev-server": "^4.1.0",
     "webpack-manifest-plugin": "^5.0.0",
     "webpack-merge": "^5.8.0"
+  },
+  "nearfs": {
+    "cid": "bafybeiftqwg2qdfhjwuxt5cjvvsxflp6ghhwgz5db3i4tqipocvyzhn2bq"
   }
 }
