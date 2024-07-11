@@ -1,33 +1,71 @@
-# NEAR BOS Web Component ( custom element )
+<!-- markdownlint-disable MD014 -->
+<!-- markdownlint-disable MD033 -->
+<!-- markdownlint-disable MD041 -->
 
-This is a Proof of Concept of embedding a NEAR BOS widget into any web application as a Web Component / Custom element.
+<div align="center">
 
-Just load react production react bundles into your index.html as shown below, and use the `near-social-viewer` custom element to embed the BOS widget.
+  <h1>near bos web component</h1>
+
+  <p>
+    <strong>Easily embed a <a href="https://near.social" target="_blank">near social widget</a> into any web app and deploy to <a href="https://web4.near.page/" target="_blank">web4</a>.</strong>
+  </p>
+
+</div>
+
+`near-social-viewer` is a [web component (custom element)](https://developer.mozilla.org/en-US/docs/Web/API/Web_components) that implements the [near-social-vm](https://github.com/NearSocial/VM) for rendering code stored on-chain in the [SocialDB](https://github.com/NearSocial/social-db) smart contract (social.near). It is the simplest way to create your own [near social viewer](https://github.com/NearSocial/viewer) and it is the easiest method for embedding [Widgets](https://thewiki.near.page/near.social_widgets) into any web application.
+
+## Usage
+
+<details open>
+  <summary>Via CDN</summary>
+
+Include the following script tags in your HTML:
 
 ```html
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Near social</title>
-    <script
-      defer="defer"
-      src="/runtime.REPLACE_WITH_BUNDLE_HASH.bundle.js"
-    ></script>
-    <script
-      defer="defer"
-      src="/main.REPLACE_WITH_BUNDLE_HASH.bundle.js"
-    ></script>
-  </head>
-  <body>
-    <h1>NEAR BOS embeddable custom element</h1>
-    <near-social-viewer></near-social-viewer>
-  </body>
-</html>
+<script src="https://cdn.jsdelivr.net/npm/near-bos-webcomponent@latest/dist/runtime.REPLACE_WITH_BUNDLE_HASH.bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/near-bos-webcomponent@latest/dist/main.REPLACE_WITH_BUNDLE_HASH.bundle.js"></script>
 ```
 
-## Setup & Development
+Be sure to replace "REPLACE_WITH_BUNDLE_HASH" with the respective hash, which can be found via the asset-manifest:
+
+<https://cdn.jsdelivr.net/npm/near-bos-webcomponent@latest/dist/asset-manifest.json>
+
+</details>
+
+Once included, you can use the web component in your HTML:
+
+```html
+<near-social-viewer src="mob.near/widget/N" initialprops='{"hashtag": "build"}' />
+```
+
+## Attributes
+
+The web component supports several attributes:
+
+* `src`: the src of the widget to render (e.g. `devs.near/widget/default`)
+* `code`: raw, valid, stringified widget code to render (e.g. `"return <p>hello world</p>"`)
+* `initialprops`: initial properties to be passed to the rendered widget
+* `rpc`: rpc url to use for requests within the VM
+* `network`: network to connect to for rpc requests & wallet connection
+* `config`: options to modify the underlying VM or usage with devtools, see available [configurations](#configuration-options)
+
+## Configuration Options
+
+To support specific features of the VM or an accompanying development server, provide a configuration following this structure:
+
+```jsonc
+{
+  "dev": { 
+    // Configuration options dedicated to the development server
+    "hotreload": { 
+      "enabled": boolean, // Determines if hot reload is enabled (e.g., true)
+      "wss": string // WebSocket server URL to connect to. Optional. Defaults to `ws://${window.location.host}` (e.g., "ws://localhost:3001")
+    }
+  }
+}
+```
+
+## Setup & Local Development
 
 Initialize repo:
 
@@ -51,33 +89,6 @@ Serve the production build:
 
 ```cmd
 yarn serve prod
-```
-
-## Attributes
-
-The `near-social-viewer` web component supports several attributes:
-
-* `src`: the src of the widget to render (e.g. `devs.near/widget/default`)
-* `code`: raw, valid, stringified widget code to render (e.g. `"return <p>hello world</p>"`)
-* `initialprops`: initial properties to be passed to the rendered widget
-* `rpc`: rpc url to use for requests within the VM
-* `network`: network to connect to for rpc requests & wallet connection
-* `config`: options to modify the underlying VM or usage with devtools, see available [configurations](#configuration-options)
-
-## Configuration Options
-
-To support specific features of the VM or an accompanying development server, provide a configuration following this structure:
-
-```jsonc
-{
-  "dev": { 
-    // Configuration options dedicated to the development server
-    "hotreload": { 
-      "enabled": boolean, // Determines if hot reload is enabled (e.g., true)
-      "wss": string // WebSocket server URL to connect to. Optional. Defaults to `ws://${window.location.host}` (e.g., "ws://localhost:3001")
-    }
-  }
-}
 ```
 
 ## Adding VM Custom Elements
