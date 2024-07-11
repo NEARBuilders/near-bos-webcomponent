@@ -6,44 +6,66 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const rootDir = path.resolve(__dirname, "..");
 
 let currentChildProcess = null;
 
-async function exec(command) {
+class ValidationError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "ValidationError";
+  }
+}
+
+function parseArgs() {
+  const [signerAccount, signerKey, network = "mainnet"] = process.argv.slice(2);
+
+  if (!signerAccount || !signerKey) {
+    console.warn(
+      "Missing arguments: signer account and signer key\n" +
+        "Usage: node release.js <signer account> <signer key> [network]\n\n" +
+        "Will attempt to sign from keychain..."
+    );
+  }
+
+  if (network !== "mainnet" && network !== "testnet") {
+    throw new ValidationError(`Invalid network: ${network}`);
+  }
+
+  console.log(`Using network: ${network}\n`);
+  return { signerAccount, signerKey, network };
+}
+
+async function exec(command, env = {}) {
   return new Promise((resolve, reject) => {
-    currentChildProcess = execCallback(command, (error, stdout, stderr) => {
-      currentChildProcess = null;
-      if (error) {
-        console.error(`Error executing command: ${command}`);
-        console.error(stderr);
-        reject(error);
-      } else {
-        resolve(stdout);
+    const options = { env: { ...process.env, ...env } };
+    let output = "";
+    currentChildProcess = execCallback(
+      command,
+      options,
+      (error, stdout, stderr) => {
+        currentChildProcess = null;
+        if (error) {
+          reject(error);
+        } else {
+          resolve(output);
+        }
       }
+    );
+    currentChildProcess.stdout.on("data", (data) => {
+      output += data.toString();
+    });
+    currentChildProcess.stderr.on("data", (data) => {
+      output += data.toString();
     });
   });
 }
 
 async function updatePackageJson(cid) {
-  const packageJsonPath = path.join(__dirname, "package.json");
-  let packageJson;
-  try {
-    const packageJsonContent = await fs.readFile(packageJsonPath, "utf8");
-    packageJson = JSON.parse(packageJsonContent);
-  } catch (error) {
-    console.error("Error reading package.json:", error);
-    throw error;
-  }
-
-  packageJson.nearfs = packageJson.nearfs || {};
-  packageJson.nearfs.cid = cid;
-
-  try {
-    await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
-  } catch (error) {
-    console.error("Error writing package.json:", error);
-    throw error;
-  }
+  const packageJsonPath = path.join(rootDir, "package.json");
+  let packageJson = JSON.parse(await fs.readFile(packageJsonPath, "utf8"));
+  packageJson.nearfs = { ...packageJson.nearfs, cid };
+  await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
 }
 
 async function runWithSpinner(message, func) {
@@ -59,43 +81,64 @@ async function runWithSpinner(message, func) {
 }
 
 async function main() {
-  console.log("Starting release process...");
+  try {
+    const { signerAccount, signerKey, network } = parseArgs();
 
-  await runWithSpinner("Building production version", () => exec("yarn prod"));
+    console.log("Starting release process...");
 
-  await runWithSpinner("Creating CAR file", () =>
-    exec("yarn nearfs:publish-library:create:car")
-  );
+    await runWithSpinner("Building production version", () =>
+      exec("yarn prod")
+    );
+    const output = await runWithSpinner("Creating CAR file", () =>
+      exec("yarn nearfs:publish-library:create:car")
+    );
 
-  const uploadOutput = await runWithSpinner("Uploading CAR file", () =>
-    exec("yarn nearfs:publish-library:upload:car")
-  );
-  const cid = uploadOutput.match(/CID: (.+)/)?.[1];
+    const lines = output.trim().split("\n");
+    const cid = lines[lines.length - 1].trim();
 
-  if (!cid) {
-    console.error("Failed to extract CID from upload output");
+    if (!cid) throw new Error("Failed to extract CID from output");
+
+    console.log(`Extracted CID: ${cid}`);
+
+    await runWithSpinner("Uploading CAR file", () =>
+      exec("yarn nearfs:publish-library:upload:car", {
+        NODE_ENV: network,
+        NEAR_SIGNER_KEY: signerKey,
+        NEAR_SIGNER_ACCOUNT: signerAccount,
+      })
+    );
+
+    await runWithSpinner("Updating package.json", () => updatePackageJson(cid));
+
+    console.log("Release process completed successfully!");
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      console.error(error.message);
+    } else {
+      console.error("An unexpected error occurred:", error);
+    }
     process.exit(1);
   }
-
-  console.log(`Extracted CID: ${cid}`);
-
-  await runWithSpinner("Updating package.json", () => updatePackageJson(cid));
-
-  await runWithSpinner("Publishing to npm", () => exec("npm publish"));
-
-  console.log("Release process completed successfully!");
 }
 
-// Handle interrupts
-process.on("SIGINT", () => {
-  console.log("\nInterrupt received, cleaning up...");
+async function cleanup() {
   if (currentChildProcess) {
     currentChildProcess.kill("SIGINT");
   }
+  try {
+    await exec("yarn clean");
+    console.log("\nCleanup completed.");
+  } catch (error) {
+    console.error("\nError during cleanup:", error);
+  }
+}
+
+process.on("SIGINT", async () => {
+  console.log("\nInterrupt received. Starting cleanup process...\n");
+
+  await cleanup();
+
   process.exit(1);
 });
 
-main().catch((error) => {
-  console.error("An unexpected error occurred:", error);
-  process.exit(1);
-});
+main();

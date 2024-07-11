@@ -53,10 +53,11 @@
     "test:ui": "npx playwright test --ui",
     "test:ui:codespaces": "npx playwright test --ui-host=0.0.0.0",
     "nearfs:publish-library:create:car": "ipfs-car pack dist/ --output dist.car",
-    "nearfs:publish-library:upload:car": "NODE_ENV=mainnet node ./node_modules/nearfs/scripts/upload-car.js dist.car",
+    "nearfs:publish-library:upload:car": "node ./node_modules/nearfs/scripts/upload-car.js dist.car",
     "fmt": "prettier --write '**/*.{js,jsx,ts,tsx,json}'",
     "fmt:check": "prettier --check '**/*.{js,jsx,ts,tsx,json}'",
-    "release": "node scripts/release.mjs"
+    "release": "node scripts/release.mjs",
+    "clean": "rimraf dist dist.car"
   },
   "eslintConfig": {
     "extends": [
