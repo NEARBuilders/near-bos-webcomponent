@@ -20,7 +20,14 @@ jobs:
           node-version: 20
           registry-url: "https://registry.npmjs.org"
       - run: yarn install
-      - run: yarn prod
-      - run: npm publish
+      - name: Run release script
+        run: yarn release
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - name: Commit and push updated package.json
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add package.json
+          git commit -m "Update package.json with new CID [skip ci]"
+          git push

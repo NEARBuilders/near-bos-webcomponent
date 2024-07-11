@@ -55,7 +55,8 @@
     "nearfs:publish-library:create:car": "ipfs-car pack dist/ --output dist.car",
     "nearfs:publish-library:upload:car": "NODE_ENV=mainnet node ./node_modules/nearfs/scripts/upload-car.js dist.car",
     "fmt": "prettier --write '**/*.{js,jsx,ts,tsx,json}'",
-    "fmt:check": "prettier --check '**/*.{js,jsx,ts,tsx,json}'"
+    "fmt:check": "prettier --check '**/*.{js,jsx,ts,tsx,json}'",
+    "release": "node scripts/release.mjs"
   },
   "eslintConfig": {
     "extends": [
@@ -97,6 +98,7 @@
     "jspm": "^3.1.0",
     "mini-css-extract-plugin": "^2.2.2",
     "nearfs": "https://github.com/vgrichina/nearfs",
+    "ora": "^8.0.1",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
     "postcss-loader": "^7.0.1",
