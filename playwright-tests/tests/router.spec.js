@@ -11,7 +11,7 @@ test("Verify default route loads successfully and displays expected content", as
   await page.goto("/");
 
   await page.evaluate(() => {
-		const config = JSON.stringify({ enableComponentSrcDataKey: true });
+		const config = JSON.stringify({ "vm": { "features": {"enableComponentSrcDataKey": true }}})
 
     document.body.innerHTML = `
     <near-social-viewer src="devs.near/widget/default" initialprops='{"message": "hello world!"}' config='${config}'></near-social-viewer>
@@ -55,8 +55,8 @@ test("should load the other routes with params when provided", async ({
 
   // Verify route loads
   await waitForSelectorToBeVisible(
-    page,
-    'div[data-component="efiz.near/widget/Node"]'
+    page, 
+		'body > near-social-viewer > div > div > div > div'
   );
 
   // Verify provided props are active
@@ -70,7 +70,7 @@ test("should be possible to set initialProps and src widget for the root path", 
 }) => {
   await page.goto("/");
   await page.evaluate(() => {
-		const config = JSON.stringify({ enableComponentSrcDataKey: true });
+		const config = JSON.stringify({ "vm": { "features": {"enableComponentSrcDataKey": true }}})
 
     document.body.innerHTML = `
     <near-social-viewer src="devhub.near/widget/app" initialProps='{"page": "community", "handle": "webassemblymusic"}' config='${config}'></near-social-viewer>

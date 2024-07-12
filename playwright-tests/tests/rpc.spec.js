@@ -14,7 +14,8 @@ test("Verify default RPC is called when value not provided", async ({
   await page.goto("/");
 
   await page.evaluate(() => {
-		const config = JSON.stringify({ enableComponentSrcDataKey: true });
+		const config = JSON.stringify({ "vm": { "features": {"enableComponentSrcDataKey": true }}})
+
 
     document.body.innerHTML = `
     <near-social-viewer src="devs.near/widget/default" config='${config}'></near-social-viewer>
@@ -64,7 +65,7 @@ test("Verify custom RPC is called when provided", async ({ page }) => {
 
   // Set the rpc attribute to a custom rpc value
   await page.evaluate((url) => {
-		const config = JSON.stringify({ enableComponentSrcDataKey: true });
+		const config = JSON.stringify({ "vm": { "features": {"enableComponentSrcDataKey": true }}})
 
     document.body.innerHTML = `
     <near-social-viewer src="devs.near/widget/default" rpc="${url}" config='${config}'></near-social-viewer>

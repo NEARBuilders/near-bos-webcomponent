@@ -32,7 +32,7 @@ describe("test data-component attribute", () => {
     page,
   }) => {
     const src = "zavodil.near/widget/Lido";
-    const config = { enableComponentSrcDataKey: true };
+		const config = { "vm": { "features": {"enableComponentSrcDataKey": true }}}
 
     await setupNearSocialViewer(page, src, config);
 
