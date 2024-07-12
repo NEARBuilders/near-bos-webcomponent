@@ -26,11 +26,29 @@ Include the following script tags in your HTML:
 <script src="https://cdn.jsdelivr.net/npm/near-bos-webcomponent@latest/dist/main.REPLACE_WITH_BUNDLE_HASH.bundle.js"></script>
 ```
 
-Be sure to replace "REPLACE_WITH_BUNDLE_HASH" with the respective hash, which can be found via the asset-manifest:
+Be sure to replace `REPLACE_WITH_BUNDLE_HASH` with the respective hash, which can be found via the asset-manifest:
 
 <https://cdn.jsdelivr.net/npm/near-bos-webcomponent@latest/dist/asset-manifest.json>
 
 </details>
+
+<details>
+  <summary>Via NEARFS web4 gateway</summary>
+
+Include the following script tags in your HTML:
+
+```html
+<script src="https://ipfs.web4.near.page/ipfs/REPLACE_WITH_NEARFS_CID/runtime.REPLACE_WITH_BUNDLE_HASH.bundle.js"></script>
+<script src="https://ipfs.web4.near.page/ipfs/REPLACE_WITH_NEARFS_CID/main.REPLACE_WITH_BUNDLE_HASH.bundle.js"></script>
+```
+
+Be sure to replace `REPLACE_WITH_NEARFS_CID` with the cid you get from [publishing to nearfs](#publishing-to-nearfs) and replace `REPLACE_WITH_BUNDLE_HASH` with the respective hash, which can be found via the asset-manifest:
+
+<https://ipfs.web4.near.page/ipfs/REPLACE_WITH_NEARFS_CID/asset-manifest.json>
+
+</details>
+
+<br />
 
 Once included, you can use the web component in your HTML:
 
