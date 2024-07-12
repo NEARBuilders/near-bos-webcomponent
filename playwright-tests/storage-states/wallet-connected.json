@@ -5,16 +5,16 @@
       "origin": "http://localhost:3000",
       "localStorage": [
         {
+          "name": "near-wallet-selector:recentlySignedInWallets",
+          "value": "[\"my-near-wallet\"]"
+        },
+        {
           "name": "near-wallet-selector:selectedWalletId",
           "value": "\"my-near-wallet\""
         },
         {
           "name": "near_app_wallet_auth_key",
-          "value": "{\"accountId\":\"anybody.near\",\"allKeys\":[\"ed25519:CziSGowWUKiP5N5pqGUgXCJXtqpySAk29YAU6zEs5RAi\"]}}"
-        },
-        {
-          "name": "near-social-vm:v01::accountId:",
-          "value": "anybody.near"
+          "value": "{\"accountId\":\"anybody.near\",\"allKeys\":[\"ed25519:CziSGowWUKiP5N5pqGUgXCJXtqpySAk29YAU6zEs5RAi\"]}"
         },
         {
           "name": "near-api-js:keystore:anybody.near:mainnet",
@@ -23,6 +23,10 @@
         {
           "name": "near-wallet-selector:contract",
           "value": "{\"contractId\":\"social.near\",\"methodNames\":[]}"
+        },
+        {
+          "name": "near-social-vm:v01::accountId:",
+          "value": "anybody.near"
         }
       ]
     }

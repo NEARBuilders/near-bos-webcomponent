@@ -47,14 +47,14 @@ export const useCode = async (page, filePath, props) => {
   const fullPath = path.join(__dirname, "code", filePath);
   try {
     const code = fs.readFileSync(fullPath, "utf8");
-    const initialProps = props ? JSON.stringify(props) : "";
+    const initialProps = props ? JSON.stringify(props) : null;
 
     // Set code and initialProps attribute
     await page.evaluate(
       ({ code, initialProps }) => {
         const viewer = document.querySelector("near-social-viewer");
         viewer.setAttribute("code", code);
-        viewer.setAttribute("initialprops", initialProps);
+        initialProps && viewer.setAttribute("initialprops", initialProps);
       },
       { code, initialProps }
     );

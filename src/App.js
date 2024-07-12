@@ -12,6 +12,7 @@ import {
   RouterProvider,
   useLocation,
 } from "react-router-dom";
+import Wallet from "./auth/Wallet";
 
 import { BosWorkspaceProvider, useRedirectMap } from "./utils/bos-workspace";
 import { EthersProvider } from "./utils/web3/ethers";
@@ -75,6 +76,9 @@ function App(props) {
                 : "about:blank";
           }
           return <Link {...props} />;
+        },
+        Wallet: (props) => {
+          return <Wallet {...props} />;
         },
       },
       features: {
