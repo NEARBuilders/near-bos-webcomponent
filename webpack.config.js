@@ -98,17 +98,18 @@ module.exports = function (env) {
           fileName: "asset-manifest.json",
           publicPath: "/",
           generate: (seed, files, entrypoints) => {
-            const manifestFiles = {};
-            entrypoints.main.forEach((file) => {
-              if (!file.endsWith(".map")) {
-                if (file.includes("runtime")) {
-                  manifestFiles["runtime.js"] = file;
-                } else if (file.includes("main")) {
-                  manifestFiles["main.js"] = file;
-                }
-              }
-            });
-            return { files: manifestFiles };
+            const manifestFiles = files.reduce((manifest, file) => {
+              manifest[file.name.replace(/\.[^.]+$/, '.js')] = file.path;
+              return manifest;
+            }, seed);
+            const entrypointFiles = entrypoints.main.filter(
+              (fileName) => !fileName.endsWith(".map")
+            );
+        
+            return {
+              files: manifestFiles,
+              entrypoints: entrypointFiles,
+            };
           },
         }),
       ],
