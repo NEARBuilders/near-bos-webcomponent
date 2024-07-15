@@ -62,9 +62,16 @@ To support specific features of the VM or an accompanying development server, pr
       "enabled": boolean, // Determines if hot reload is enabled (e.g., true)
       "wss": string // WebSocket server URL to connect to. Optional. Defaults to `ws://${window.location.host}` (e.g., "ws://localhost:3001")
     }
-  }
+  },
+  // Configuration options for the VM
+  "vm": {
+    "features": {
+    	"enableComponentSrcDataKey": boolean, // adds the "data-component" attribute specifying the rendered component's "src"
+		}
+	}
 }
 ```
+
 
 ## Local Widget Development
 
@@ -97,6 +104,7 @@ Another option is to use the same mechanism as [near-discovery](https://github.c
 The above strategies require changes to be reflected either on page reload, or from a fresh rpc request. For faster updates, there is an option in `config` to enable hot reload via dev.hotreload (see [configurations](#configuration-options)). This will try to connect to a web socket server on the same port, or via the provided url, to use redirectMap with most recent data.
 
 This feature works best when accompanied with [bos-workspace](https://github.com/nearbuilders/bos-workspace), which will automatically inject a config to the attribute if you provide the path to your web component's dist, or a link to it stored on [NEARFS](https://github.com/vgrichina/nearfs). See more in [Customizing the Gateway](https://github.com/NEARBuilders/bos-workspace?tab=readme-ov-file#customizing-the-gateway). It can be disabled with the `--no-hot` flag.
+
 
 ## Setup & Local Development
 
@@ -203,22 +211,26 @@ test("for supporting SEO friendly URLs, it should be possible to set initialProp
 
 Here you can see that the viewer element `src` attribute is set to use the `devhub.near/widget/app` component, and the `initialProps` set to values from the path.
 
-## Publishing libraries to NEARFS
+## Publishing to NEARFS
 
 For testing how the library would work when used from CDN, you may publish it to NEARFS.
 
-```bash
-yarn nearfs:publish-library:create:car
-```
-
-Take note of the IPFS address returned by this command, which will be used for finding the published library later. An example of what this looks like is `bafybeicu5ozyhhsd4bpz4keiur6cwexnrzwxla5kaxwhrcu52fkno5q5fa`
+To publish, use the helper script to create and upload an [IPFS CAR](https://car.ipfs.io/), deployed to nearfs with a signature from your NEAR account.
 
 ```bash
-NODE_ENV=mainnet yarn nearfs:publish-library:upload:car youraccount.near
+yarn prepare:release <signer account> <signer key> <network>
 ```
+
+This script will output the CID to terminal, as well as automatically save it under nearfs.cid in package.json.
+
+**Parameters:**
+
+* `signer account`: NEAR account to use for signing IPFS URL update transaction, see [web4-deploy](https://github.com/vgrichina/web4-deploy?tab=readme-ov-file#deploy-fully-on-chain-to-nearfs)
+* `signer key`:  NEAR account private key to use for signing. Should have base58-encoded key starting with `ed25519:`. Will attempt to sign from keychain (~/.near-credentials/) if not provided.
+* `network`: NEAR network to use. Defaults to mainnet.
+
+This is an example of the NEARFS url, and you should replace with the cid you received above:
+
+<https://ipfs.web4.near.page/ipfs/bafybeiftqwg2qdfhjwuxt5cjvvsxflp6ghhwgz5db3i4tqipocvyzhn2bq/>
 
 After uploading, it normally takes some minutes before the files are visible on NEARFS. When going to the expected URL based on the IPFS address we saw above, we will first see the message `Not found`.
-
-This is an example of the NEARFS url, and you should replace with the IPFS address you received above:
-
-<https://ipfs.web4.near.page/ipfs/bafybeicu5ozyhhsd4bpz4keiur6cwexnrzwxla5kaxwhrcu52fkno5q5fa/>
