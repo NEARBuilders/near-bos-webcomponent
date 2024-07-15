@@ -61,7 +61,13 @@ To support specific features of the VM or an accompanying development server, pr
       "enabled": boolean, // Determines if hot reload is enabled (e.g., true)
       "wss": string // WebSocket server URL to connect to. Optional. Defaults to `ws://${window.location.host}` (e.g., "ws://localhost:3001")
     }
-  }
+  },
+  // Configuration options for the VM
+  "vm": {
+    "features": {
+    	"enableComponentSrcDataKey": boolean, // adds the "data-component" attribute specifying the rendered component's "src"
+		}
+	}
 }
 ```
 

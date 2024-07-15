@@ -14,8 +14,10 @@ test("should use default network (mainnet) when network value not provided", asy
   await page.goto("/");
 
   await page.evaluate(() => {
+		const config = JSON.stringify({ "vm": { "features": {"enableComponentSrcDataKey": true }}})
+
     document.body.innerHTML = `
-    <near-social-viewer src="devs.near/widget/default"></near-social-viewer>
+    <near-social-viewer src="devs.near/widget/default" config='${config}'></near-social-viewer>
     `;
   });
 
@@ -53,8 +55,10 @@ test("should use testnet network when network attribute is provided", async ({
 
   // Set the netork attribute to testnet
   await page.evaluate(() => {
+		const config = JSON.stringify({ "vm": { "features": {"enableComponentSrcDataKey": true }}})
+
     document.body.innerHTML = `
-    <near-social-viewer src="neardevs.testnet/widget/default" network="testnet"></near-social-viewer>
+    <near-social-viewer src="neardevs.testnet/widget/default" network="testnet" config='${config}'></near-social-viewer>
     `;
   });
 

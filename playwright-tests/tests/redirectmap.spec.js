@@ -46,150 +46,154 @@ describe("session-storage", () => {
       );
     });
   });
+});
 
-  describe("hot-reload", () => {
-    test.beforeEach(async ({ page }) => {
-      await page.goto("/");
+describe("hot-reload", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/");
+  });
+
+  test("should trigger api request to */socket.io/* if hot reload is enabled", async ({
+    page,
+  }) => {
+    let websocketCount = 0;
+
+    await page.route("**/socket.io/*", (route) => {
+      websocketCount++;
+      route.continue();
     });
 
-    test("should trigger api request to */socket.io/* if hot reload is enabled", async ({
-      page,
-    }) => {
-      let websocketCount = 0;
-
-      await page.route("**/socket.io/*", (route) => {
-        websocketCount++;
-        route.continue();
-      });
-
-      await page.evaluate(() => {
-        document.body.innerHTML = `<near-social-viewer src="neardevs.testnet/widget/default" config='{"dev": { "hotreload": { "enabled": true } } }'></near-social-viewer>`;
-      });
-
-      await waitForSelectorToBeVisible(page, "near-social-viewer");
-
-      expect(websocketCount).toBeGreaterThan(0);
+    await page.evaluate(() => {
+      document.body.innerHTML = `<near-social-viewer src="neardevs.testnet/widget/default" config='{"dev": { "hotreload": { "enabled": true } } }'></near-social-viewer>`;
     });
 
-    test("should not trigger api request to */socket.io/* if hot reload is not enabled", async ({
-      page,
-    }) => {
-      let websocketCount = 0;
+    await waitForSelectorToBeVisible(page, "near-social-viewer");
 
-      await page.route("**/socket.io/*", (route) => {
-        websocketCount++;
-        route.continue();
-      });
+    expect(websocketCount).toBeGreaterThan(0);
+  });
 
-      await page.evaluate(() => {
-        document.body.innerHTML = `<near-social-viewer src="neardevs.testnet/widget/default"></near-social-viewer>`;
-      });
+  test("should not trigger api request to */socket.io/* if hot reload is not enabled", async ({
+    page,
+  }) => {
+    let websocketCount = 0;
 
-      await waitForSelectorToBeVisible(page, "near-social-viewer");
-
-      expect(websocketCount).toEqual(0);
+    await page.route("**/socket.io/*", (route) => {
+      websocketCount++;
+      route.continue();
     });
 
-    describe("with running socket server", () => {
-      let io, httpServer;
-      const PORT = 3001;
-      let HOST = "localhost";
+    await page.evaluate(() => {
+      document.body.innerHTML = `<near-social-viewer src="neardevs.testnet/widget/default"></near-social-viewer>`;
+    });
 
-      test.beforeAll(async () => {
-        httpServer = http.createServer();
+    await waitForSelectorToBeVisible(page, "near-social-viewer");
 
-        io = new Server(httpServer, {
-          cors: {
-            origin: `http://${HOST}:3000`,
-            methods: ["GET", "POST"],
-          },
-        });
+    expect(websocketCount).toEqual(0);
+  });
 
-        io.on("connection", () => {
-          io.emit("fileChange", {
+  describe("with running socket server", () => {
+    let io, httpServer;
+    const PORT = 3001;
+    let HOST = "localhost";
+
+    test.beforeAll(async () => {
+      httpServer = http.createServer();
+
+      io = new Server(httpServer, {
+        cors: {
+          origin: `http://${HOST}:3000`,
+          methods: ["GET", "POST"],
+        },
+      });
+
+      io.on("connection", () => {
+        io.emit("fileChange", {
+          components: {
             "anybody.near/widget/test": {
               code: "return <p>hello world</p>;",
             },
-          });
-        });
-
-        // wait for socket start
-        await new Promise((resolve) => {
-          httpServer.listen(PORT, HOST, () => {
-            resolve();
-          });
-        });
-      });
-
-      test("should show local redirect map and react to changes", async ({
-        page,
-      }) => {
-        // Verify the viewer is visible
-        await waitForSelectorToBeVisible(page, "near-social-viewer");
-
-        await page.evaluate(() => {
-          const viewer = document.querySelector("near-social-viewer");
-          viewer.setAttribute("src", "anybody.near/widget/test"); // this code does not exist
-        });
-
-        await page.waitForSelector(
-          'div.alert.alert-danger:has-text("is not found")'
-        );
-
-        // Verify error
-        const errMsg = await page.locator(
-          'div.alert.alert-danger:has-text("is not found")'
-        );
-
-        expect(await errMsg.isVisible()).toBe(true);
-
-        let websocketCount = 0;
-
-        await page.route("**/socket.io/*", (route) => {
-          websocketCount++;
-          route.continue();
-        });
-
-        const config = {
-          dev: { hotreload: { enabled: true, wss: `ws://${HOST}:${PORT}` } },
-        };
-
-        // Enable hot reload
-        await page.evaluate(
-          ({ config }) => {
-            const viewer = document.querySelector("near-social-viewer");
-            viewer.setAttribute("config", JSON.stringify(config));
           },
-          { config }
-        );
+        });
+      });
 
-        await page.waitForSelector("near-social-viewer");
+      // wait for socket start
+      await new Promise((resolve) => {
+        httpServer.listen(PORT, HOST, () => {
+          resolve();
+        });
+      });
+    });
 
-        // Get the value of the config attribute
-        const actualConfig = await page.evaluate(() => {
+    test("should show local redirect map and react to changes", async ({
+      page,
+    }) => {
+      // Verify the viewer is visible
+      await waitForSelectorToBeVisible(page, "near-social-viewer");
+
+      await page.evaluate(() => {
+        const viewer = document.querySelector("near-social-viewer");
+        viewer.setAttribute("src", "anybody.near/widget/test"); // this code does not exist
+      });
+
+      await page.waitForSelector(
+        'div.alert.alert-danger:has-text("is not found")'
+      );
+
+      // Verify error
+      const errMsg = await page.locator(
+        'div.alert.alert-danger:has-text("is not found")'
+      );
+
+      expect(await errMsg.isVisible()).toBe(true);
+
+      let websocketCount = 0;
+
+      await page.route("**/socket.io/*", (route) => {
+        websocketCount++;
+        route.continue();
+      });
+
+      const config = {
+        dev: { hotreload: { enabled: true, wss: `ws://${HOST}:${PORT}` } },
+      };
+
+      // Enable hot reload
+      await page.evaluate(
+        ({ config }) => {
           const viewer = document.querySelector("near-social-viewer");
-          return viewer.getAttribute("config");
-        });
+          viewer.setAttribute("config", JSON.stringify(config));
+        },
+        { config }
+      );
 
-        // Assert it is set and equals custom value
-        expect(actualConfig).toBe(JSON.stringify(config));
+      await page.waitForSelector("near-social-viewer");
 
-        // Assert web socket was hit
-        expect(websocketCount).toBeGreaterThan(0);
+      // Get the value of the config attribute
+      const actualConfig = await page.evaluate(() => {
+        const viewer = document.querySelector("near-social-viewer");
+        return viewer.getAttribute("config");
+      });
 
-        await expect(await page.getByText("hello world")).toBeVisible();
+      // Assert it is set and equals custom value
+      expect(actualConfig).toBe(JSON.stringify(config));
 
-        io.emit("fileChange", {
+      // Assert web socket was hit
+      expect(websocketCount).toBeGreaterThan(0);
+
+      await expect(await page.getByText("hello world")).toBeVisible();
+
+      io.emit("fileChange", {
+        components: {
           "anybody.near/widget/test": { code: "return <p>goodbye world</p>;" },
-        });
-
-        await expect(await page.getByText("goodbye world")).toBeVisible();
+        },
       });
 
-      test.afterAll(() => {
-        io.close();
-        httpServer.close();
-      });
+      await expect(await page.getByText("goodbye world")).toBeVisible();
+    });
+
+    test.afterAll(() => {
+      io.close();
+      httpServer.close();
     });
   });
 });
