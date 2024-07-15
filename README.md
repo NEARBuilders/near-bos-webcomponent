@@ -1,6 +1,7 @@
 <!-- markdownlint-disable MD014 -->
 <!-- markdownlint-disable MD033 -->
 <!-- markdownlint-disable MD041 -->
+<!-- markdownlint-disable MD029 -->
 
 <div align="center">
 
@@ -9,7 +10,6 @@
   <p>
     <strong>Easily embed a <a href="https://near.social" target="_blank">near social widget</a> into any web app and deploy to <a href="https://web4.near.page/" target="_blank">web4</a>.</strong>
   </p>
-
 </div>
 
 `near-social-viewer` is a [web component (custom element)](https://developer.mozilla.org/en-US/docs/Web/API/Web_components) that implements the [near-social-vm](https://github.com/NearSocial/VM) for rendering code stored on-chain in the [SocialDB](https://github.com/NearSocial/social-db) smart contract (social.near). It is the simplest way to create your own [near social viewer](https://github.com/NearSocial/viewer) and it is the easiest method for embedding [Widgets](https://thewiki.near.page/near.social_widgets) into any web application.
@@ -50,6 +50,12 @@ Be sure to replace `REPLACE_WITH_NEARFS_CID` with the cid you get from [publishi
 
 <br />
 
+Be sure to replace "REPLACE_WITH_BUNDLE_HASH" with the respective hash, which can be found via the asset-manifest:
+
+<https://cdn.jsdelivr.net/npm/near-bos-webcomponent@latest/dist/asset-manifest.json>
+
+</details>
+
 Once included, you can use the web component in your HTML:
 
 ```html
@@ -79,9 +85,49 @@ To support specific features of the VM or an accompanying development server, pr
       "enabled": boolean, // Determines if hot reload is enabled (e.g., true)
       "wss": string // WebSocket server URL to connect to. Optional. Defaults to `ws://${window.location.host}` (e.g., "ws://localhost:3001")
     }
-  }
+  },
+  // Configuration options for the VM
+  "vm": {
+    "features": {
+    	"enableComponentSrcDataKey": boolean, // adds the "data-component" attribute specifying the rendered component's "src"
+		}
+	}
 }
 ```
+
+
+## Local Widget Development
+
+There are several strategies for accessing local widget code during development.
+
+### Proxy RPC
+
+The recommended, least invasive strategy is to provide a custom RPC url that proxies requests for widget code. Widget code is stored in the [socialdb](https://github.com/NearSocial/social-db), and so it involves an RPC request to get the stringified code. We can proxy this request to use local data instead.
+
+Either build a custom proxy server, or use [bos-workspace](https://github.com/nearbuilders/bos-workspace) which provides a proxy by default and will automatically inject it to the `rpc` attribute if you provide the path to your web component's dist, or a link to it stored on [NEARFS](https://github.com/vgrichina/nearfs). See more in [Customizing the Gateway](https://github.com/NEARBuilders/bos-workspace?tab=readme-ov-file#customizing-the-gateway).
+
+### Redirect Map
+
+The NEAR Social VM supports a feature called `redirectMap` which allows you to load widgets from other sources than the on-chain social db. An example redirect map can look like this:
+
+```json
+{ "devhub.near/widget/devhub.page.feed": { "code": "return 'hello';" } }
+```
+
+The result of applying this redirect map is that the widget `devhub.near/widget/devhub.page.feed` will be replaced by a string that says `hello`.
+
+The `near-social-viewer` web component supports loading a redirect map from the session storage, which is useful when using the viewer for local development or test pipelines.
+
+By setting the session storage key `nearSocialVMredirectMap` to the JSON value of the redirect map, the web component will pass this to the VM Widget config.
+
+Another option is to use the same mechanism as [near-discovery](https://github.com/near/near-discovery/), where you can load components from a locally hosted [bos-loader](https://github.com/near/bos-loader) by adding the key `flags` to localStorage with the value `{"bosLoaderUrl": "http://127.0.0.1:3030" }`. There also exists an input at [dev.near.org/flags](https://dev.near.org/flags) to input this url.
+
+### Hot Reload
+
+The above strategies require changes to be reflected either on page reload, or from a fresh rpc request. For faster updates, there is an option in `config` to enable hot reload via dev.hotreload (see [configurations](#configuration-options)). This will try to connect to a web socket server on the same port, or via the provided url, to use redirectMap with most recent data.
+
+This feature works best when accompanied with [bos-workspace](https://github.com/nearbuilders/bos-workspace), which will automatically inject a config to the attribute if you provide the path to your web component's dist, or a link to it stored on [NEARFS](https://github.com/vgrichina/nearfs). See more in [Customizing the Gateway](https://github.com/NEARBuilders/bos-workspace?tab=readme-ov-file#customizing-the-gateway). It can be disabled with the `--no-hot` flag.
+
 
 ## Setup & Local Development
 
@@ -91,7 +137,7 @@ Initialize repo:
 yarn
 ```
 
-Start development version:
+Start the development version:
 
 ```cmd
 yarn start
@@ -106,7 +152,7 @@ yarn prod
 Serve the production build:
 
 ```cmd
-yarn serve prod
+yarn serve:prod
 ```
 
 ## Adding VM Custom Elements
@@ -145,64 +191,6 @@ bos-workspace dev -g ./path/to/dist
 ```
 
 This will start a local dev server using the custom gateway, so you may develop your local widgets through it with access to the custom element.
-
-## Running Playwright tests
-
-To be able to run the [playwright](https://playwright.dev) tests, you first need to install the dependencies. You can see how this is done in [.devcontainer/post-create.sh](./.devcontainer/post-create.sh) which is automatically executed when opening this repository in a github codespace.
-
-When the dependencies are set up, you can run the test suite in your terminal:
-
-```bash
-yarn test
-```
-
-To run tests visually in the playwright UI, you can use the following command:
-
-```bash
-yarn test:ui
-```
-
-This will open the playwright UI in a browser, where you can run single tests, and also inspect visually.
-
-If you want to use the playwright UI from a github codespace, you can use this command:
-
-```bash
-yarn test:ui:codespaces
-```
-
-In general it is a good practice, and very helpful for reviewers and users of this project, that all use cases are covered in Playwright tests. Also, when contributing, try to make your tests as simple and clear as possible, so that they serve as examples on how to use the functionality.
-
-## Local Widget Development
-
-There are several strategies for accessing local widget code during development.
-
-### Proxy RPC
-
-The recommended, least invasive strategy is to provide a custom RPC url that proxies requests for widget code. Widget code is stored in the [socialdb](https://github.com/NearSocial/social-db), and so it involves an RPC request to get the stringified code. We can proxy this request to use our local code instead.
-
-You can build a custom proxy server, or [bos-workspace](https://github.com/nearbuilders/bos-workspace) provides a proxy by default and will automatically inject it to the `rpc` attribute if you provide the path to your web component's dist, or a link to it stored on [NEARFS](https://github.com/vgrichina/nearfs). See more in [Customizing the Gateway](https://github.com/NEARBuilders/bos-workspace?tab=readme-ov-file#customizing-the-gateway).
-
-### Redirect Map
-
-The NEAR social VM supports a feature called `redirectMap` which allows you to load widgets from other sources than the on chain social db. An example redirect map can look like this:
-
-```json
-{ "devhub.near/widget/devhub.page.feed": { "code": "return 'hello';" } }
-```
-
-The result of applying this redirect map is that the widget `devhub.near/widget/devhub.page.feed` will be replaced by a string that says `hello`.
-
-The `near-social-viewer` web component supports loading a redirect map from the session storage, which is useful when using the viewer for local development or test pipelines.
-
-By setting the session storage key `nearSocialVMredirectMap` to the JSON value of the redirect map, the web component will pass this to the VM Widget config.
-
-You can also use the same mechanism as [near-discovery](https://github.com/near/near-discovery/) where you can load components from a locally hosted [bos-loader](https://github.com/near/bos-loader) by adding the key `flags` to localStorage with the value `{"bosLoaderUrl": "http://127.0.0.1:3030" }`.
-
-### Hot Reload
-
-The above strategies require changes to be reflected either on page reload, or from a fresh rpc request. For faster updates, there is an option in `config` to enable hot reload via dev.hotreload (see [configurations](#configuration-options)), which will try to connect to a web socket server on the same port and use redirectMap with most recent data.
-
-This feature works best when accompanied with [bos-workspace](https://github.com/nearbuilders/bos-workspace), which will automatically inject a config to the attribute if you provide the path to your web component's dist, or a link to it stored on [NEARFS](https://github.com/vgrichina/nearfs). See more in [Customizing the Gateway](https://github.com/NEARBuilders/bos-workspace?tab=readme-ov-file#customizing-the-gateway). It can be disabled with the `--no-hot` flag.
 
 ## Configuring Ethers
 

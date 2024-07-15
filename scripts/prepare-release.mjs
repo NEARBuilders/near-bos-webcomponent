@@ -179,9 +179,10 @@ async function main() {
 
     console.log("Preparing a release...");
 
-    // await runWithSpinner("Building production version", () =>
-    //   exec("yarn prod")
-    // );
+    await runWithSpinner("Building production version", () =>
+      exec("yarn prod")
+    );
+
     const output = await runWithSpinner("Creating CAR file", () =>
       exec("yarn nearfs:publish-library:create:car")
     );
