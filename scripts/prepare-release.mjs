@@ -23,6 +23,7 @@ program
     "Network to use (mainnet or testnet)",
     "mainnet"
   )
+  .option('-p, --post', 'Post the release to socialdb', false)
   .parse(process.argv);
 
 const options = program.opts();
@@ -76,6 +77,13 @@ async function updatePackageJson(cid) {
   await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
 }
 
+async function postRelease(cid) {
+  const data = {
+    tagName: "near-social-viewer",
+    source: `https://ipfs.web4.near.page/ipfs/${cid}`
+  }
+}
+
 async function runWithSpinner(message, func) {
   const spinner = ora(message).start();
   try {
@@ -117,6 +125,13 @@ async function main() {
     );
 
     await runWithSpinner("Updating package.json", () => updatePackageJson(cid));
+
+    if (options.post) {
+      await runWithSpinner("Posting release", () => postRelease(cid));
+      console.log("Release posted successfully!");
+    } else {
+      console.log("Release preparation complete. Use --post flag to post the release.");
+    }
 
     console.log("Release prepared successfully!");
   } catch (error) {
