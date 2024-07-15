@@ -7,6 +7,7 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { merge } = require("webpack-merge");
 const loadPreset = require("./config/presets/loadPreset");
 const loadConfig = (mode) => require(`./config/webpack.${mode}.js`)(mode);
+const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 
 module.exports = function (env) {
   const { mode = "production" } = env || {};
@@ -92,6 +93,24 @@ module.exports = function (env) {
         new webpack.ProvidePlugin({
           process: "process/browser",
           Buffer: [require.resolve("buffer/"), "Buffer"],
+        }),
+        new WebpackManifestPlugin({
+          fileName: "asset-manifest.json",
+          publicPath: "/",
+          generate: (seed, files, entrypoints) => {
+            const manifestFiles = files.reduce((manifest, file) => {
+              manifest[file.name.replace(/\.[^.]+$/, '.js')] = file.path;
+              return manifest;
+            }, seed);
+            const entrypointFiles = entrypoints.main.filter(
+              (fileName) => !fileName.endsWith(".map")
+            );
+        
+            return {
+              files: manifestFiles,
+              entrypoints: entrypointFiles,
+            };
+          },
         }),
       ],
     },

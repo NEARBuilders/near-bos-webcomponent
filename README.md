@@ -1,61 +1,46 @@
-# NEAR BOS Web Component ( custom element )
+<!-- markdownlint-disable MD014 -->
+<!-- markdownlint-disable MD033 -->
+<!-- markdownlint-disable MD041 -->
 
-This is a Proof of Concept of embedding a NEAR BOS widget into any web application as a Web Component / Custom element.
+<div align="center">
 
-Just load react production react bundles into your index.html as shown below, and use the `near-social-viewer` custom element to embed the BOS widget.
+  <h1>near bos web component</h1>
+
+  <p>
+    <strong>Easily embed a <a href="https://near.social" target="_blank">near social widget</a> into any web app and deploy to <a href="https://web4.near.page/" target="_blank">web4</a>.</strong>
+  </p>
+
+</div>
+
+`near-social-viewer` is a [web component (custom element)](https://developer.mozilla.org/en-US/docs/Web/API/Web_components) that implements the [near-social-vm](https://github.com/NearSocial/VM) for rendering code stored on-chain in the [SocialDB](https://github.com/NearSocial/social-db) smart contract (social.near). It is the simplest way to create your own [near social viewer](https://github.com/NearSocial/viewer) and it is the easiest method for embedding [Widgets](https://thewiki.near.page/near.social_widgets) into any web application.
+
+## Usage
+
+<details open>
+  <summary>Via CDN</summary>
+
+Include the following script tags in your HTML:
 
 ```html
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Near social</title>
-    <script
-      defer="defer"
-      src="/runtime.REPLACE_WITH_BUNDLE_HASH.bundle.js"
-    ></script>
-    <script
-      defer="defer"
-      src="/main.REPLACE_WITH_BUNDLE_HASH.bundle.js"
-    ></script>
-  </head>
-  <body>
-    <h1>NEAR BOS embeddable custom element</h1>
-    <near-social-viewer></near-social-viewer>
-  </body>
-</html>
+<script src="https://cdn.jsdelivr.net/npm/near-bos-webcomponent@latest/dist/runtime.REPLACE_WITH_BUNDLE_HASH.bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/near-bos-webcomponent@latest/dist/main.REPLACE_WITH_BUNDLE_HASH.bundle.js"></script>
 ```
 
-## Setup & Development
+Be sure to replace "REPLACE_WITH_BUNDLE_HASH" with the respective hash, which can be found via the asset-manifest:
 
-Initialize repo:
+<https://cdn.jsdelivr.net/npm/near-bos-webcomponent@latest/dist/asset-manifest.json>
 
-```cmd
-yarn
-```
+</details>
 
-Start development version:
+Once included, you can use the web component in your HTML:
 
-```cmd
-yarn start
-```
-
-Production build:
-
-```cmd
-yarn prod
-```
-
-Serve the production build:
-
-```cmd
-yarn serve prod
+```html
+<near-social-viewer src="mob.near/widget/N" initialprops='{"hashtag": "build"}' />
 ```
 
 ## Attributes
 
-The `near-social-viewer` web component supports several attributes:
+The web component supports several attributes:
 
 * `src`: the src of the widget to render (e.g. `devs.near/widget/default`)
 * `code`: raw, valid, stringified widget code to render (e.g. `"return <p>hello world</p>"`)
@@ -84,6 +69,32 @@ To support specific features of the VM or an accompanying development server, pr
 		}
 	}
 }
+```
+
+## Setup & Local Development
+
+Initialize repo:
+
+```cmd
+yarn
+```
+
+Start development version:
+
+```cmd
+yarn start
+```
+
+Production build:
+
+```cmd
+yarn prod
+```
+
+Serve the production build:
+
+```cmd
+yarn serve prod
 ```
 
 ## Adding VM Custom Elements
@@ -223,22 +234,26 @@ test("for supporting SEO friendly URLs, it should be possible to set initialProp
 
 Here you can see that the viewer element `src` attribute is set to use the `devhub.near/widget/app` component, and the `initialProps` set to values from the path.
 
-## Publishing libraries to NEARFS
+## Publishing to NEARFS
 
 For testing how the library would work when used from CDN, you may publish it to NEARFS.
 
-```bash
-yarn nearfs:publish-library:create:car
-```
-
-Take note of the IPFS address returned by this command, which will be used for finding the published library later. An example of what this looks like is `bafybeicu5ozyhhsd4bpz4keiur6cwexnrzwxla5kaxwhrcu52fkno5q5fa`
+To publish, use the helper script to create and upload an [IPFS CAR](https://car.ipfs.io/), deployed to nearfs with a signature from your NEAR account.
 
 ```bash
-NODE_ENV=mainnet yarn nearfs:publish-library:upload:car youraccount.near
+yarn prepare:release <signer account> <signer key> <network>
 ```
+
+This script will output the CID to terminal, as well as automatically save it under nearfs.cid in package.json.
+
+**Parameters:**
+
+* `signer account`: NEAR account to use for signing IPFS URL update transaction, see [web4-deploy](https://github.com/vgrichina/web4-deploy?tab=readme-ov-file#deploy-fully-on-chain-to-nearfs)
+* `signer key`:  NEAR account private key to use for signing. Should have base58-encoded key starting with `ed25519:`. Will attempt to sign from keychain (~/.near-credentials/) if not provided.
+* `network`: NEAR network to use. Defaults to mainnet.
+
+This is an example of the NEARFS url, and you should replace with the cid you received above:
+
+<https://ipfs.web4.near.page/ipfs/bafybeiftqwg2qdfhjwuxt5cjvvsxflp6ghhwgz5db3i4tqipocvyzhn2bq/>
 
 After uploading, it normally takes some minutes before the files are visible on NEARFS. When going to the expected URL based on the IPFS address we saw above, we will first see the message `Not found`.
-
-This is an example of the NEARFS url, and you should replace with the IPFS address you received above:
-
-<https://ipfs.web4.near.page/ipfs/bafybeicu5ozyhhsd4bpz4keiur6cwexnrzwxla5kaxwhrcu52fkno5q5fa/>
