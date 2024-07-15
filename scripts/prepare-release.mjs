@@ -1,4 +1,4 @@
-import { exec as execCallback } from "child_process";
+import { exec as execCallback, spawn } from "child_process";
 import { Command } from "commander";
 import fs from "fs/promises";
 import ora from "ora";
@@ -17,13 +17,20 @@ program
   .name("release")
   .description("Prepare a release for near-bos-webcomponent")
   .option("-a, --account <account>", "NEAR account to sign for the release")
-  .option("-k, --key <key>", "Signer key")
+  .option(
+    "--signer-public-key <signerPublicKey>",
+    "Public key for signing transactions in the format: ed25519:<public_key>"
+  )
+  .option(
+    "--signer-private-key <signerPrivateKey>",
+    "Private key for signing transactions in the format: ed25519:<private_key>"
+  )
   .option(
     "-n, --network <network>",
     "Network to use (mainnet or testnet)",
     "mainnet"
   )
-  .option('-p, --post', 'Post the release to socialdb', false)
+  .option("-p, --post", "Post the release to socialdb", false)
   .parse(process.argv);
 
 const options = program.opts();
@@ -78,10 +85,80 @@ async function updatePackageJson(cid) {
 }
 
 async function postRelease(cid) {
-  const data = {
+  const releaseData = {
     tagName: "near-social-viewer",
-    source: `https://ipfs.web4.near.page/ipfs/${cid}`
+    bundleUrl: `https://ipfs.web4.near.page/ipfs/${cid}`,
+  };
+
+  const SOCIAL_CONTRACT = {
+    mainnet: "social.near",
+    testnet: "v1.social08.testnet",
+  };
+
+  const txData = {
+    data: {
+      [options.account]: {
+        post: {
+          main: JSON.stringify({
+            type: "md",
+            text: `{ "tagName": "${releaseData.tagName}", "bundleUrl": "${releaseData.bundleUrl}" }`,
+          }),
+        },
+        index: {
+          post: '{"key":"main","value":{"type":"md"}}', // type is release
+        },
+      },
+    },
+  };
+
+  // Prepare the command and arguments
+  const args = [
+    "near-cli-rs",
+    "contract",
+    "call-function",
+    "as-transaction",
+    SOCIAL_CONTRACT[options.network],
+    "set",
+    "json-args",
+    JSON.stringify(txData), // need json args
+    "prepaid-gas",
+    "100.0 Tgas",
+    "attached-deposit",
+    "0 NEAR",
+    "sign-as",
+    options.account,
+    "network-config",
+    options.network,
+  ];
+
+  if (options.signerPublicKey && options.signerPrivateKey) {
+    args.push(
+      "sign-with-plaintext-private-key",
+      "--signer-public-key",
+      `${options.signerPublicKey}`,
+      "--signer-private-key",
+      `${options.signerPrivateKey}`,
+      "send"
+    );
   }
+
+  const deployProcess = spawn("npx", args, {
+    stdio: "inherit",
+  });
+
+  deployProcess.on("close", (code) => {
+    if (code === 0) {
+      console.log(
+        `Successfully posted release to account ${options.account}`
+      );
+    } else {
+      console.error(`Failed to post release from account ${options.account}`);
+    }
+  });
+
+  deployProcess.on("error", (err) => {
+    console.error(`Deployment failed with error: ${err.message}`);
+  });
 }
 
 async function runWithSpinner(message, func) {
@@ -102,9 +179,9 @@ async function main() {
 
     console.log("Preparing a release...");
 
-    await runWithSpinner("Building production version", () =>
-      exec("yarn prod")
-    );
+    // await runWithSpinner("Building production version", () =>
+    //   exec("yarn prod")
+    // );
     const output = await runWithSpinner("Creating CAR file", () =>
       exec("yarn nearfs:publish-library:create:car")
     );
@@ -119,7 +196,7 @@ async function main() {
     await runWithSpinner("Uploading CAR file", () =>
       exec("yarn nearfs:publish-library:upload:car", {
         NODE_ENV: options.network,
-        NEAR_SIGNER_KEY: options.key,
+        NEAR_SIGNER_KEY: options.signerPrivateKey,
         NEAR_SIGNER_ACCOUNT: options.account,
       })
     );
@@ -128,9 +205,10 @@ async function main() {
 
     if (options.post) {
       await runWithSpinner("Posting release", () => postRelease(cid));
-      console.log("Release posted successfully!");
     } else {
-      console.log("Release preparation complete. Use --post flag to post the release.");
+      console.log(
+        "Release preparation complete. Use --post flag to post the release."
+      );
     }
 
     console.log("Release prepared successfully!");

@@ -253,16 +253,18 @@ For testing how the library would work when used from CDN, you may publish it to
 To publish, use the helper script to create and upload an [IPFS CAR](https://car.ipfs.io/), deployed to nearfs with a signature from your NEAR account.
 
 ```bash
-yarn prepare:release <signer account> <signer key> <network>
+yarn prepare:release -a <signer account> -n <network> --signer-public-key <signerPublicKey> --signer-private-key <signerPrivateKey> -p
 ```
 
 This script will output the CID to terminal, as well as automatically save it under nearfs.cid in package.json.
 
 **Parameters:**
 
-* `signer account`: NEAR account to use for signing IPFS URL update transaction, see [web4-deploy](https://github.com/vgrichina/web4-deploy?tab=readme-ov-file#deploy-fully-on-chain-to-nearfs)
-* `signer key`:  NEAR account private key to use for signing. Should have base58-encoded key starting with `ed25519:`. Will attempt to sign from keychain (~/.near-credentials/) if not provided.
-* `network`: NEAR network to use. Defaults to mainnet.
+* `-a <signer account>`: NEAR account to use for signing IPFS URL update transaction, see [web4-deploy](https://github.com/vgrichina/web4-deploy?tab=readme-ov-file#deploy-fully-on-chain-to-nearfs)
+* `--signer-public-key <signer public key>`: Public key for signing transactions in the format: ed25519:<public_key>. Only required when using the "post" option.
+* `--signer-private-key <signer private key>`:  Private key for signing transactions in the format: ed25519:<private_key>. Will attempt to sign from keychain (~/.near-credentials/) if not provided.
+* `-n <network>`: NEAR network to use. Defaults to mainnet.
+* `-p`: Option to post release cid to the release feed. Defaults false. Requires public key for signing, or will default to interactive [near-cli-rs](https://github.com/near/near-cli-rs) if not provided.
 
 This is an example of the NEARFS url, and you should replace with the cid you received above:
 
