@@ -1,4 +1,5 @@
-import { exec as execCallback } from "child_process";
+import { exec as execCallback, spawn } from "child_process";
+import { Command } from "commander";
 import fs from "fs/promises";
 import ora from "ora";
 import path from "path";
@@ -10,35 +11,45 @@ const rootDir = path.resolve(__dirname, "..");
 
 let currentChildProcess = null;
 
-class ValidationError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = "ValidationError";
-  }
-}
+const program = new Command();
 
-function parseArgs() {
-  const [signerAccount, signerKey, network = "mainnet"] = process.argv.slice(2);
+program
+  .name("release")
+  .description("Prepare a release for near-bos-webcomponent")
+  .option("-a, --account <account>", "NEAR account to sign for the release")
+  .option(
+    "--signer-public-key <signerPublicKey>",
+    "Public key for signing transactions in the format: ed25519:<public_key>"
+  )
+  .option(
+    "--signer-private-key <signerPrivateKey>",
+    "Private key for signing transactions in the format: ed25519:<private_key>"
+  )
+  .option(
+    "-n, --network <network>",
+    "Network to use (mainnet or testnet)",
+    "mainnet"
+  )
+  .option("-p, --post", "Post the release to socialdb", false)
+  .parse(process.argv);
 
-  if (!signerAccount) {
-    throw new ValidationError("Missing argument: signer account\n" +
-        "Usage: node release.js <signer account> <signer key> [network]\n\n" +
-      "Please provide the NEAR account to sign for the release.");
-  } 
-  if (!signerKey) {
-    console.warn(
-      "Missing argument: signer key\n" +
-        "Usage: node release.js <signer account> <signer key> [network]\n\n" +
-        "Will attempt to sign from keychain..."
+const options = program.opts();
+
+function validateArgs() {
+  if (!options.account) {
+    throw new Error(
+      "Missing argument: signer account. Use -a or --account to specify."
     );
   }
-
-  if (network !== "mainnet" && network !== "testnet") {
-    throw new ValidationError(`Invalid network: ${network}`);
+  if (!options.key) {
+    console.warn(
+      "Missing argument: signer key. Will attempt to sign from keychain..."
+    );
   }
-
-  console.log(`Using network: ${network}\n`);
-  return { signerAccount, signerKey, network };
+  if (options.network !== "mainnet" && options.network !== "testnet") {
+    throw new Error(`Invalid network: ${options.network}`);
+  }
+  console.log(`Using network: ${options.network}\n`);
 }
 
 async function exec(command, env = {}) {
@@ -73,6 +84,83 @@ async function updatePackageJson(cid) {
   await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
 }
 
+async function postRelease(cid) {
+  const releaseData = {
+    tagName: "near-social-viewer",
+    bundleUrl: `https://ipfs.web4.near.page/ipfs/${cid}`,
+  };
+
+  const SOCIAL_CONTRACT = {
+    mainnet: "social.near",
+    testnet: "v1.social08.testnet",
+  };
+
+  const txData = {
+    data: {
+      [options.account]: {
+        post: {
+          main: JSON.stringify({
+            type: "md",
+            text: `{ "tagName": "${releaseData.tagName}", "bundleUrl": "${releaseData.bundleUrl}" }`,
+          }),
+        },
+        index: {
+          post: '{"key":"main","value":{"type":"md"}}', // type is release
+        },
+      },
+    },
+  };
+
+  // Prepare the command and arguments
+  const args = [
+    "near-cli-rs",
+    "contract",
+    "call-function",
+    "as-transaction",
+    SOCIAL_CONTRACT[options.network],
+    "set",
+    "json-args",
+    JSON.stringify(txData), // need json args
+    "prepaid-gas",
+    "100.0 Tgas",
+    "attached-deposit",
+    "0 NEAR",
+    "sign-as",
+    options.account,
+    "network-config",
+    options.network,
+  ];
+
+  if (options.signerPublicKey && options.signerPrivateKey) {
+    args.push(
+      "sign-with-plaintext-private-key",
+      "--signer-public-key",
+      `${options.signerPublicKey}`,
+      "--signer-private-key",
+      `${options.signerPrivateKey}`,
+      "send"
+    );
+  }
+
+  const deployProcess = spawn("npx", args, {
+    stdio: "inherit",
+  });
+
+  deployProcess.on("close", (code) => {
+    if (code === 0) {
+      console.log(
+        `Successfully posted release to account ${options.account}`
+      );
+    } else {
+      console.error(`Failed to post release from account ${options.account}`);
+    }
+  });
+
+  deployProcess.on("error", (err) => {
+    console.error(`Deployment failed with error: ${err.message}`);
+  });
+}
+
 async function runWithSpinner(message, func) {
   const spinner = ora(message).start();
   try {
@@ -87,13 +175,14 @@ async function runWithSpinner(message, func) {
 
 async function main() {
   try {
-    const { signerAccount, signerKey, network } = parseArgs();
+    validateArgs();
 
     console.log("Preparing a release...");
 
     await runWithSpinner("Building production version", () =>
       exec("yarn prod")
     );
+
     const output = await runWithSpinner("Creating CAR file", () =>
       exec("yarn nearfs:publish-library:create:car")
     );
@@ -107,21 +196,25 @@ async function main() {
 
     await runWithSpinner("Uploading CAR file", () =>
       exec("yarn nearfs:publish-library:upload:car", {
-        NODE_ENV: network,
-        NEAR_SIGNER_KEY: signerKey,
-        NEAR_SIGNER_ACCOUNT: signerAccount,
+        NODE_ENV: options.network,
+        NEAR_SIGNER_KEY: options.signerPrivateKey,
+        NEAR_SIGNER_ACCOUNT: options.account,
       })
     );
 
     await runWithSpinner("Updating package.json", () => updatePackageJson(cid));
 
+    if (options.post) {
+      await runWithSpinner("Posting release", () => postRelease(cid));
+    } else {
+      console.log(
+        "Release preparation complete. Use --post flag to post the release."
+      );
+    }
+
     console.log("Release prepared successfully!");
   } catch (error) {
-    if (error instanceof ValidationError) {
-      console.error(error.message);
-    } else {
-      console.error("An unexpected error occurred:", error);
-    }
+    console.error("An error occurred:", error.message);
     process.exit(1);
   }
 }

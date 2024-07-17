@@ -87,6 +87,7 @@
     "browserify-zlib": "^0.2.0",
     "buffer": "^6.0.3",
     "clean-webpack-plugin": "^4.0.0",
+    "commander": "^12.1.0",
     "copy-webpack-plugin": "^9.0.1",
     "cross-env": "^7.0.3",
     "crypto-browserify": "^3.12.0",
@@ -119,6 +120,6 @@
     "webpack-merge": "^5.8.0"
   },
   "nearfs": {
-    "cid": "bafybeiftqwg2qdfhjwuxt5cjvvsxflp6ghhwgz5db3i4tqipocvyzhn2bq"
+    "cid": "bafybeibe63hqugbqr4writdxgezgl5swgujay6t5uptw2px7q63r7crk2q"
   }
 }
