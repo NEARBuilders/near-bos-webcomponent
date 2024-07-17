@@ -50,12 +50,6 @@ Be sure to replace `REPLACE_WITH_NEARFS_CID` with the cid you get from [publishi
 
 <br />
 
-Be sure to replace "REPLACE_WITH_BUNDLE_HASH" with the respective hash, which can be found via the asset-manifest:
-
-<https://cdn.jsdelivr.net/npm/near-bos-webcomponent@latest/dist/asset-manifest.json>
-
-</details>
-
 Once included, you can use the web component in your HTML:
 
 ```html
@@ -89,9 +83,9 @@ To support specific features of the VM or an accompanying development server, pr
   // Configuration options for the VM
   "vm": {
     "features": {
-    	"enableComponentSrcDataKey": boolean, // adds the "data-component" attribute specifying the rendered component's "src"
-		}
-	}
+      "enableComponentSrcDataKey": boolean, // adds the "data-component" attribute specifying the rendered component's "src"
+    }
+  }
 }
 ```
 
