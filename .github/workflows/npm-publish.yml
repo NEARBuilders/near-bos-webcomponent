@@ -18,7 +18,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
       - run: yarn install
       - name: Prepare the release
-        run: yarn prepare:release
+        run: yarn prepare:release devs.near ${{secrets.DEVS_SIGNER_PRIVATE_KEY}}
       - name: Commit and push updated package.json (nearfs cid)
         run: |
           git config --local user.email "action@github.com"
