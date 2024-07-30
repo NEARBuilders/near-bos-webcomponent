@@ -1,16 +1,15 @@
-const webpack = require("webpack");
+const rspack = require("@rspack/core");
 const paths = require("./config/paths");
 const path = require("path");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-const HTMLWebpackPlugin = require("html-webpack-plugin");
-const CopyWebpackPlugin = require("copy-webpack-plugin");
 const { merge } = require("webpack-merge");
 const loadPreset = require("./config/presets/loadPreset");
-const loadConfig = (mode) => require(`./config/webpack.${mode}.js`)(mode);
-const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
+const loadConfig = (mode) => require(`./config/rspack.${mode}.js`)(mode);
+const { RspackManifestPlugin } = require("rspack-manifest-plugin");
 
 module.exports = function (env) {
   const { mode = "production" } = env || {};
+  const prod = mode === "production";
 
   return merge(
     {
@@ -30,9 +29,29 @@ module.exports = function (env) {
             },
           },
           {
-            test: /\.js$/,
-            use: ["babel-loader"],
-            exclude: path.resolve(__dirname, "node_modules"),
+            test: /\.(j|t)s$/,
+            exclude: [/[\\/]node_modules[\\/]/],
+            loader: "builtin:swc-loader",
+            options: {
+              jsc: {
+                parser: {
+                  syntax: 'ecmascript',
+                  jsx: true,
+                },
+                externalHelpers: true,
+                transform: {
+                  react: {
+                    runtime: "automatic",
+                    development: !prod,
+                    refresh: !prod,
+                  },
+                },
+              },
+              env: {
+                targets: "Chrome >= 48",
+              },
+            },
+            type: 'javascript/auto',
           },
           // Images: Copy image files to build folder
           { test: /\.(?:ico|gif|png|jpg|jpeg)$/i, type: "asset/resource" },
@@ -61,13 +80,13 @@ module.exports = function (env) {
         },
       },
       plugins: [
-        new webpack.EnvironmentPlugin({
+        new rspack.EnvironmentPlugin({
           // Configure environment variables here.
           ENVIRONMENT: "browser",
         }),
         new CleanWebpackPlugin(),
         // Copies files from target to destination folder
-        new CopyWebpackPlugin({
+        new rspack.CopyRspackPlugin({
           patterns: [
             {
               from: paths.publicPath,
@@ -79,33 +98,33 @@ module.exports = function (env) {
             },
           ],
         }),
-        new HTMLWebpackPlugin({
+        new rspack.HtmlRspackPlugin({
           template: `${paths.publicPath}/index.html`,
           publicPath: process.env.PUBLIC_PATH ?? "/",
           minify: false,
         }),
-        new HTMLWebpackPlugin({
+        new rspack.HtmlRspackPlugin({
           template: `${paths.publicPath}/index.html`,
           filename: "404.html",
           publicPath: process.env.PUBLIC_PATH ?? "/",
           minify: false,
         }),
-        new webpack.ProvidePlugin({
+        new rspack.ProvidePlugin({
           process: "process/browser",
           Buffer: [require.resolve("buffer/"), "Buffer"],
         }),
-        new WebpackManifestPlugin({
+        new RspackManifestPlugin({
           fileName: "asset-manifest.json",
           publicPath: "/",
           generate: (seed, files, entrypoints) => {
             const manifestFiles = files.reduce((manifest, file) => {
-              manifest[file.name.replace(/\.[^.]+$/, '.js')] = file.path;
+              manifest[file.name.replace(/\.[^.]+$/, ".js")] = file.path;
               return manifest;
             }, seed);
             const entrypointFiles = entrypoints.main.filter(
               (fileName) => !fileName.endsWith(".map")
             );
-        
+
             return {
               files: manifestFiles,
               entrypoints: entrypointFiles,
