@@ -32,6 +32,7 @@ module.exports = function (env) {
             test: /\.(j|t)s$/,
             exclude: [/[\\/]node_modules[\\/]/],
             loader: "builtin:swc-loader",
+            /** @type {import('@rspack/core').SwcLoaderOptions} */
             options: {
               jsc: {
                 parser: {
@@ -39,13 +40,6 @@ module.exports = function (env) {
                   jsx: true,
                 },
                 externalHelpers: true,
-                transform: {
-                  react: {
-                    runtime: "automatic",
-                    development: !prod,
-                    refresh: !prod,
-                  },
-                },
               },
               env: {
                 targets: "Chrome >= 48",
