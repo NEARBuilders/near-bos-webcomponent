@@ -9,7 +9,6 @@ const { RspackManifestPlugin } = require("rspack-manifest-plugin");
 
 module.exports = function (env) {
   const { mode = "production" } = env || {};
-  const prod = mode === "production";
 
   return merge(
     {
