@@ -63,6 +63,11 @@ module.exports = () => {
         new rspack.SwcCssMinimizerRspackPlugin(),
         new rspack.SwcJsMinimizerRspackPlugin({
           exclude: /webcomponentapp.js/,
+          minimizerOptions: {
+            compress: {
+              drop_console: true,
+            },
+          }
         }),
       ],
       runtimeChunk: {
