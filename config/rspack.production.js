@@ -1,6 +1,4 @@
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
-const TerserPlugin = require("terser-webpack-plugin");
+const rspack = require('@rspack/core');
 const path = require("path");
 
 module.exports = () => {
@@ -13,13 +11,6 @@ module.exports = () => {
     devtool: false,
     module: {
       rules: [
-        // {
-        //   test: /\.(css)$/,
-        //   use: [MiniCssExtractPlugin.loader, "css-loader"],
-        //   //   options: {
-        //   //     sourceMap: false,
-        //   //   },
-        // },
         {
           test: /\.(scss|css)$/,
           use: [
@@ -61,17 +52,22 @@ module.exports = () => {
       ],
     },
     plugins: [
-      new MiniCssExtractPlugin({
+      new rspack.CssExtractRspackPlugin({
         filename: "styles/[name].[contenthash].css",
         chunkFilename: "[id].css",
-      }),
+      })
     ],
     optimization: {
       minimize: true,
       minimizer: [
-        new CssMinimizerPlugin(),
-        new TerserPlugin({
+        new rspack.SwcCssMinimizerRspackPlugin(),
+        new rspack.SwcJsMinimizerRspackPlugin({
           exclude: /webcomponentapp.js/,
+          minimizerOptions: {
+            compress: {
+              drop_console: true,
+            },
+          }
         }),
       ],
       runtimeChunk: {
