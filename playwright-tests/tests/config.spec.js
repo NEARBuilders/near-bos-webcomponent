@@ -19,7 +19,7 @@ describe("test data-component attribute", () => {
     page,
   }) => {
     await page.evaluate(() => {
-      const src = "zavodil.near/widget/Lido";
+      const src = "efiz.near/widget/Tree";
 
       document.body.innerHTML = `<near-social-viewer src="${src}"></near-social-viewer>`;
     });
@@ -31,7 +31,7 @@ describe("test data-component attribute", () => {
   test("with the correct configuration there will be a data-component property in the components", async ({
     page,
   }) => {
-    const src = "zavodil.near/widget/Lido";
+    const src = "efiz.near/widget/Tree";
 		const config = { "vm": { "features": {"enableComponentSrcDataKey": true }}}
 
     await setupNearSocialViewer(page, src, config);
