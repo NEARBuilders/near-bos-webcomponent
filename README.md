@@ -15,6 +15,29 @@
 
 `near-social-viewer` is a [web component (custom element)](https://developer.mozilla.org/en-US/docs/Web/API/Web_components) that implements the [near-social-vm](https://github.com/NearSocial/VM) for rendering code stored on-chain in the [SocialDB](https://github.com/NearSocial/social-db) smart contract (social.near). It is the simplest way to create your own [near social viewer](https://github.com/NearSocial/viewer) and it is the easiest method for embedding [Widgets](https://thewiki.near.page/near.social_widgets) into any web application.
 
+<details>
+  <summary>Table of Contents</summary>
+
+- [Usage](#usage)
+- [Attributes](#attributes)
+- [Configuration Options](#configuration-options)
+- [Local Widget Development](#local-widget-development)
+  - [Proxy RPC](#proxy-rpc)
+  - [Redirect Map](#redirect-map)
+  - [Hot Reload](#hot-reload)
+- [Setup & Local Development](#setup--local-development)
+  - [Installing Dependencies](#installing-dependencies)
+  - [Running the App](#running-the-app)
+  - [Building for Production](#building-for-production)
+  - [Running Tests](#running-tests)
+- [Adding VM Custom Elements](#adding-vm-custom-elements)
+- [Configuring Ethers](#configuring-ethers)
+- [Landing Page for SEO Friendly URLs](#landing-page-for-seo-friendly-urls)
+- [Publishing to NEARFS](#publishing-to-nearfs)
+- [Contributing](#contributing)
+
+</details>
+
 ## Usage
 
 <details open>
@@ -61,12 +84,12 @@ Once included, you can use the web component in your HTML:
 
 The web component supports several attributes:
 
-* `src`: the src of the widget to render (e.g. `devs.near/widget/default`)
-* `code`: raw, valid, stringified widget code to render (e.g. `"return <p>hello world</p>"`)
-* `initialprops`: initial properties to be passed to the rendered widget
-* `rpc`: rpc url to use for requests within the VM
-* `network`: network to connect to for rpc requests & wallet connection
-* `config`: options to modify the underlying VM or usage with devtools, see available [configurations](#configuration-options)
+- `src`: the src of the widget to render (e.g. `devs.near/widget/default`)
+- `code`: raw, valid, stringified widget code to render (e.g. `"return <p>hello world</p>"`)
+- `initialprops`: initial properties to be passed to the rendered widget
+- `rpc`: rpc url to use for requests within the VM
+- `network`: network to connect to for rpc requests & wallet connection
+- `config`: options to modify the underlying VM or usage with devtools, see available [configurations](#configuration-options)
 
 ## Configuration Options
 
@@ -89,7 +112,6 @@ To support specific features of the VM or an accompanying development server, pr
   }
 }
 ```
-
 
 ## Local Widget Development
 
@@ -123,32 +145,37 @@ The above strategies require changes to be reflected either on page reload, or f
 
 This feature works best when accompanied with [bos-workspace](https://github.com/nearbuilders/bos-workspace), which will automatically inject a config to the attribute if you provide the path to your web component's dist, or a link to it stored on [NEARFS](https://github.com/vgrichina/nearfs). See more in [Customizing the Gateway](https://github.com/NEARBuilders/bos-workspace?tab=readme-ov-file#customizing-the-gateway). It can be disabled with the `--no-hot` flag.
 
-
 ## Setup & Local Development
 
-Initialize repo:
+### Installing dependencies
 
-```cmd
-yarn
+```bash
+yarn install
 ```
 
-Start the development version:
+### Running the app
 
-```cmd
-yarn start
+First, run the development server:
+
+```bash
+yarn run dev
 ```
 
-Production build:
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
 
-```cmd
-yarn prod
+### Building for production
+
+```bash
+yarn run prod
 ```
 
-Serve the production build:
+### Running tests
 
-```cmd
-yarn serve:prod
+```bash
+npm run test
 ```
+
+See the full [testing guide](./playwright-tests/README.md).
 
 ## Adding VM Custom Elements
 
@@ -243,12 +270,28 @@ This script will output the CID to terminal, as well as automatically save it un
 
 **Parameters:**
 
-* `signer account`: NEAR account to use for signing IPFS URL update transaction, see [web4-deploy](https://github.com/vgrichina/web4-deploy?tab=readme-ov-file#deploy-fully-on-chain-to-nearfs)
-* `signer key`:  NEAR account private key to use for signing. Should have base58-encoded key starting with `ed25519:`. Will attempt to sign from keychain (~/.near-credentials/) if not provided.
-* `network`: NEAR network to use. Defaults to mainnet.
+- `signer account`: NEAR account to use for signing IPFS URL update transaction, see [web4-deploy](https://github.com/vgrichina/web4-deploy?tab=readme-ov-file#deploy-fully-on-chain-to-nearfs)
+- `signer key`:  NEAR account private key to use for signing. Should have base58-encoded key starting with `ed25519:`. Will attempt to sign from keychain (~/.near-credentials/) if not provided.
+- `network`: NEAR network to use. Defaults to mainnet.
 
 This is an example of the NEARFS url, and you should replace with the cid you received above:
 
 <https://ipfs.web4.near.page/ipfs/bafybeiftqwg2qdfhjwuxt5cjvvsxflp6ghhwgz5db3i4tqipocvyzhn2bq/>
 
 After uploading, it normally takes some minutes before the files are visible on NEARFS. When going to the expected URL based on the IPFS address we saw above, we will first see the message `Not found`.
+
+## Contributing
+
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+If you're interested in contributing to this project, please read the [contribution guide](./CONTRIBUTING).
+
+<div align="right">
+<a href="https://nearbuilders.org" target="_blank">
+<img
+  src="https://builders.mypinata.cloud/ipfs/QmWt1Nm47rypXFEamgeuadkvZendaUvAkcgJ3vtYf1rBFj"
+  alt="Near Builders"
+  height="40"
+/>
+</a>
+</div>
