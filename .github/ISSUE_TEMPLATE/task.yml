@@ -4,7 +4,7 @@ title: "[Task]: "
 labels: ["enabler"]
 assignees: []
 body:
-- type: textarea
+  - type: textarea
     id: overview
     attributes:
       label: Overview
