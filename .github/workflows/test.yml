@@ -25,7 +25,7 @@ jobs:
         run: if [ -d "node_modules" ]; then echo "node_modules cache hit"; else echo "node_modules cache miss"; fi
 
       - name: Install dependencies
-        run: yarn install
+        run: yarn install --frozen-lockfile
 
       - name: Format code
         run: yarn fmt
