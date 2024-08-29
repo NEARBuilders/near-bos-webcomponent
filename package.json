@@ -1,6 +1,6 @@
 {
   "name": "near-bos-webcomponent",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "homepage": "https://github.com/NEARBuilders/near-bos-webcomponent",
   "repository": {
     "type": "git",
@@ -70,8 +70,8 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.38.1",
-    "@rspack/cli": "^0.7.5",
-    "@rspack/core": "^0.7.5",
+    "@rspack/cli": "^1.0.0",
+    "@rspack/core": "^1.0.0",
     "assert": "^2.0.0",
     "browserify-zlib": "^0.2.0",
     "buffer": "^6.0.3",
