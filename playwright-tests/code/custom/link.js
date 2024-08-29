@@ -1,6 +1,6 @@
 const { to, href, text } = props;
 return (
-  <Link to={to} href={href}>
-    {text}
+  <Link to={"/hello"} href={href}>
+    hello! {text}
   </Link>
 );

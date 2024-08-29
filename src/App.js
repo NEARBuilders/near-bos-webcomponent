@@ -1,7 +1,7 @@
 import "App.scss";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/js/bootstrap.bundle";
-import React, { useEffect, useMemo } from "react";
+import React, { createContext, useEffect, useMemo, useState } from "react";
 import "react-bootstrap-typeahead/css/Typeahead.css";
 
 import { isValidAttribute } from "dompurify";
@@ -16,6 +16,30 @@ import Wallet from "./auth/Wallet";
 
 import { BosWorkspaceProvider, useRedirectMap } from "./utils/bos-workspace";
 import { EthersProvider } from "./utils/web3/ethers";
+
+// Higher-order component to provide context and handle hydration
+const withHydration = (WrappedComponent) => {
+  return (props) => {
+    const [isHydrated, setIsHydrated] = useState(false);
+
+    useEffect(() => {
+      setIsHydrated(true);
+    }, []);
+
+    if (!isHydrated) {
+      return null; // Or a loading indicator
+    }
+
+    const commonFunctions = { sharedFunction: () => console.log(JSON.stringify(props)) }
+
+    return (
+      <WrappedComponent
+        {...props}
+        {...commonFunctions}
+      />
+    );
+  };
+};
 
 function Viewer({ widgetSrc, code, initialProps }) {
   const location = useLocation();
@@ -51,8 +75,16 @@ function Viewer({ widgetSrc, code, initialProps }) {
 }
 
 function App(props) {
-  const { src, code, initialProps, rpc, network, selectorPromise, config } =
-    props;
+  const {
+    src,
+    code,
+    initialProps,
+    rpc,
+    network,
+    selectorPromise,
+    config,
+    customElements,
+  } = props;
 
   const { initNear } = useInitNear();
 
@@ -62,27 +94,10 @@ function App(props) {
     const VM = {
       networkId: network || "mainnet",
       selector: selectorPromise,
-      customElements: {
-        Link: (props) => {
-          if (!props.to && props.href) {
-            props.to = props.href;
-            delete props.href;
-          }
-          if (props.to) {
-            props.to =
-              typeof props.to === "string" &&
-              isValidAttribute("a", "href", props.to)
-                ? props.to
-                : "about:blank";
-          }
-          return <Link {...props} />;
-        },
-        Wallet: (props) => {
-          return <Wallet {...props} />;
-        },
-      },
+      customElements: customElements,
       features: {
-        enableComponentSrcDataKey: config?.vm?.features?.enableComponentSrcDataKey,
+        enableComponentSrcDataKey:
+          config?.vm?.features?.enableComponentSrcDataKey,
       },
       config: {
         defaultFinality: undefined,
