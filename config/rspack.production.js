@@ -60,7 +60,7 @@ module.exports = () => {
     optimization: {
       minimize: true,
       minimizer: [
-        new rspack.SwcCssMinimizerRspackPlugin(),
+        new rspack.LightningCssMinimizerRspackPlugin(),
         new rspack.SwcJsMinimizerRspackPlugin({
           exclude: /webcomponentapp.js/,
           minimizerOptions: {
