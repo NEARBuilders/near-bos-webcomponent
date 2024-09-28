@@ -25,7 +25,7 @@ jobs:
           git config --local user.name "GitHub Action"
           git add package.json
           git commit -m "Update package.json with new nearfs cid [skip ci]"
-          git push
+          git push origin HEAD:main
       - name: Publish to NPM
         run: npm publish
         env:
