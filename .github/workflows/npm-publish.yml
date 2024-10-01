@@ -24,8 +24,13 @@ jobs:
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add package.json
-          git commit -m "Update package.json with new nearfs cid [skip ci]"
-          git push origin HEAD:main
+          # Check if there are changes to commit
+          if ! git diff --cached --quiet; then
+            git commit -m "Update package.json with new nearfs cid [skip ci]"
+            git push origin HEAD:main
+          else
+            echo "No changes to commit."
+          fi
       - name: Publish to NPM
         run: npm publish
         env:
